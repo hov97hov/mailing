@@ -1,0 +1,66 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');*/
+@import url('https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&display=swap');
+body {
+    font-family: 'Tinos', serif;
+    /*font-family: 'Roboto', sans-serif;*/
+    background-image: url("/images/body/light-green-watercolor-background_3590-19.webp");
+    background-position: bottom;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+ul {
+    list-style: none;
+    padding: 0 !important;
+}
+
+.data-table-search-filter{
+    width: 100%;
+}
+.data-table-search-filter input {
+    width: 100%;
+}
+.v-card__title .v-input {
+    padding: 0 !important;
+}
+.pagination-search button {
+    background: #ffce0b;
+    color: #000000;
+    border: 1px solid #ffce0b
+}
+.pagination-search button:hover {
+    background: #FDD531FF;
+    color: #000000;
+    border: 1px solid #FDD531FF
+}
+.page-item.active .page-link {
+    background: #ffce0b !important;
+    color: #000000 !important;
+    border: 1px solid #FDD531FF !important
+}
+
+.page-item.active .page-link:hover {
+    background: #FDD531FF !important;
+    color: #000000 !important;
+    border: 1px solid #FDD531FF !important
+}
+.ql-container {
+    min-height: auto !important;
+    height: 40% !important;
+}
+
+.theme--light.v-application {
+    background: transparent !important;
+}
+
+.v-application a {
+    color: black !important;
+}
+.v-breadcrumbs__divider {
+    color: black !important;
+}
+
