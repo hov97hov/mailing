@@ -2,10 +2,12 @@
 
 namespace App\Mail;
 
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 
 class SendEmail extends Mailable
@@ -39,6 +41,12 @@ class SendEmail extends Mailable
                     'text' => $this->data['text'] ?? '',
                     'files' => $this->data['files'] ?? ''
                 ]);
+
+            $this->withSwiftMessage(function ($message) {
+                $message->getHeaders()->addTextHeader(
+                    'X-PM-Message-Stream', Config::get('mail.mailers.smtp.header')
+                );
+            });
 
             return $this;
 

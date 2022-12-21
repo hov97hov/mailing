@@ -12,7 +12,8 @@ class Group extends Model
 
     protected $fillable = [
         'name',
-        'color'
+        'color',
+        'image',
     ];
 
     public function contact(): BelongsToMany

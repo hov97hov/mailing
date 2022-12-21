@@ -19,10 +19,11 @@ class AuthController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'role' => 0,
             'password' => Hash::make($request->password)
         ]);
 
-        return response()->json(['msg' => 'Register Successfully']);
+        return response()->json(['status' => 200]);
     }
 
     public function login(LoginRequest $request)
@@ -43,7 +44,7 @@ class AuthController extends Controller
         Session::flush();
         Auth::logout();
 
-        return redirect('login');
+        return response()->json(['status' => 200]);
     }
 
 }

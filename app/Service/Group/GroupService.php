@@ -11,7 +11,25 @@ class GroupService implements GroupInterface
 {
     public function createGroup($data)
     {
-        return Group::create($data);
+        $createGroup = Group::create([
+            'name' => $data->name,
+            'color' => $data->color,
+        ]);
+
+        if($data->hasFile('image')) {
+            $name = $data->image->getClientOriginalName();
+            $data->image->move(public_path() . '/storage/groups/', $name);
+            $filePath = '/storage/groups/'. $name;
+
+            Group::where('id', $createGroup->id)->update([
+                'image' => $filePath
+            ]);
+        }
+
+        return response()->json([
+            'status' => 200
+        ]);
+
     }
 
     public function createContactGroup($data)

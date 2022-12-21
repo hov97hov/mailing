@@ -61,15 +61,6 @@
                                    Ջնջել
                                </v-btn>
                            </div>
-                          <div class="action-btn-content" v-if="selectedActive.length || selectedArchive.length">
-                              <v-btn
-                                  @click="openSelectedArchivedDialog"
-                                  color="teal lighten-1"
-                                    dark
-                              >
-                                  Ավելացնել Արխիվ
-                              </v-btn>
-                          </div>
                         </div>
                         <v-card v-if="allMessages">
                             <v-card-title>
@@ -323,17 +314,32 @@
                                 <v-text-field
                                     v-model="defaultMessage.to"
                                     label="ՈՒմ"
-                                    solo
-                                    hide-details
+                                    hide-details="auto"
+                                    :error-messages="errors.defaultMessage.to"
+                                    @input="checkErrors('defaultMessage', 'to')"
                                 ></v-text-field>
                             </div>
                             <div class="mailing-field-content">
                                 <v-text-field
                                     v-model="defaultMessage.subject"
                                     label="Թեմա"
-                                    solo
-                                    hide-details
+                                    hide-details="auto"
+                                    :error-messages="errors.defaultMessage.subject"
+                                    @input="checkErrors('defaultMessage', 'subject')"
                                 ></v-text-field>
+                            </div>
+                            <div class="mailing-field-content">
+                                <div class="mailing-field-content">
+                                    <v-select
+                                        v-model="defaultMessage.userEmail"
+                                        :items="userEmails"
+                                        item-value="email"
+                                        item-text="email"
+                                        label="Ընտրեք թե որ էլ․ փոստով եք ուզում ուղարկել"
+                                        :error-messages="errors.defaultMessage.userEmail"
+                                        @input="checkErrors('defaultMessage', 'userEmail')"
+                                    ></v-select>
+                                </div>
                             </div>
                             <div class="mailing-field-content">
                                 <v-file-input
@@ -370,6 +376,9 @@
                             <div class="mailing-field-content">
                                 <vue-editor
                                     v-model="defaultMessage.text"
+                                    hide-details="auto"
+                                    :error-messages="errors.defaultMessage.text"
+                                    @input="checkErrors('defaultMessage', 'text')"
                                 >
                                 </vue-editor>
                             </div>
@@ -514,10 +523,21 @@
         >
             <v-card>
                 <v-card-title>
-                    <span class="text-h5">Use Google's location service?</span>
+                    <span class="text-h5">Ուղարկված նամակը</span>
                 </v-card-title>
                 <v-card-text>
-                   fdsfdsfdsfsd
+                    <div class="modal-top">
+                        Թեմա - {{oneMessage.subject}}
+                    </div>
+                    <div class="modal-messages" v-html="oneMessage.message"></div>
+                    <div class="modal-files">
+                        <div
+                            v-if="oneMessage.file.length"
+                            v-for="item in oneMessage.file"
+                        >
+                            <a :href="item.file_path" download="">{{item.file_name}}</a>
+                        </div>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -611,6 +631,7 @@ export default {
     },
     data: () => {
         return {
+            userEmails: [],
             selectedArchiveDialog: false,
             deleteContactsDialog: false,
             addActiveMessage: false,
@@ -642,6 +663,7 @@ export default {
             oneMessage: [],
             defaultMessage: {
                 to: '',
+                userEmail: '',
                 subject: '',
                 text: '',
             },
@@ -660,6 +682,7 @@ export default {
                 { text: 'Գործողություններ', value: 'iron' },
             ],
             headersNoRegisterData: [
+                { text: 'Նշել' },
                 {
                     text: 'Նամակ',
                     align: 'start',
@@ -671,6 +694,15 @@ export default {
                 { text: 'Ամսաթիվ', value: 'created_at' },
                 { text: 'Գործողություններ', value: 'iron' },
             ],
+
+            errors: {
+                defaultMessage: {
+                    to: '',
+                    userEmail: '',
+                    subject: '',
+                    text: '',
+                },
+            }
         }
     },
 
@@ -706,9 +738,17 @@ export default {
 
     async created() {
         await this.getAllMessages()
+        await this.getUserEmails()
     },
 
     methods: {
+        checkErrors(obj, field) {
+            if (obj) {
+                this.errors[obj][field] = ''
+            } else {
+                this.errors[field] = ''
+            }
+        },
         selectAllActive(type){
             if(!type){
                 this.allMessagesData.map((item, i) => {
@@ -751,10 +791,21 @@ export default {
         openDialog(id){
             this.messageDialog = true
             this.messageId = id
+            this.getMessage()
          },
 
+        async getUserEmails() {
+            await axios.post(`/api/get-user-emails`)
+                .then(response => {
+                    this.userEmails = response.data.userEmails
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        },
+
         async getMessage() {
-            await axios.get(`/api/get-message`, {id: this.messageId})
+            await axios.post(`/api/get-message`, {id: this.messageId})
                 .then(response => {
                     this.oneMessage = response.data.oneMessage
                 })
@@ -889,6 +940,8 @@ export default {
                     })
                     this.deleteMessage = false
                     this.getNoRegisterContactData()
+                    this.getAllMessages()
+                    this.getArchiveMessage()
                 })
                 .catch(e => {
                     console.log(e)
@@ -913,6 +966,7 @@ export default {
                         speed: 1000
                     })
                     this.getAllMessages()
+                    this.getArchiveMessage()
                     this.deleteContactsDialog = false
                 })
                 .catch(e => {
@@ -956,6 +1010,7 @@ export default {
 
             formData.append('to', this.defaultMessage.to)
             formData.append('subject', this.defaultMessage.subject)
+            formData.append('from', this.defaultMessage.userEmail)
             formData.append('text', this.defaultMessage.text)
 
             await axios.post(`/api/send-message`, formData,
@@ -976,8 +1031,8 @@ export default {
                 this.defaultMessage.text = ''
                 this.defaultMessage.subject = ''
                 this.files = []
-            }).catch((error) => {
-                console.log(error)
+            }).catch((e) => {
+                this.errors.defaultMessage = Object.assign(this.errors.defaultMessage, e.response.data.errors)
             })
         },
     }
@@ -1141,6 +1196,26 @@ export default {
                     font-size: 18px !important;
                 }
             }
+        }
+    }
+
+    //maodal message
+    .modal-top {
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #dddddd;
+    }
+    .modal-files {
+        border-top: 1px solid #dddddd;
+        padding-top: 10px;
+    }
+    .modal-files > div {
+        margin-bottom: 10px;
+        a {
+            padding: 5px 10px;
+            background: #00C853;
+            color: #ffffff !important;
+            border-radius: 5px;
         }
     }
 </style>

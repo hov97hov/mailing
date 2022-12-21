@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //LOGIN
 Route::post('register', [AuthController::class, 'register']);
 Route::post('check-login', [AuthController::class, 'login']);
-Route::get('logout', [AuthController::class, 'logout']);
+Route::post('logout', [AuthController::class, 'logout']);
 //CONTACT
 Route::get('get-contacts', [ContactController::class, 'getContacts'])->name('getContacts');
 Route::post('create-contact', [ContactController::class, 'createContact'])->name('createContact');
@@ -33,6 +34,8 @@ Route::post('update-contact', [ContactController::class, 'updateContact'])->name
 Route::post('delete-contact', [ContactController::class, 'deleteContact'])->name('deleteContact');
 Route::post('delete-contacts', [ContactController::class, 'deleteContacts'])->name('deleteContacts');
 Route::post('delete-selected-contacts', [ContactController::class, 'deleteSelectedContact'])->name('deleteSelectedContact');
+Route::post('get-user-emails', [ContactController::class, 'getUserEmails'])->name('getUserEmails');
+Route::post('get-auth-user', [ContactController::class, 'getAuthUser'])->name('getAuthUser');
 //GROUP
 Route::post('create-group', [GroupsController::class, 'createGroup'])->name('createGroup');
 Route::post('get-groups', [GroupsController::class, 'getGroups'])->name('getGroups');
@@ -48,9 +51,12 @@ Route::get('get-all-messages', [MessageController::class, 'getAllMessages'])->na
 Route::post('add-archive-message', [MessageController::class, 'addArchiveMessage'])->name('addArchiveMessage');
 Route::get('get-archive-message', [MessageController::class, 'getArchiveMessages'])->name('getArchiveMessages');
 Route::post('delete-message', [MessageController::class, 'deleteMessage'])->name('deleteMessage');
-Route::get('get-message', [MessageController::class, 'getOneMessage'])->name('getOneMessage');
+Route::post('get-message', [MessageController::class, 'getOneMessage'])->name('getOneMessage');
 Route::post('delete-selected-messages', [MessageController::class, 'deleteSelectedMessage'])->name('deleteSelectedMessage');
 Route::post('add-archive-selected-message', [MessageController::class, 'addSelectedArchived'])->name('addSelectedArchived');
 Route::post('send-message', [MessageController::class, 'sendMessage'])->name('sendMessage');
 Route::get('get-no-register-message-contact', [MessageController::class, 'getNoRegisterContactMessages'])->name('getNoRegisterContactMessages');
-
+//SETTINGS
+Route::post('/create-settings', [SettingController::class, 'createSettings'])->name('createSettings');
+Route::post('/get-settings', [SettingController::class, 'getSettings'])->name('getSettings');
+Route::post('/create-mail', [SettingController::class, 'createMail'])->name('createMail');

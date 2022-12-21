@@ -12,45 +12,53 @@
                             <div class="card-body p-4 p-sm-5">
                                 <h5 class="card-title text-center mb-5 fw-light fs-5">Գրանցվել</h5>
                                 <form>
-                                    <div class="form-floating mb-3">
-                                        <input
+                                    <div class="form-input">
+                                        <v-text-field
                                             v-model="formData.name"
                                             type="text"
-                                            class="form-control"
-                                            id="floatingInput"
-                                            placeholder="name@example.com"
-                                        >
-                                        <label for="floatingInput">Անուն</label>
+                                            label="Անուն"
+                                            outlined
+                                            dense
+                                            hide-details="auto"
+                                            :error-messages="errors.formData.name"
+                                            @input="checkErrors('formData', 'name')"
+                                        ></v-text-field>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input
+                                    <div class="form-input">
+                                        <v-text-field
                                             v-model="formData.email"
                                             type="text"
-                                            class="form-control"
-                                            id="floatingInput"
-                                            placeholder="email@example.com"
-                                        >
-                                        <label for="floatingInput">Էլ․ Փոստ</label>
+                                            label="Էլ․փոստ"
+                                            outlined
+                                            dense
+                                            hide-details="auto"
+                                            :error-messages="errors.formData.email"
+                                            @input="checkErrors('formData', 'email')"
+                                        ></v-text-field>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input
+                                    <div class="form-input">
+                                        <v-text-field
                                             v-model="formData.password"
+                                            label="Գաղտնաբառ"
+                                            outlined
+                                            dense
+                                            hide-details="auto"
                                             type="password"
-                                            class="form-control"
-                                            id="floatingPassword"
-                                            placeholder="Password"
-                                        >
-                                        <label for="floatingPassword">Գաղտնաբառ</label>
+                                            :error-messages="errors.formData.password"
+                                            @input="checkErrors('formData', 'password')"
+                                        ></v-text-field>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input
+                                    <div class="form-input">
+                                        <v-text-field
                                             v-model="formData.password_confirmation"
+                                            label="Կրկնել գաղտնաբառը"
                                             type="password"
-                                            class="form-control"
-                                            id="floatingPassword"
-                                            placeholder="Password"
-                                        >
-                                        <label for="floatingPassword">Կրկնել գաղտնաբառ</label>
+                                            outlined
+                                            dense
+                                            hide-details="auto"
+                                            :error-messages="errors.formData.password"
+                                            @input="checkErrors('formData', 'password')"
+                                        ></v-text-field>
                                     </div>
                                     <div class="d-grid">
                                         <v-btn
@@ -66,6 +74,8 @@
                 </div>
             </div>
         </div>
+        <!--NOTIFICATION-->
+        <notifications group="auth"/>
     </div>
 </template>
 
@@ -84,24 +94,66 @@ export default {
                 email: '',
                 password: '',
                 password_confirmation: '',
+            },
+            errors: {
+                formData: {
+                    name: '',
+                    email: '',
+                    password: '',
+                    password_confirmation: '',
+                }
             }
         }
     },
     methods: {
+        checkErrors(obj, field) {
+            if (obj) {
+                this.errors[obj][field] = ''
+            } else {
+                this.errors[field] = ''
+            }
+        },
         async submit() {
-            await axios.post('/api/register', this.formData)
-                .then(response => {
-                    console.log(response)
+            axios.get('/sanctum/csrf-cookie').then(response => {
+                axios.post('/api/register', {
+                    name: this.formData.name,
+                    email: this.formData.email,
+                    password: this.formData.password,
+                    password_confirmation: this.formData.password_confirmation,
+                }).then(r => {
+                    this.$notify({
+                        group: 'auth',
+                        type: 'success',
+                        text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Օգտատերտ հաջողությամբ գրանցված է',
+                        duration: 1000,
+                        speed: 1000
+                    })
+                    this.formData.name = ''
+                    this.formData.email = ''
+                    this.formData.password = ''
+                    this.formData.password_confirmation = ''
+                }).catch(e => {
+                    this.errors.formData = Object.assign(this.errors.formData, e.response.data.errors)
                 })
-                .catch(e => {
-                    console.log(e)
-                })
+            })
         }
     }
 }
 </script>
 
 <style scoped lang="scss">
+    .d-grid {
+        margin-top: 30px;
+    }
+    .form-input {
+        margin-bottom: 20px;
+    }
+    .error-message {
+        color: red;
+        font-size: 12px;
+        display: block;
+        margin-top: 5px
+    }
     .register-wrapper {
         display: flex;
     }

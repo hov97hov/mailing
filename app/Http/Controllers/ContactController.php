@@ -6,8 +6,11 @@ use App\Http\Requests\CreateContactRequest;
 use App\Http\Requests\UpdateContactRequest;
 use App\Interfaces\Contact\ContactInterface;
 use App\Models\Contact;
+use App\Models\Email;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -78,5 +81,21 @@ class ContactController extends Controller
     public function deleteSelectedContact(Request $request)
     {
         $this->contact->deleteSelectedContact($request->ids);
+    }
+
+    public function getUserEmails()
+    {
+        return \response()->json([
+           'userEmails' => Email::with(['user' => function($query) {
+               $query->where('user_id', Auth::id());
+           }])->get()
+        ]);
+    }
+
+    public function getAuthUser()
+    {
+        return \response()->json([
+            'authUser' => User::where('id', Auth::id())->first()
+        ]);
     }
 }

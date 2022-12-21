@@ -24,8 +24,19 @@ class CreateContactRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required',
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:contacts'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Անվան դաշտը պարտադիր է:',
+            'name' => 'Անվան դաշտը պարտադիր է:',
+            'email.required' => 'Էլփոստի դաշտը պարտադիր է:',
+            'email.unique' => 'Նամակն արդեն վերցված է:',
+            'email' => 'Էլփոստի դաշտը պարտադիր է:',
         ];
     }
 }

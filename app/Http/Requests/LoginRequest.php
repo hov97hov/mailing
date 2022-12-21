@@ -28,4 +28,14 @@ class LoginRequest extends FormRequest
             'password' => ['required'],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'Էլփոստի դաշտը պարտադիր է:',
+            'email' => 'Էլփոստի դաշտը պարտադիր է:',
+            'password.required' => 'Գաղտնաբառի դաշտը պարտադիր է:',
+            'password' => 'Գաղտնաբառի դաշտը պարտադիր է:'
+        ];
+    }
 }

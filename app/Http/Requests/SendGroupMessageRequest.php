@@ -25,8 +25,17 @@ class SendGroupMessageRequest extends FormRequest
     {
         return [
             'subject' => 'required',
-            'text' => 'required',
             'contacts' => 'required',
+            'from' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'subject.required' => 'Թեմայի դաշտը պարտադիր է:',
+            'contacts' => 'required',
+            'from' => 'ՈՒղարկողի դաշտը պարտադիր է:',
         ];
     }
 }

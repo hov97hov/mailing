@@ -127,8 +127,22 @@
                                     v-model="defaultMessage.subject"
                                     label="Թեմա"
                                     solo
-                                    hide-details
+                                    hide-details="auto"
+                                    :error-messages="errors.defaultMessage.subject"
+                                    @input="checkErrors('defaultMessage', 'subject')"
                                 ></v-text-field>
+                            </div>
+                            <div class="mailing-field-content">
+                                <v-select
+                                    v-model="defaultMessage.userEmail"
+                                    :items="userEmails"
+                                    item-value="email"
+                                    item-text="email"
+                                    hide-details="auto"
+                                    label="Ընտրեք թե որ էլ․ փոստով եք ուզում ուղարկել"
+                                    :error-messages="errors.defaultMessage.userEmail"
+                                    @input="checkErrors('defaultMessage', 'userEmail')"
+                                ></v-select>
                             </div>
                             <div class="mailing-field-content">
                                 <v-file-input
@@ -324,6 +338,7 @@ export default {
             defaultMessage: {
                 subject: '',
                 text: '',
+                userEmail: '',
             },
             breadcrumbs: [
                 {
@@ -354,7 +369,15 @@ export default {
                 { text: 'Գործողություն', sortable: false, value: 'iron' },
             ],
             contacts: [],
-            defaultEditData: {}
+            userEmails: [],
+            defaultEditData: {},
+            errors: {
+                defaultMessage: {
+                    subject: '',
+                    text: '',
+                    userEmail: '',
+                },
+            }
         }
     },
 
@@ -362,6 +385,7 @@ export default {
 
     async created() {
         await this.getGroupContacts()
+        await this. getUserEmails()
     },
     watch: {
         selected: {
@@ -375,6 +399,22 @@ export default {
         }
     },
     methods: {
+        checkErrors(obj, field) {
+            if (obj) {
+                this.errors[obj][field] = ''
+            } else {
+                this.errors[field] = ''
+            }
+        },
+        async getUserEmails() {
+            await axios.post(`/api/get-user-emails`)
+                .then(response => {
+                    this.userEmails = response.data.userEmails
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        },
         selectAll(type){
             if(!type){
                 this.contacts.contact.map((item, i) => {
@@ -469,6 +509,7 @@ export default {
             formData.append('text', this.defaultMessage.text)
             formData.append('contacts',  this.selected)
             formData.append('groupId',  this.groupId)
+            formData.append('from',  this.defaultMessage.userEmail)
 
             await axios.post(`/api/send-group-message`, formData,
                 {
@@ -487,8 +528,8 @@ export default {
                 this.defaultMessage.text = ''
                 this.defaultMessage.subject = ''
                 this.files = []
-            }).catch((error) => {
-                console.log(error)
+            }).catch((e) => {
+                this.errors.defaultMessage = Object.assign(this.errors.defaultMessage, e.response.data.errors)
             })
         },
 

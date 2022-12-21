@@ -25,4 +25,9 @@ class Message extends Model
     {
         return $this->belongsTo(Contact::class);
     }
+
+    public function file()
+    {
+       return $this->hasMany(Attachment::class, 'message_id');
+    }
 }

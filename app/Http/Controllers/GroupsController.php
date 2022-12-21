@@ -52,7 +52,7 @@ class GroupsController extends Controller
      */
     public function createGroup(CreateGroupRequest $request)
     {
-        $this->group->createGroup($request->all());
+        $this->group->createGroup($request);
     }
 
     /**
@@ -163,6 +163,7 @@ class GroupsController extends Controller
                             'message_id' => $id,
                             'file_path' => $filePath,
                             'file_name' => $name,
+                            'from' => $request->from,
                         ]);
                     }
 
@@ -176,7 +177,7 @@ class GroupsController extends Controller
                 'subject' => $request->subject,
                 'email' => $cnt->email,
                 'text' => $request->text,
-                'files' => $filesData,
+                'files' => $filesData ?? null,
             ];
 
             dispatch(new SendEmailJob($details));

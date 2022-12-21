@@ -51,7 +51,7 @@ class MessageController extends Controller
     public function getOneMessage(Request $request)
     {
         return response()->json([
-            'oneMessage' => Message::where('id', $request->id)->first()
+            'oneMessage' => Message::where('id', $request->id)->with('file')->first()
         ]);
     }
 
@@ -108,6 +108,7 @@ class MessageController extends Controller
         foreach ($emails as $cnt) {
             $details = [
                 'subject' => $request->subject,
+                'from' => $request->from,
                 'email' => $cnt,
                 'text' => $request->text,
                 'files' => $filesData ?? '',

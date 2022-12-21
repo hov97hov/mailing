@@ -30,4 +30,20 @@ class RegisterRequest extends FormRequest
             'password_confirmation' => ['required'],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Անվան դաշտը պարտադիր է:',
+            'name' => 'Անվան դաշտը պարտադիր է:',
+            'email.required' => 'Էլփոստի դաշտը պարտադիր է:',
+            'email.unique' => 'Նամակն արդեն վերցված է:',
+            'email' => 'Էլփոստի դաշտը պարտադիր է:',
+            'password.required' => 'Գաղտնաբառի դաշտը պարտադիր է:',
+            'password.confirmed' => 'Գաղտնաբառի հաստատումը չի համընկնում:',
+            'password' => 'Գաղտնաբառի դաշտը պարտադիր է:',
+            'password_confirmation.required' => 'Գաղտնաբառի դաշտը պարտադիր է:',
+            'password_confirmation' => 'Գաղտնաբառի դաշտը պարտադիր է:',
+        ];
+    }
 }

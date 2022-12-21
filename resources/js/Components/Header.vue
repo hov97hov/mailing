@@ -11,7 +11,7 @@
                     <div class="header-btn-content">
                         <div class="menu-btns">
                             <v-btn
-                                @click="openLogoutModal"
+                                @click="logout"
                                 class="menu-btn"
                             >
                                 Դուրս գալ
@@ -38,36 +38,19 @@ export default {
     async created() {
     },
     methods: {
-        openLogoutModal() {
-            this.$modal.show('dialog', {
-                title: 'Մոդալ',
-                text: 'Ցանկանում եք դուրս գալ ?',
-                buttons: [
-                    {
-                        title: 'Փակել',
-                        handler: () => {
-                            this.$modal.hide('dialog')
-                        }
-                    },
-                    {
-                        title: 'Դուրս գալ',
-                        handler: () => {
-                            this.logout()
-                            this.$modal.hide('dialog')
-                        }
-                    }
-                ]
-            })
+        checkErrors(obj, field) {
+            if (obj) {
+                this.errors[obj][field] = ''
+            } else {
+                this.errors[field] = ''
+            }
         },
-
         async logout() {
-            await axios.get('/api/logout')
-                .then(response => {
-                    console.log(response)
+            axios.get('/sanctum/csrf-cookie').then(response => {
+                axios.post('/api/logout').then(r => {
+                    location.href = '/'
                 })
-                .catch(e => {
-                    this.errors.push(e)
-                })
+            })
         }
     }
 }

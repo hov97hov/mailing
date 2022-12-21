@@ -2,11 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&display=swap');
 body {
     font-family: 'Tinos', serif;
-    /*font-family: 'Roboto', sans-serif;*/
-    background-image: url("/images/body/light-green-watercolor-background_3590-19.webp");
-    background-position: bottom;
-    background-size: cover;
-    background-attachment: fixed;
 }
 
 a {
@@ -62,5 +57,9 @@ ul {
 }
 .v-breadcrumbs__divider {
     color: black !important;
+}
+
+.v-messages__message {
+    color: red !important;
 }
 

@@ -28,4 +28,12 @@ class CreateGroupRequest extends FormRequest
             'color' => 'required',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'դաշտը պարտադիր է:',
+            'color.required' => 'դաշտը պարտադիր է:',
+        ];
+    }
 }

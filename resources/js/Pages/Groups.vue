@@ -19,6 +19,9 @@
                         <div class="group-item" v-for="item in groupsData" :style="`border: 3px solid ${item.color}`">
                             <div class="group-item-header">
                                 <div class="group-title">
+                                    <div class="group-title-image">
+                                        <img :src="item.image" alt="">
+                                    </div>
                                     <a :href="`/group/${item.id}`">
                                         <h3><b>{{item.name}}</b></h3>
                                     </a>
@@ -90,8 +93,22 @@
                                         v-model="defaultMessage.subject"
                                         label="Թեմա"
                                         solo
-                                        hide-details
+                                        hide-details="auto"
+                                        :error-messages="errors.defaultMessage.subject"
+                                        @input="checkErrors('defaultMessage', 'subject')"
                                     ></v-text-field>
+                                </div>
+                                <div class="mailing-field-content">
+                                    <v-select
+                                        v-model="defaultMessage.userEmail"
+                                        :items="userEmails"
+                                        item-value="email"
+                                        item-text="email"
+                                        hide-details="auto"
+                                        label="Ընտրեք թե որ էլ․ փոստով եք ուզում ուղարկել"
+                                        :error-messages="errors.defaultMessage.userEmail"
+                                        @input="checkErrors('defaultMessage', 'userEmail')"
+                                    ></v-select>
                                 </div>
                                 <div class="mailing-field-content">
                                     <v-file-input
@@ -193,7 +210,19 @@
                                     v-model="defaultDataGroup.name"
                                     label="Անուն"
                                     required
+                                    hide-details="auto"
+                                    :error-messages="errors.defaultDataGroup.name"
+                                    @input="checkErrors('defaultDataGroup', 'name')"
                                 ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                                <v-file-input
+                                    v-model="groupImg"
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    placeholder="Pick an avatar"
+                                    prepend-icon="mdi-camera"
+                                    label="Ավելացնել նկար"
+                                ></v-file-input>
                             </v-col>
                             <v-col cols="12" sm="12" md="12">
                                 <p>Ընտրել գույն</p>
@@ -321,12 +350,14 @@ export default {
         return {
             groupId: '',
             files: [],
+            groupImg: null,
             defaultDataGroup: {
                 color: '',
                 name: '',
             },
             defaultMessage: {
                 subject: '',
+                userEmail: '',
                 text: '',
             },
             autoUpdate: true,
@@ -344,6 +375,7 @@ export default {
             sound: true,
             widgets: false,
             groupsData: [],
+            userEmails: [],
             search: '',
             singleSelect: false,
             selected: [],
@@ -360,12 +392,40 @@ export default {
                     href: '',
                 },
             ],
+            errors: {
+                defaultMessage: {
+                    subject: '',
+                    text: '',
+                    userEmail: '',
+                },
+                defaultDataGroup: {
+                    color: '',
+                    name: '',
+                },
+            }
         }
     },
     async created() {
+        await this.getUserEmails()
         await this.getGroups()
     },
     methods: {
+        checkErrors(obj, field) {
+            if (obj) {
+                this.errors[obj][field] = ''
+            } else {
+                this.errors[field] = ''
+            }
+        },
+        async getUserEmails() {
+            await axios.post(`/api/get-user-emails`)
+                .then(response => {
+                    this.userEmails = response.data.userEmails
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        },
         remove (item) {
             const index = this.contacts.indexOf(item.id)
             if (index >= 0) this.contacts.splice(index, 1)
@@ -382,7 +442,11 @@ export default {
         },
 
         async createGroup() {
-            await axios.post(`/api/create-group`, this.defaultDataGroup)
+            const formData = new FormData()
+            formData.append('name', this.defaultDataGroup.name)
+            formData.append('color', this.defaultDataGroup.color)
+            formData.append('image', this.groupImg)
+            await axios.post(`/api/create-group`, formData)
                 .then(response => {
                     this.$notify({
                         group: 'auth',
@@ -395,7 +459,7 @@ export default {
                     this.addGroupsDialog = false
                 })
                 .catch(e => {
-                    console.log(e)
+                    this.errors.defaultDataGroup = Object.assign(this.errors.defaultDataGroup, e.response.data.errors)
                 })
         },
 
@@ -491,6 +555,7 @@ export default {
             formData.append('text', this.defaultMessage.text)
             formData.append('contacts',  this.contactsGroups)
             formData.append('groupId',  this.groupId)
+            formData.append('from',  this.userEmail)
 
             await axios.post(`/api/send-group-message`, formData,
                 {
@@ -509,8 +574,8 @@ export default {
                 this.defaultMessage.text = ''
                 this.defaultMessage.subject = ''
                 this.files = []
-            }).catch((error) => {
-                console.log(error)
+            }).catch((e) => {
+                this.errors.defaultMessage = Object.assign(this.errors.defaultMessage, e.response.data.errors)
             })
         },
     }
@@ -595,8 +660,16 @@ export default {
                         justify-content: space-between;
                         margin: 0 0 15px;
                         .group-title {
-                            width: 50%;
                             word-break: break-word;
+                            .group-title-image {
+                                margin-right: 10px;
+                                margin-botom: 10px;
+                                img {
+                                    width: 100px;
+                                    height: 50px;
+                                    object-fit: cover;
+                                }
+                            }
                         }
                     }
                     .group-count {
@@ -623,6 +696,7 @@ export default {
         justify-content: center;
         .write-message-content {
             width: 70%;
+            background: #ffffff;
         }
         .mailing-field-content {
         margin-top: 20px;
