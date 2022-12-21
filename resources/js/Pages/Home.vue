@@ -368,6 +368,7 @@
                                             v-else-if="index === 2"
                                             class="text-overline mx-2"
                                         >
+
                                                 +{{ files.length - 2 }} File(s)
                                             </span>
                                     </template>
