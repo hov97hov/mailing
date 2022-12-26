@@ -133,16 +133,17 @@
                                 ></v-text-field>
                             </div>
                             <div class="mailing-field-content">
-                                <v-select
+                                <v-radio-group
                                     v-model="defaultMessage.userEmail"
-                                    :items="userEmails"
-                                    item-value="email"
-                                    item-text="email"
-                                    hide-details="auto"
-                                    label="Ընտրեք թե որ էլ․ փոստով եք ուզում ուղարկել"
-                                    :error-messages="errors.defaultMessage.userEmail"
-                                    @input="checkErrors('defaultMessage', 'userEmail')"
-                                ></v-select>
+                                    mandatory
+                                >
+                                    <v-radio
+                                        v-for="item in userEmails"
+                                        :key="item.id"
+                                        :label="item.email"
+                                        :value="item.email"
+                                    ></v-radio>
+                                </v-radio-group>
                             </div>
                             <div class="mailing-field-content">
                                 <v-file-input

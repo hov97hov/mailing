@@ -52,6 +52,17 @@
 
                     <v-list-item-content>
                         <a class="v-list-item__title-a" href="/contacts">
+                            <v-list-item-title>Կոնտակտներ</v-list-item-title>
+                        </a>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-icon>
+                        <v-icon>mdi-account-group-outline</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <a class="v-list-item__title-a" href="/users">
                             <v-list-item-title>Օգտատերեր</v-list-item-title>
                         </a>
                     </v-list-item-content>
@@ -78,25 +89,14 @@
                         </a>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
-                    <v-list-item-icon>
-                        <v-icon>mdi-email-sync-outline</v-icon>
-                    </v-list-item-icon>
-
-                    <v-list-item-content>
-                        <a class="v-list-item__title-a" href="/settings">
-                            <v-list-item-title>SMTP Կարգավորումներ</v-list-item-title>
-                        </a>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
+                <v-list-item v-if="authUser.role === 1">
                     <v-list-item-icon>
                         <v-icon>mdi-email-plus-outline</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
                         <a class="v-list-item__title-a" href="/emails">
-                            <v-list-item-title>Ավելացնել Էլ, փոստ</v-list-item-title>
+                            <v-list-item-title>Էլ․ փոստերի ցուցակ</v-list-item-title>
                         </a>
                     </v-list-item-content>
                 </v-list-item>

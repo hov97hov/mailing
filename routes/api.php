@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -59,4 +60,13 @@ Route::get('get-no-register-message-contact', [MessageController::class, 'getNoR
 //SETTINGS
 Route::post('/create-settings', [SettingController::class, 'createSettings'])->name('createSettings');
 Route::post('/get-settings', [SettingController::class, 'getSettings'])->name('getSettings');
-Route::post('/create-mail', [SettingController::class, 'createMail'])->name('createMail');
+Route::post('/create-email', [SettingController::class, 'createMail'])->name('createMail');
+Route::post('/get-emails', [SettingController::class, 'getEmails'])->name('getEmails');
+Route::post('/update-email', [SettingController::class, 'updateEmail'])->name('updateEmail');
+Route::post('/delete-email', [SettingController::class, 'deleteEmail'])->name('deleteEmail');
+Route::post('/create-email-user', [SettingController::class, 'createEmailUser'])->name('createEmailUser');
+//USERS
+Route::post('/get-users', [UserController::class, 'getUsers'])->name('getUsers');
+Route::post('/update-user', [UserController::class, 'updateUser'])->name('updateUser');
+Route::post('/delete-user', [UserController::class, 'deleteUser'])->name('deleteUser');
+Route::post('/delete-selected-users', [UserController::class, 'deleteSelectedUser'])->name('deleteSelectedUser');

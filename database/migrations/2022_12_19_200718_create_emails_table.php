@@ -16,6 +16,13 @@ class CreateEmailsTable extends Migration
         Schema::create('emails', function (Blueprint $table) {
             $table->id();
             $table->string('email');
+            $table->string('host');
+            $table->string('from');
+            $table->string('header');
+            $table->string('port');
+            $table->string('encryption');
+            $table->string('username');
+            $table->string('password');
             $table->timestamps();
         });
     }

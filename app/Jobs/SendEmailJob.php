@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\SendEmail;
+use App\Models\Email;
 use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -28,15 +29,15 @@ class SendEmailJob implements ShouldQueue
     public function __construct($details)
     {
         $this->details = $details;
-        $settings = Setting::where('user_id', Auth::id())->first();
+//        $settings = Email::where('email', $this->details['from'])->first();
 
-        Config::set('mail.mailers.smtp.host', $settings->host);
-        Config::set('mail.mailers.smtp.port', $settings->port);
-        Config::set('mail.mailers.smtp.encryption', $settings->encryption);
-        Config::set('mail.mailers.smtp.username', $settings->username);
-        Config::set('mail.mailers.smtp.password', $settings->password);
-        Config::set('mail.mailers.smtp.from','hov97mkrtchyan@gmail.com');
-        Config::set('mail.mailers.smtp.header', $settings->header);
+//        Config::set('mail.mailers.smtp.host', $settings->host);
+//        Config::set('mail.mailers.smtp.port', $settings->port);
+//        Config::set('mail.mailers.smtp.encryption', $settings->encryption);
+//        Config::set('mail.mailers.smtp.username', $settings->username);
+//        Config::set('mail.mailers.smtp.password', $settings->password);
+//        Config::set('mail.mailers.smtp.from', $details['from']);
+//        Config::set('mail.mailers.smtp.header', $settings->header);
     }
 
     /**
