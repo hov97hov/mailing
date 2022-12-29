@@ -9,7 +9,9 @@ import Vuetify from "vuetify";
 import 'vuetify/dist/vuetify.min.css';
 import '@mdi/font/css/materialdesignicons.css'
 import Notifications from 'vue-notification'
+import loader from "vue-ui-preloader";
 
+Vue.use(loader);
 Vue.use(Notifications)
 Vue.use(InertiaPlugin);
 Vue.use(Vuetify);

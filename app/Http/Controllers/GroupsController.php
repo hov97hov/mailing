@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddContactGroupRequest;
+use App\Http\Requests\CreateContactRequest;
 use App\Http\Requests\CreateGroupRequest;
 use App\Http\Requests\SendGroupMessageRequest;
 use App\Http\Resources\ContactResource;
@@ -15,6 +16,7 @@ use App\Models\Group;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,15 +57,32 @@ class GroupsController extends Controller
         $this->group->createGroup($request);
     }
 
+    public function editGroup(CreateGroupRequest $request)
+    {
+        return Group::where('id', $request->id)->update([
+            'name' => $request->name,
+            'color' => $request->color,
+            'sort' => $request->sort,
+        ]);
+    }
+
     /**
      * @return JsonResponse
      */
     public function getGroups(): JsonResponse
     {
         return \response()->json([
-           'groups' => Group::orderBy('id', 'DESC')->get()
+           'groups' => Group::orderBy('sort', 'ASC')->with('contact')->get()
         ]);
     }
+
+    public function getSelectedGroups(Request $request): JsonResponse
+    {
+        return \response()->json([
+            'groups' => Group::whereIn('id', $request->ids)->orderBy('id', 'DESC')->with('contact')->get()
+        ]);
+    }
+
 
     /**
      * @param Request $request
@@ -71,6 +90,11 @@ class GroupsController extends Controller
     public function deleteGroup(Request $request)
     {
         return Group::where('id', $request->id)->delete();
+    }
+
+    public function deleteSelectedGroup(Request $request)
+    {
+        return Group::whereIn('id', $request->ids)->delete();
     }
 
     public function addContactGroup(AddContactGroupRequest $request)
@@ -130,6 +154,9 @@ class GroupsController extends Controller
         ]);
     }
 
+    /**
+     * @param SendGroupMessageRequest $request
+     */
     public function sendGroupMessage(SendGroupMessageRequest $request)
     {
         $contactsIds = explode(',', $request->contacts);
@@ -149,7 +176,6 @@ class GroupsController extends Controller
        if($request->hasFile('files')) {
             foreach ($request->files as $file) {
                 foreach ($file as $item) {
-
                     $name = $item->getClientOriginalName();
                     if ($request->groupId === 'contact') {
                         $item->move(public_path() . '/storage/mails/contacts/', $name);
@@ -184,11 +210,53 @@ class GroupsController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function deleteSelectedContactGroup(Request $request): JsonResponse
     {
         $this->group->deleteSelectedContactGroup($request);
 
         return response()->json([
+            'status' => 200
+        ]);
+    }
+
+    /**
+     * @param CreateContactRequest $request
+     * @return JsonResponse
+     */
+    public function addNewContactGroup(CreateContactRequest $request): JsonResponse
+    {
+        $contact = Contact::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'user_id' => Auth::id()
+        ]);
+
+        ContactGroup::create([
+            'contact_id' => $contact->id,
+            'group_id' => $request->group_id,
+        ]);
+
+        return \response()->json([
+            'status' => 200
+        ]);
+    }
+
+    public function addContactsGroups(Request $request)
+    {
+        foreach ($request->group_ids as $groupId) {
+            foreach ($request->contacts as $contact) {
+                ContactGroup::firstOrCreate([
+                    'group_id' => $groupId,
+                    'contact_id' => $contact,
+                ]);
+            }
+        }
+
+        return \response()->json([
             'status' => 200
         ]);
     }

@@ -83,7 +83,7 @@ class ContactController extends Controller
         $this->contact->deleteSelectedContact($request->ids);
     }
 
-    public function getUserEmails()
+    public function getUserEmails(): JsonResponse
     {
         return \response()->json([
            'userEmails' => Email::with(['user' => function($query) {

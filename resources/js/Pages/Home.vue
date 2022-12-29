@@ -43,10 +43,6 @@
                                       <span><i class="fa fa-file-archive-o" aria-hidden="true"></i></span>
                                       <span>Արխիվ</span>
                                 </li>
-                                <li @click="openNoRegisterContactMessages">
-                                    <span><i class="fa fa-file-archive-o" aria-hidden="true"></i></span>
-                                    <span>Չգրանցված օգտատերերի նամակներ</span>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -216,73 +212,6 @@
                                 </template>
                             </v-data-table>
                         </v-card>
-                        <v-card v-if="noRegisterMessage">
-                            <v-card-title>
-                                <p class="table-title">Չգրանցված օգտատերերի Նամակներ</p>
-                                <v-text-field
-                                    v-model="search"
-                                    append-icon="mdi-magnify"
-                                    label="Որոնել"
-                                    single-line
-                                    hide-details
-                                    color="green accent-4"
-                                ></v-text-field>
-                            </v-card-title>
-                            <v-data-table
-                                :headers="headersNoRegisterData"
-                                :items="noRegisterContactData"
-                                :search="search"
-                                item-key="id"
-                                solo
-                                :footer-props="{
-                                    showFirstLastPage: true,
-                                    'items-per-page-text':'Գնալ',
-                                 }"
-                            >
-                                <template v-slot:body="{ items, options }">
-                                    <tbody>
-                                    <tr
-                                        v-for="item in items"
-                                        :key="item.id"
-                                        class="table-tr"
-                                    >
-                                        <td>
-                                            <v-checkbox
-                                                v-model="selectedNoRegisterMessage"
-                                                :value="item.id"
-                                                item-value="id"
-                                                hide-details
-                                                color="green accent-4"
-                                            />
-                                        </td>
-                                        <td @click="openDialog(item.id)">
-                                            <b>
-                                                <div v-html="item.message"></div>
-                                            </b>
-                                        </td>
-                                        <td>
-                                            {{item.subject}}
-                                        </td>
-                                        <td>
-                                            {{item.email}}
-                                        </td>
-                                        <td>
-                                            {{item.created_at}}
-                                        </td>
-                                        <td>
-                                            <div class="table-action">
-                                                <div class="action-item archive">
-                                                    <v-btn @click="deleteMessageDialog(item.id)">
-                                                        <v-icon>mdi-delete</v-icon>
-                                                    </v-btn>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </template>
-                            </v-data-table>
-                        </v-card>
                     </div>
                 </div>
             </div>
@@ -310,28 +239,29 @@
                 <v-container>
                     <div class="message-dialog-content">
                         <div class="write-message-content">
-                            <div class="mailing-field-content">
-                                <v-text-field
-                                    v-model="defaultMessage.to"
-                                    label="ՈՒմ"
-                                    hide-details="auto"
-                                    :error-messages="errors.defaultMessage.to"
-                                    @input="checkErrors('defaultMessage', 'to')"
-                                ></v-text-field>
-                            </div>
-                            <div class="mailing-field-content">
-                                <v-text-field
-                                    v-model="defaultMessage.subject"
-                                    label="Թեմա"
-                                    hide-details="auto"
-                                    :error-messages="errors.defaultMessage.subject"
-                                    @input="checkErrors('defaultMessage', 'subject')"
-                                ></v-text-field>
-                            </div>
-                            <div class="mailing-field-content">
+                            <div class="left-section">
                                 <div class="mailing-field-content">
+                                    <v-text-field
+                                        v-model="defaultMessage.to"
+                                        label="Ում"
+                                        solo
+                                        hide-details="auto"
+                                    ></v-text-field>
+                                </div>
+                                <div class="mailing-field-content">
+                                    <v-text-field
+                                        v-model="defaultMessage.subject"
+                                        label="Թեմա"
+                                        solo
+                                        hide-details="auto"
+                                        :error-messages="errors.defaultMessage.subject"
+                                        @input="checkErrors('defaultMessage', 'subject')"
+                                    ></v-text-field>
+                                </div>
+                                <div class="mailing-field-content">
+                                    <p>Ընտրել որ էլ․ փոստով ուղարկել նամակը</p>
                                     <v-radio-group
-                                        v-model="defaultMessage.userEmail"
+                                        v-model="defaultMessage.from"
                                         mandatory
                                     >
                                         <v-radio
@@ -342,61 +272,194 @@
                                         ></v-radio>
                                     </v-radio-group>
                                 </div>
-                            </div>
-                            <div class="mailing-field-content">
-                                <v-file-input
-                                    v-model="files"
-                                    color="green accent-4"
-                                    counter
-                                    label="Ֆայլ"
-                                    multiple
-                                    placeholder="Ընտրել Ֆայլ"
-                                    prepend-icon="mdi-paperclip"
-                                    outlined
-                                    show-size
-                                >
-                                    <template v-slot:selection="{ index, text }">
-                                        <v-chip
-                                            v-if="index < 2"
-                                            color="green accent-4"
-                                            dark
-                                            label
-                                            small
-                                        >
-                                            {{ text }}
-                                        </v-chip>
+                                <div class="mailing-field-content">
+                                    <v-file-input
+                                        v-model="files"
+                                        color="green accent-4"
+                                        counter
+                                        label="Ֆայլ"
+                                        multiple
+                                        placeholder="Ընտրել Ֆայլ"
+                                        prepend-icon="mdi-paperclip"
+                                        show-size
+                                    >
+                                        <template v-slot:selection="{ index, text }">
+                                            <v-chip
+                                                v-if="index < 2"
+                                                color="green accent-4"
+                                                dark
+                                                label
+                                                small
+                                            >
+                                                {{ text }}
+                                            </v-chip>
 
-                                        <span
-                                            v-else-if="index === 2"
-                                            class="text-overline mx-2"
-                                        >
-
+                                            <span
+                                                v-else-if="index === 2"
+                                                class="text-overline mx-2"
+                                            >
                                                 +{{ files.length - 2 }} File(s)
                                             </span>
-                                    </template>
-                                </v-file-input>
+                                        </template>
+                                    </v-file-input>
+                                </div>
+                                <div class="mailing-field-content select-group">
+                                    <v-btn @click="selectGroupDialog = true">
+                                        Ընտրել խումբ
+                                    </v-btn>
+                                    <div class="groups">
+                                            <span
+                                                v-for="item in selectedGroupsData"
+                                                :style="`border: 1px solid ${item.color}`"
+                                            >
+                                                {{item.name}}
+                                            </span>
+                                    </div>
+                                </div>
+                                <div class="mailing-field-content">
+                                    <v-text-field
+                                        v-model="defaultMessage.link"
+                                        label="Ավելացնել հղում"
+                                        solo
+                                        hide-details="auto"
+                                    ></v-text-field>
+                                </div>
+                                <div class="mailing-field-content select-design">
+                                    <div>
+                                        <v-radio-group
+                                            v-model="selectDesign"
+                                            column
+                                        >
+                                            <div class="mailing-template-content">
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template1"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-02.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template2"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-03.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template3"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-04.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template4"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-05.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template5"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-06.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template6"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-07.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template7"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-08.jpg" alt="">
+                                                </div>
+                                                <div class="mailing-template">
+                                                    <v-radio
+                                                        label="Ընտրել"
+                                                        color="green"
+                                                        value="template8"
+                                                    ></v-radio>
+                                                    <img style="width: 150px" src="/images/email/մաիլինգ-09.jpg" alt="">
+                                                </div>
+                                            </div>
+                                        </v-radio-group>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mailing-field-content">
-                                <vue-editor
-                                    v-model="defaultMessage.text"
-                                    hide-details="auto"
-                                    :error-messages="errors.defaultMessage.text"
-                                    @input="checkErrors('defaultMessage', 'text')"
-                                >
-                                </vue-editor>
-                            </div>
-                            <div class="mailing-button-field-content">
-                                <v-btn
-                                    @click="sendMessage"
-                                    color="green accent-4"
-                                    dark
-                                >
-                                    Ուղարկել
-                                </v-btn>
+                            <div class="right-section">
+                                <div class="mailing-field-content">
+                                    <vue-editor
+                                        v-model="defaultMessage.text"
+                                    >
+                                    </vue-editor>
+                                </div>
+                                <div class="mailing-button-field-content">
+                                    <v-btn
+                                        @click="sendMessageGroup"
+                                        color="green accent-4"
+                                        dark
+                                    >
+                                        Ուղարկել
+                                    </v-btn>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </v-container>
+            </v-card>
+        </v-dialog>
+        <!--SELECT GROUPS-->
+        <v-dialog
+            v-model="selectGroupDialog"
+            scrollable
+            max-width="300px"
+        >
+            <v-card>
+                <v-card-title>Ընտրել խմբեր</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text style="height: 300px;">
+                    <div v-for="item in groupsData">
+                        <v-checkbox
+                            v-model="selectedGroups"
+                            :value="item.id"
+                            item-value="id"
+                            :label="item.name"
+                            hide-details
+                            color="green accent-4"
+                        />
+                    </div>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="selectGroupDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="getSelectedGroups"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
         <!--DELETE DIALOG-->
@@ -614,6 +677,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
     </v-app>
@@ -634,7 +698,8 @@ export default {
     },
     data: () => {
         return {
-            userEmails: [],
+            userEmails: {},
+            selectDesign: 'template1',
             selectedArchiveDialog: false,
             deleteContactsDialog: false,
             addActiveMessage: false,
@@ -653,23 +718,28 @@ export default {
             userData: [],
             search: '',
             singleSelect: false,
+            loading: false,
+            selectGroupDialog: false,
             allSelectedarchiveMessages: false,
-            noRegisterMessage: false,
             selectedActive: [],
-            selectedNoRegisterMessage: [],
             emails: [],
             files: [],
             selectedArchive: [],
+            contactsGroups: [],
             allMessagesData: [],
             archiveMessages: [],
             noRegisterContactData: [],
             oneMessage: [],
+            groupsData: [],
+            selectedGroups: [],
+            selectedGroupsData: [],
             test: null,
             defaultMessage: {
                 to: '',
-                userEmail: '',
+                from: '',
                 subject: '',
                 text: '',
+                link: '',
             },
             headers: [
                 { text: 'Նշել' },
@@ -701,48 +771,17 @@ export default {
 
             errors: {
                 defaultMessage: {
-                    to: '',
-                    userEmail: '',
+                    from: '',
                     subject: '',
                     text: '',
                 },
             }
         }
     },
-
-    watch: {
-        selectedActive: {
-            async handler (val){
-                if(val.length === this.allMessagesData.length){
-                    this.allSelectedActive = true
-                }else{
-                    this.allSelectedActive = false
-                }
-            }
-        },
-        selectedArchive: {
-            async handler (val){
-                if(val.length === this.archiveMessages.length){
-                    this.allSelectedarchiveMessages = true
-                }else{
-                    this.allSelectedarchiveMessages = false
-                }
-            }
-        },
-        selectedNoRegisterMessage: {
-            async handler (val){
-                if(val.length === this.noRegisterContactData.length) {
-                    this.noRegisterContactDataSelected = true
-                } else{
-                    this.noRegisterContactDataSelected = false
-                }
-            }
-        },
-    },
-
     async created() {
         await this.getAllMessages()
         await this.getUserEmails()
+        await this.getGroups()
     },
 
     methods: {
@@ -753,17 +792,26 @@ export default {
                 this.errors[field] = ''
             }
         },
-        selectAllActive(type){
-            if(!type){
-                this.allMessagesData.map((item, i) => {
-                    if (!this.selectedActive.includes(item.id)) {
-                        this.selectedActive.push(item.id);
-                    }
-                })
-            }else{
-                this.selectedActive = []
-            }
 
+        async getGroups() {
+            await axios.post(`/api/get-groups`)
+                .then(response => {
+                    this.groupsData = response.data.groups
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        },
+
+        async getSelectedGroups() {
+            await axios.post(`/api/get-selected-groups`, {ids: this.selectedGroups})
+                .then(response => {
+                    this.selectedGroupsData = response.data.groups
+                    this.selectGroupDialog = false
+                })
+                .catch(e => {
+                    console.log(e)
+                })
         },
 
         selectAllArchive(type){
@@ -775,19 +823,6 @@ export default {
                 })
             }else{
                 this.selectedArchive = []
-            }
-
-        },
-
-        selectAllNoRegisterMessage(type){
-            if(!type){
-                this.noRegisterContactData.map((item, i) => {
-                    if (!this.selectedNoRegisterMessage.includes(item.id)) {
-                        this.selectedNoRegisterMessage.push(item.id);
-                    }
-                })
-            }else{
-                this.selectedNoRegisterMessage = []
             }
 
         },
@@ -821,31 +856,12 @@ export default {
         openAllMessages () {
             this.allMessages = true
             this.archive = false
-            this.noRegisterMessage = false
         },
 
         openArchivedMessages () {
             this.getArchiveMessage()
             this.archive = true
             this.allMessages = false
-            this.noRegisterMessage = false
-        },
-
-        openNoRegisterContactMessages() {
-            this.getNoRegisterContactData()
-            this.archive = false
-            this.allMessages = false
-            this.noRegisterMessage =true
-        },
-
-        async getNoRegisterContactData() {
-            await axios.get(`/api/get-no-register-message-contact`)
-                .then(response => {
-                    this.noRegisterContactData = response.data.noRegisterContactData
-                })
-                .catch(e => {
-                    console.log(e)
-                })
         },
 
         async getAllMessages() {
@@ -943,7 +959,6 @@ export default {
                         speed: 1000
                     })
                     this.deleteMessage = false
-                    this.getNoRegisterContactData()
                     this.getAllMessages()
                     this.getArchiveMessage()
                 })
@@ -1003,7 +1018,8 @@ export default {
                 })
         },
 
-        async sendMessage() {
+        async sendMessageGroup() {
+            this.loading = true
             const formData = new FormData()
 
             if (this.files.length) {
@@ -1011,11 +1027,24 @@ export default {
                     formData.append('files[]', item)
                 })
             }
+            this.contactsGroups = []
+            if (this.selectedGroupsData.length) {
+                this.selectedGroupsData.map(item => {
+                    if (item.contact.length) {
+                        item.contact.map(contact => {
+                            this.contactsGroups.push(contact.id)
+                        })
+                    }
+                })
+            }
 
             formData.append('to', this.defaultMessage.to)
             formData.append('subject', this.defaultMessage.subject)
-            formData.append('from', this.defaultMessage.userEmail)
             formData.append('text', this.defaultMessage.text)
+            formData.append('from',  this.defaultMessage.from)
+            formData.append('groups',  this.contactsGroups)
+            formData.append('design', this.selectDesign)
+            formData.append('link', this.defaultMessage.link)
 
             await axios.post(`/api/send-message`, formData,
                 {
@@ -1031,11 +1060,14 @@ export default {
                     speed: 1000
                 })
                 this.dialog = false
-                this.defaultMessage.to = ''
                 this.defaultMessage.text = ''
                 this.defaultMessage.subject = ''
+                this.defaultMessage.from = ''
+                this.defaultMessage.link = ''
                 this.files = []
+                this.loading = false
             }).catch((e) => {
+                this.loading = false
                 this.errors.defaultMessage = Object.assign(this.errors.defaultMessage, e.response.data.errors)
             })
         },
@@ -1044,6 +1076,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.mailing-template-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+    .checked-group {
+        display: flex;
+        align-items: center;
+        margin: 0 0 15px;
+        .v-input--checkbox {
+            margin: 0;
+        }
+    }
     .mailing-wrapper {
         display: flex;
         .mailing-content {
@@ -1209,6 +1254,7 @@ export default {
         margin-bottom: 20px;
         border-bottom: 1px solid #dddddd;
     }
+
     .modal-files {
         border-top: 1px solid #dddddd;
         padding-top: 10px;
@@ -1220,6 +1266,48 @@ export default {
             background: #00C853;
             color: #ffffff !important;
             border-radius: 5px;
+        }
+    }
+
+    .message-dialog-content {
+        display: flex;
+        justify-content: center;
+        .write-message-content {
+            width: 100%;
+            display: flex;
+            background: #ffffff;
+            .left-section {
+                width: 50%;
+                margin-right: 20px;
+            }
+            .right-section {
+                width: 50%;
+            }
+        }
+        .mailing-field-content {
+            margin-top: 10px;
+            &.select-group {
+                display: flex;
+                align-items: flex-start;
+                .groups {
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin-left: 10px;
+                    span {
+                        padding: 5px;
+                        border-radius: 5px;
+                        margin-left: 5px;
+                        margin-right: 5px;
+                        margin-bottom: 5px;
+                    }
+                }
+            }
+        }
+        .mailing-button-field-content {
+            margin-top: 20px;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: flex-end;
         }
     }
 </style>

@@ -39,14 +39,19 @@ Route::post('get-user-emails', [ContactController::class, 'getUserEmails'])->nam
 Route::post('get-auth-user', [ContactController::class, 'getAuthUser'])->name('getAuthUser');
 //GROUP
 Route::post('create-group', [GroupsController::class, 'createGroup'])->name('createGroup');
+Route::post('edit-group', [GroupsController::class, 'editGroup'])->name('editGroup');
 Route::post('get-groups', [GroupsController::class, 'getGroups'])->name('getGroups');
+Route::post('get-selected-groups', [GroupsController::class, 'getSelectedGroups'])->name('getSelectedGroups');
 Route::post('delete-group', [GroupsController::class, 'deleteGroup'])->name('deleteGroup');
+Route::post('delete-selected-group', [GroupsController::class, 'deleteSelectedGroup'])->name('deleteSelectedGroup');
 Route::post('add-contact-group', [GroupsController::class, 'addContactGroup'])->name('addContactGroup');
 Route::post('get-group-contacts', [GroupsController::class, 'getGroupContacts'])->name('getGroupContacts');
 Route::post('delete-contact-group', [GroupsController::class, 'deleteContactGroup'])->name('deleteContactGroup');
 Route::post('get-group-contacts', [GroupsController::class, 'getGroupContactsMessage'])->name('getGroupContactsMessage');
 Route::post('send-group-message', [GroupsController::class, 'sendGroupMessage'])->name('sendGroupMessage');
 Route::post('delete-selected-contact-group', [GroupsController::class, 'deleteSelectedContactGroup'])->name('deleteSelectedContactGroup');
+Route::post('create-new-contact-group', [GroupsController::class, 'addNewContactGroup'])->name('addNewContactGroup');
+Route::post('add-contacts-groups', [GroupsController::class, 'addContactsGroups'])->name('addContactsGroups');
 //MESSAGES
 Route::get('get-all-messages', [MessageController::class, 'getAllMessages'])->name('getAllMessages');
 Route::post('add-archive-message', [MessageController::class, 'addArchiveMessage'])->name('addArchiveMessage');

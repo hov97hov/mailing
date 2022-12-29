@@ -14,6 +14,7 @@ class GroupService implements GroupInterface
         $createGroup = Group::create([
             'name' => $data->name,
             'color' => $data->color,
+            'sort' => $data->sort,
         ]);
 
         if($data->hasFile('image')) {

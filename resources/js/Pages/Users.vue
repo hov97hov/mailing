@@ -65,10 +65,9 @@
                                             <button>{{ item.email }}</button>
                                         </td>
                                         <td>
-                                            <div v-for="email in  item.emails">
-                                                {{ email.email }} <br>
+                                            <div v-for="email in item.emails">
+                                                {{ email.email }}<br> <br>
                                             </div>
-
                                         </td>
                                         <td>
                                             <button>{{ item.created_at }}</button>

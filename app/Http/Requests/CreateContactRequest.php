@@ -35,8 +35,8 @@ class CreateContactRequest extends FormRequest
             'name.required' => 'Անվան դաշտը պարտադիր է:',
             'name' => 'Անվան դաշտը պարտադիր է:',
             'email.required' => 'Էլփոստի դաշտը պարտադիր է:',
-            'email.unique' => 'Նամակն արդեն վերցված է:',
-            'email' => 'Էլփոստի դաշտը պարտադիր է:',
+            'email.unique' => 'Էլ. փոստի արդեն գրանցված է:',
+            'email' => 'Էլ. փոստի դաշտը պարտադիր է:',
         ];
     }
 }

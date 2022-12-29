@@ -34,19 +34,19 @@ class SendEmail extends Mailable
     public function build()
     {
         try{
-            $this->view('email.email')
+            $this->view('email.'.$this->data['design'])
                 ->from('info@teghekatu.am')
                 ->subject($this->data['subject'])
                 ->with([
-                    'text' => $this->data['text'] ?? '',
+                    'data' => $this->data ?? '',
                     'files' => $this->data['files'] ?? ''
                 ]);
 
-//            $this->withSwiftMessage(function ($message) {
-//                $message->getHeaders()->addTextHeader(
-//                    'X-PM-Message-Stream', Config::get('mail.mailers.smtp.header')
-//                );
-//            });
+            $this->withSwiftMessage(function ($message) {
+                $message->getHeaders()->addTextHeader(
+                    'X-PM-Message-Stream', Config::get('mail.mailers.smtp.header')
+                );
+            });
 
             return $this;
 

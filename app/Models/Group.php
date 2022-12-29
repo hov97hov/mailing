@@ -14,6 +14,7 @@ class Group extends Model
         'name',
         'color',
         'image',
+        'sort',
     ];
 
     public function contact(): BelongsToMany

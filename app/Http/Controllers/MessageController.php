@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SendMessageContactRequest;
 use App\Jobs\SendEmailJob;
 use App\Models\Attachment;
 use App\Models\Contact;
+use App\Models\Group;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class MessageController extends Controller
@@ -18,7 +21,7 @@ class MessageController extends Controller
     public function getAllMessages(): JsonResponse
     {
         return response()->json([
-            'allMessages' => Message::where(['user_id' => '1', 'archived' => '0'])->whereHas('contact')->with(['contact' => function($query) {
+            'allMessages' => Message::where(['user_id' => Auth::id(), 'archived' => '0'])->whereHas('contact')->with(['contact' => function($query) {
                 $query->with('group');
             }])->get()
         ]);
@@ -67,18 +70,58 @@ class MessageController extends Controller
         ]);
     }
 
-    public function sendMessage(Request $request)
+    public function sendMessage(SendMessageContactRequest $request)
     {
-        $emails = explode(',', $request->to);
-        foreach ($emails as $email) {
+        $contacts = [];
+
+        if (isset($request->contacts)) {
+            foreach (explode(',', $request->contacts) as $contactItem) {
+                $getContacts = Contact::where('id', $contactItem)->first();
+                $contacts[] = $getContacts;
+            }
+        }
+
+        if(isset($request->groupId)) {
+            $group = Group::where('id', $request->groupId)->whereHas('contact')->with('contact')->first();
+            foreach ($group->contact as $groupContact) {
+                $contacts[] = $groupContact;
+            }
+        }
+
+        if ($request->groups) {
+            $groupContacts = explode(',', $request->groups);
+            $contact = Contact::whereIn('id', $groupContacts)->get();
+            foreach ($contact as $item) {
+                $contacts[] = $item;
+            }
+        }
+
+        if (isset($request->to)) {
+            $email = Contact::where('email', $request->to)->first();
+            if ($email) {
+                $contacts[] = $email;
+            }
+            if (!$email) {
+                $email = Contact::create([
+                    'name' => $request->to,
+                    'email' => $request->to,
+                    'user_id' => Auth::id()
+                ]);
+                $contacts[] = $email;
+            }
+        }
+
+
+        $createMessagesId = [];
+        foreach ($contacts as $contactEmail) {
             $createMessages = Message::create([
                 'subject' => $request->subject,
-                'email' => $email,
-                'user_id' => 1,
+                'email' => $contactEmail->email,
+                'user_id' => Auth::id(),
+                'contact_id' => $contactEmail->id,
                 'message' => $request->text,
             ]);
-
-            $messageIds[] = $createMessages->id;
+            $createMessagesId[] = $createMessages->id;
         }
 
         if($request->hasFile('files')) {
@@ -92,7 +135,7 @@ class MessageController extends Controller
                         $item->move(public_path() . '/storage/mails/'.$request->groupId, $name);
                         $filePath = '/storage/mails/'.$request->groupId.'/'. $name;
                     }
-                    foreach ($messageIds as $id) {
+                    foreach ($createMessagesId as $id) {
                         Attachment::create([
                             'message_id' => $id,
                             'file_path' => $filePath,
@@ -105,13 +148,15 @@ class MessageController extends Controller
             }
         }
 
-        foreach ($emails as $cnt) {
+        foreach ($contacts as $contactEmail) {
             $details = [
                 'subject' => $request->subject,
                 'from' => $request->from,
-                'email' => $cnt,
+                'email' => $contactEmail,
                 'text' => $request->text,
+                'design' => $request->design,
                 'files' => $filesData ?? '',
+                'link' => $request->link ?? null,
             ];
 
             dispatch(new SendEmailJob($details));

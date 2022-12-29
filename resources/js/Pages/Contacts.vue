@@ -19,16 +19,6 @@
                                     Ջնջել
                                 </v-btn>
                             </div>
-                            <div class="action-btn-content" v-if="selected.length">
-                                <v-btn
-                                    @click="openDialogSendGroupMessage"
-                                    class="send-message"
-                                    dark
-                                >
-                                    <span>Ուղարկել նամակ</span>
-                                    <v-icon>mdi-email-outline</v-icon>
-                                </v-btn>
-                            </div>
                         </div>
                         <v-card>
                             <v-card-title>
@@ -100,103 +90,6 @@
                 </div>
             </div>
         </div>
-        <!--MESSAGE-->
-        <v-dialog
-            v-model="dialog"
-            fullscreen
-            hide-overlay
-            transition="dialog-bottom-transition"
-        >
-            <v-card>
-                <v-toolbar
-                    color="green accent-4"
-                >
-                    <v-btn
-                        icon
-                        dark
-                        @click="dialog = false"
-                    >
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    <v-toolbar-title class="text-white">Գրել Նոր նամակ</v-toolbar-title>
-                </v-toolbar>
-                <v-container>
-                    <div class="message-dialog-content">
-                        <div class="write-message-content">
-                            <div class="mailing-field-content">
-                                <v-text-field
-                                    v-model="defaultMessage.subject"
-                                    label="Թեմա"
-                                    solo
-                                    hide-details="auto"
-                                    :error-messages="errors.defaultMessage.subject"
-                                    @input="checkErrors('defaultMessage', 'subject')"
-                                ></v-text-field>
-                            </div>
-                            <div class="mailing-field-content">
-                                <v-select
-                                    v-model="defaultMessage.userEmail"
-                                    :items="userEmails"
-                                    item-value="email"
-                                    item-text="email"
-                                    label="Ընտրեք թե որ էլ․ փոստով եք ուզում ուղարկել"
-                                    hide-details="auto"
-                                    :error-messages="errors.defaultMessage.userEmail"
-                                    @input="checkErrors('defaultMessage', 'userEmail')"
-                                ></v-select>
-                            </div>
-                            <div class="mailing-field-content">
-                                <v-file-input
-                                    v-model="files"
-                                    color="green accent-4"
-                                    counter
-                                    label="Ֆայլ"
-                                    multiple
-                                    placeholder="Ընտրել Ֆայլ"
-                                    prepend-icon="mdi-paperclip"
-                                    outlined
-                                    show-size
-                                >
-                                    <template v-slot:selection="{ index, text }">
-                                        <v-chip
-                                            v-if="index < 2"
-                                            color="green accent-4"
-                                            dark
-                                            label
-                                            small
-                                        >
-                                            {{ text }}
-                                        </v-chip>
-
-                                        <span
-                                            v-else-if="index === 2"
-                                            class="text-overline mx-2"
-                                        >
-                                                +{{ files.length - 2 }} File(s)
-                                            </span>
-                                    </template>
-                                </v-file-input>
-                            </div>
-                            <div class="mailing-field-content">
-                                <vue-editor
-                                    v-model="defaultMessage.text"
-                                >
-                                </vue-editor>
-                            </div>
-                            <div class="mailing-button-field-content">
-                                <v-btn
-                                    @click="sendMessageGroup"
-                                    color="green accent-4"
-                                    dark
-                                >
-                                    Ուղարկել
-                                </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </v-container>
-            </v-card>
-        </v-dialog>
         <!--DELETE CONTACT-->
         <v-dialog
             v-model="deleteDialog"

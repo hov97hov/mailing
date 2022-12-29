@@ -78,17 +78,6 @@
                         </a>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
-                    <v-list-item-icon>
-                        <v-icon>mdi-account-plus-outline</v-icon>
-                    </v-list-item-icon>
-
-                    <v-list-item-content>
-                        <a class="v-list-item__title-a" href="/add-contact">
-                            <v-list-item-title>Ավելացնել Կոնտակտ</v-list-item-title>
-                        </a>
-                    </v-list-item-content>
-                </v-list-item>
                 <v-list-item v-if="authUser.role === 1">
                     <v-list-item-icon>
                         <v-icon>mdi-email-plus-outline</v-icon>
