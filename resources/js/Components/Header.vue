@@ -6,22 +6,130 @@
                     <div class="logo">
                         <a href="/">
                             <img src="/images/header/logo.png" alt="logo">
+                            <span>Mailing</span>
                         </a>
                     </div>
-                    <div class="header-btn-content">
+                    <div class="header-last">
                         <div class="menu-btns">
                             <v-btn
-                                @click="logout"
-                                class="menu-btn"
+                                @click="location.href= '/emails'"
+                                class="create-btn"
                             >
-                                Դուրս գալ
+                                <v-icon>mdi-plus-circle-outline</v-icon>
+                                <span>Ավելացնել էլ․ Փոստ</span>
+                            </v-btn
+                            >
+                            <v-btn
+                                @click="createCategoryPage"
+                                class="create-btn"
+                            >
+                                <v-icon>mdi-plus-circle-outline</v-icon>
+                                <span>Ավելացնել կատեգորիա</span>
                             </v-btn>
                         </div>
                     </div>
                 </div>
-                <v-dialog />
             </div>
         </div>
+        <v-dialog
+            v-model="addCategoryDialog"
+            persistent
+            max-width="600px"
+        >
+            <v-card>
+                <v-card-title>
+                    <span class="text-h5">User Profile</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col
+                                cols="12"
+                                sm="6"
+                                md="4"
+                            >
+                                <v-text-field
+                                    label="Legal first name*"
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                            <v-col
+                                cols="12"
+                                sm="6"
+                                md="4"
+                            >
+                                <v-text-field
+                                    label="Legal middle name"
+                                    hint="example of helper text only on focus"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col
+                                cols="12"
+                                sm="6"
+                                md="4"
+                            >
+                                <v-text-field
+                                    label="Legal last name*"
+                                    hint="example of persistent helper text"
+                                    persistent-hint
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    label="Email*"
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    label="Password*"
+                                    type="password"
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                            <v-col
+                                cols="12"
+                                sm="6"
+                            >
+                                <v-select
+                                    :items="['0-17', '18-29', '30-54', '54+']"
+                                    label="Age*"
+                                    required
+                                ></v-select>
+                            </v-col>
+                            <v-col
+                                cols="12"
+                                sm="6"
+                            >
+                                <v-autocomplete
+                                    :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
+                                    label="Interests"
+                                    multiple
+                                ></v-autocomplete>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="addCategoryDialog = false"
+                    >
+                        Close
+                    </v-btn>
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                    >
+                        Save
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -32,7 +140,7 @@ export default {
     name: "home",
     data: () => {
         return {
-
+            addCategoryDialog: false
         }
     },
     async created() {
@@ -44,6 +152,9 @@ export default {
             } else {
                 this.errors[field] = ''
             }
+        },
+        createCategoryPage() {
+            location.href = '/groups'
         },
         async logout() {
             axios.get('/sanctum/csrf-cookie').then(response => {
@@ -58,34 +169,38 @@ export default {
 
 <style scoped lang="scss">
     .header {
-        background: #ffffff;
-        box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+        height: 70px;
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             .logo {
                 a {
+                    display: flex;
+                    color: #253266 !important;
+                    text-decoration: none;
+                    align-items: flex-start;
                     img {
                         width: 50px;
                     }
+                    span {
+                        font-style: normal;
+                        font-weight: 700;
+                        font-size: 26px;
+                        line-height: 71px;
+                        display: flex;
+                        align-items: center;
+                        margin-top: -7px;
+                    }
                 }
             }
-            .header-btn-content {
+            .header-last {
                 display: flex;
-                .menu-btns {
-                    .menu-btn {
-                        margin-left: 10px;
-                        background: #ffffff;
-                        border: 2px solid #00C853;
-                        box-shadow: none;
-                        text-transform: capitalize;
-                        border-radius: 5px;
-                        &:hover {
-                            background: #00C853;
-                            color: #ffffff;
-                        }
-                    }
+                .create-btn {
+                    background: transparent !important;
+                    box-shadow: unset !important;
+                    border: unset !important;
+                    text-transform: capitalize !important;
                 }
             }
         }

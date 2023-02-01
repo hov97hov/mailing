@@ -1,25 +1,7 @@
 <template>
     <v-card>
         <v-navigation-drawer
-            v-model="drawer"
-            :mini-variant.sync="mini"
-            permanent
         >
-            <v-list-item class="px-2">
-                <v-list-item-avatar>
-                    <v-img src="/images/user/login-user-photo.png"></v-img>
-                </v-list-item-avatar>
-
-                <v-list-item-title>{{authUser.name}}</v-list-item-title>
-
-                <v-btn
-                    icon
-                    @click.stop="mini = !mini"
-                >
-                    <v-icon>mdi-chevron-left</v-icon>
-                </v-btn>
-            </v-list-item>
-
             <v-divider></v-divider>
 
             <v-list dense>
@@ -118,30 +100,3 @@ export default {
     }
 }
 </script>
-<style>
-    .v-navigation-drawer__content {
-        height: 100vh;
-    }
-    .v-sheet.v-card {
-        border-radius: 0;
-    }
-    .v-list-item:hover {
-        background: #00C853 !important;
-        color: #ffffff !important
-    }
-    .v-list-item__title-a {
-        color: #000000 !important;
-    }
-    .v-list-item:hover  .v-list-item__title-a {
-        color: #ffffff !important;
-    }
-    .v-list-item:hover  .theme--light.v-icon {
-        color: #ffffff !important;
-    }
-    .v-list-item__title-a:hover {
-        color: #ffffff !important;
-    }
-    .v-list-item__title {
-        margin-left: 10px;
-    }
-</style>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
@@ -30,11 +31,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //contacts
     Route::get('/contacts', [ContactController::class, 'index'])->name('index.contacts');
     Route::get('/add-contact', [ContactController::class, 'createContactPage'])->name('createContactPage');
-
-    //settings
-    Route::get('/emails', [SettingController::class, 'emails'])->name('index.emails');
-    Route::get('/users', [UserController::class, 'users'])->name('index.users');
-
+    //contacts
+    Route::get('/emails', [EmailController::class, 'index']);
     Route::middleware([UserPermision::class])->group(function () {
         //register
         Route::get('/register', [LoginController::class, 'register'])->name('register');
