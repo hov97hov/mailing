@@ -27,14 +27,16 @@
                                </a>
                            </li>
                            <li>
-                               <a href="groups">
+                               <a href="/groups">
                                    <img src="/images/category.png">
-                                   <span>Կատեգորյաներ</span>
+                                   <span>Կատեգորիաներ</span>
                                </a>
                            </li>
                            <li>
-                               <img src="/images/mail.png">
-                               <span>Էլ․ փոստեր</span>
+                               <a href="/emails">
+                                   <img src="/images/mail.png">
+                                   <span>Էլ․ փոստեր</span>
+                               </a>
                            </li>
                        </ul>
                    </div>
@@ -109,40 +111,48 @@
                                <img src="/images/removeIcon.png" alt="">
                            </div>
                        </div>
-                        <v-data-table
-                            :headers="headers"
-                            :items="desserts"
-                            :search="search"
-                        >
-                            <template v-slot:item.from="{ item }">
-                               <div class="from">
-                                   <div class="round">
-                                       <input type="checkbox" id="checkbox"/>
-                                       <label for="checkbox"></label>
-                                   </div>
-                                   <div>
-                                       <img src="/images/Group.png" alt="">
-                                       {{item.from}}
-                                   </div>
-                               </div>
-                            </template>
-                            <template v-slot:item.to="{ item }">
-                                <div class="to">
+                        <div class="message-list">
+                            <div class="header">
+                                <div>Ումից</div>
+                                <div>Ում</div>
+                                <div>Թեմա</div>
+                                <div>Ամսաթիվ</div>
+                            </div>
+                            <div class="list">
+                                <div>
+                                    <div class="checkbox"></div>
+                                    <div class="img"><img src="/images/Group.png" alt=""></div>
+                                    <div class="name">hovo1997mkrtchyan@gmail.com</div>
+                                </div>
+                                <div>
                                     <img src="/images/company.png" alt="">
-                                    {{item.to}}
+                                    <div>Առողջապահություն</div>
                                 </div>
-                            </template>
-                            <template v-slot:item.subject="{ item }">
-                                <div class="subject">
-                                    {{item.subject}}
+                                <div>
+                                   <div>Եթե Ձեր ամբողջ ...</div>
                                 </div>
-                            </template>
-                            <template v-slot:item.date="{ item }">
-                                <div class="date">
-                                    {{item.date}}
+                                <div>
+                                    <div>19.01.2023</div>
                                 </div>
-                            </template>
-                        </v-data-table>
+                            </div>
+                            <div class="list">
+                                <div>
+                                    <div class="checkbox"></div>
+                                    <div class="img"><img src="/images/Group.png" alt=""></div>
+                                    <div class="name">hovo1997mkrtchyan@gmail.com</div>
+                                </div>
+                                <div>
+                                    <img src="/images/company.png" alt="">
+                                    <div>Առողջապահություն</div>
+                                </div>
+                                <div>
+                                    <div>Եթե Ձեր ամբողջ ...</div>
+                                </div>
+                                <div>
+                                    <div>19.01.2023</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
            </div>
@@ -156,14 +166,12 @@
 <script>
 import axios from "axios";
 import Header from '../../../resources/js/Components/Header'
-import Navbar from '../../../resources/js/Components/Navbar'
 import { VueEditor } from "vue2-editor";
 
 export default {
     name: "home",
     components: {
         Header,
-        Navbar,
         VueEditor
     },
     data: () => {
@@ -290,6 +298,7 @@ export default {
             .mailing-right-list {
                 width: 70%;
                 .mailing-right-list-header {
+                    margin-top: -22px;
                     width: 50%;
                     border-bottom: 1px solid;
                     margin-bottom: 10px;
@@ -340,20 +349,81 @@ export default {
                             width: 300px;
                         }
                     }
-                    .from {
-                        display: flex;
-                        > div {
-                            &:last-child {
-                                display: flex;
-                                align-items: center;
-                                img {
-                                    margin-right: 5px;
+                    .message-list {
+                        overflow-x: auto;
+                        > .header {
+                            display: flex;
+                            justify-content: space-between;
+                            padding-top: 5px;
+                            padding-bottom: 5px;
+                            background: #DEE1E4;
+                            border-radius: 5px;
+                            margin-bottom: 10px;
+                            > div {
+                                font-family: 'Inter';
+                                font-style: normal;
+                                font-weight: 400;
+                                font-size: 18px;
+                                line-height: 22px;
+                                color: #253266;
+                                &:nth-child(1) {
+                                     min-width: 300px;
+                                    padding-left: 40px;
                                 }
+                                &:nth-child(2) {
+                                     min-width: 300px;
+                                }
+                                &:nth-child(3) {
+                                     min-width: 150px;
+                                }
+                                &:nth-child(4) {
+                                      min-width: 110px;
+                                    padding-right: 30px;
+                                 }
                             }
                         }
-                        .round {
-                            margin-top: 3px;
-                            margin-right: 20px;
+                        .list {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 10px 10px;
+                            border-radius: 15px;
+                            border: 1px solid #B9B9B9;
+                            &:not(:last-child) {
+                                margin-bottom: 5px;
+                            }
+                            > div {
+                                display: flex;
+                                align-items: center;
+
+                                &:nth-child(1) {
+                                    min-width: 300px;
+                                    .checkbox {
+                                        width: 20px;
+                                        height: 20px;
+                                        border: 1px solid;
+                                        border-radius: 50%;
+                                        margin-right: 10px
+                                    }
+                                    img {
+                                        margin-right: 10px
+                                    }
+                                }
+                                &:nth-child(2) {
+                                    min-width: 300px;
+                                    img {
+                                        margin-right: 10px;
+                                    }
+                                }
+                                &:nth-child(3) {
+                                    min-width: 150px;
+                                }
+                                &:nth-child(4) {
+                                    display: flex;
+                                    justify-content: center;
+                                    min-width: 110px;
+                                }
+                            }
                         }
                     }
                 }

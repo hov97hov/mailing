@@ -26,101 +26,113 @@
                                     <span>Նամակներ</span>
                                 </a>
                             </li>
-                            <li class="groups">
-                                <img src="/images/category.png">
-                                <span>Կատեգորյաներ</span>
-                            </li>
                             <li>
-                                <img src="/images/mail.png">
-                                <span>Էլ․ փոստեր</span>
+                                <a href="/groups">
+                                    <img src="/images/category.png">
+                                    <span>Կատեգորիաներ</span>
+                                </a>
+                            </li>
+                            <li class="emails">
+                                <a href="/emails">
+                                    <img src="/images/mail.png">
+                                    <span>Էլ․ փոստեր</span>
+                                </a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="mailing-right-list">
-                    <div class="create-category">
-                        <div class="title">Ավելացնել կատեգորիա</div>
-                        <div class="create-category-content">
-                            <div>
-                                <v-text-field
-                                    placeholder="Անուն"
-                                    filled
-                                    rounded
-                                    dense
-                                ></v-text-field>
-                            </div>
-                            <div>
-                                <v-text-field
-                                    placeholder="Էլ․ փոստ"
-                                    filled
-                                    rounded
-                                    dense
-                                ></v-text-field>
-                            </div>
-                            <div>
-                               <div class="add-photo">
-                                   <div>Ավելացնել նկար</div>
-                                   <div class="icon">
-                                       <v-file-input
-                                           hide-input
-                                           show-size
-                                           truncate-length="15"
-                                           prepend-icon="mdi-plus"
-                                       ></v-file-input>
-                                   </div>
-                               </div>
+                    <div class="top-section">
+                        <span>ԷԼ․ ՀԱՍՑԵՆԵՐԻ ՑՈՒՑԱԿ</span>
+                    </div>
+                    <div class="mailing-right-list-content">
+                        <div @click="closePage" class="close-page">
+                            <v-icon color="#253266">mdi-close</v-icon>
+                        </div>
+                        <div class="create-category">
+                            <div class="create-category-content">
                                 <div>
-                                    <button>Ավելացնել</button>
+                                    <v-text-field
+                                        placeholder="Անուն"
+                                        filled
+                                        rounded
+                                        dense
+                                    ></v-text-field>
+                                </div>
+                                <div>
+                                    <v-text-field
+                                        placeholder="Էլ․ փոստ"
+                                        filled
+                                        rounded
+                                        dense
+                                    ></v-text-field>
+                                </div>
+                                <div>
+                                    <v-select
+                                        :items="items"
+                                        label="Ընտրել Կատեգորիան"
+                                        rounded
+                                        solo
+                                    ></v-select>
+                                </div>
+                                <div>
+                                    <v-textarea
+                                        rows="1"
+                                        placeholder="..."
+                                        height="120"
+                                        solo
+                                    ></v-textarea>
+                                </div>
+                                <div class="btn-content">
+                                    <v-btn>Հաստատել</v-btn>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="search-content">
-                        <div class="search">
-                            <v-text-field
-                                v-model="search"
-                                prepend-inner-icon="mdi-magnify"
-                                filled
-                                rounded
-                                dense
-                                hi
-                                hide-details
-                                color="#253266"
-                            ></v-text-field>
+                        <div class="search-content">
+                            <div class="search">
+                                <v-text-field
+                                    v-model="search"
+                                    prepend-inner-icon="mdi-magnify"
+                                    filled
+                                    rounded
+                                    dense
+                                    hi
+                                    hide-details
+                                    color="#253266"
+                                ></v-text-field>
+                            </div>
                         </div>
-                    </div>
-                    <div class="category-messages-list">
-                        <v-card>
-                            <v-data-table
-                                :headers="headers"
-                                :items="desserts"
-                                :search="search"
-                                hide-default-header
-                            >
-                                <template v-slot:item.name="{ item }">
-                                    <div class="table-td">
-                                        <div>
-                                            <div class="round">
-                                                <input type="checkbox" id="checkbox"/>
-                                                <label for="checkbox"></label>
+                        <div class="category-messages-list">
+                            <div class="header">
+                                <div>Անուն</div>
+                                <div>Էլ․ փոստ</div>
+                                <div>Կատեգորիա</div>
+                                <div></div>
+                            </div>
+                            <div class="items">
+                                <div class="item">
+                                    <div class="checkbox"></div>
+                                    <div class="ids">1</div>
+                                    <div class="last-block">
+                                        <div class="name">ArtmedMedical</div>
+                                        <div class="email">info@teghekatu.am</div>
+                                        <div class="category">Առողջապահություն</div>
+                                        <div class="actions">
+                                            <div>
+                                                <img src="/images/pencil.png" alt="">
                                             </div>
+                                            <div class="view-user-info">
+                                                <img @click="isActive = !isActive" src="/images/Subtract.png" alt="">
+                                                <div class="user-info" v-if="isActive">
+                                                   ...
+                                                </div>
+                                            </div>
+                                            <div><img src="/images/removeIocn.png" alt=""></div>
                                         </div>
-                                       <div>
-                                           <img src="/images/Group.png" alt="">
-                                           <span>{{item.name}}</span>
-                                       </div>
                                     </div>
-                                </template>
-                                <template v-slot:item.action="{ item }">
-                                    <div class="table-td-action">
-                                        <div><img src="/images/plus.png" alt=""></div>
-                                        <div><img src="/images/mailIcon.png" alt=""></div>
-                                        <div><img src="/images/pencil.png" alt=""></div>
-                                        <div><img src="/images/removeIcon.png" alt=""></div>
-                                    </div>
-                                </template>
-                            </v-data-table>
-                        </v-card>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,45 +146,20 @@
 <script>
 import axios from "axios";
 import Header from '../../../resources/js/Components/Header'
-import Navbar from '../../../resources/js/Components/Navbar'
 import { VueEditor } from "vue2-editor";
 
 export default {
     name: "home",
     components: {
         Header,
-        Navbar,
         VueEditor
     },
     data: () => {
         return {
             loading: false,
-            messageList: false,
-            messageBox: true,
+            isActive: false,
             dialog: false,
             search: '',
-            headers: [
-                {text: 'Ումից', value: 'name',},
-                { text: 'Ում', value: 'action' },
-            ],
-            desserts: [
-                {
-                    action: '',
-                    name: 'Առողջապահություն',
-                },
-                {
-                    action: '',
-                    name: 'Առողջապահություն',
-                },
-                {
-                    action: '',
-                    name: 'Առողջապահություն',
-                },
-                {
-                    action: '',
-                    name: 'Առողջապահություն',
-                },
-            ],
         }
     },
     async created() {
@@ -183,6 +170,7 @@ export default {
         openMessageBox() {
           location.href = '/'
         },
+
         checkErrors(obj, field) {
             if (obj) {
                 this.errors[obj][field] = ''
@@ -190,11 +178,16 @@ export default {
                 this.errors[field] = ''
             }
         },
+
+        closePage() {
+            location.href = '/'
+        },
     }
 }
 </script>
 
 <style scoped lang="scss">
+
 .mailing-wrapper {
     display: flex;
     .mailing-content {
@@ -220,7 +213,7 @@ export default {
                         border-radius: 5px;
                         cursor: pointer;
                         margin-bottom: 10px;
-                        &.groups {
+                        &.emails {
                             background: #D3D4DA;
                         }
                         &:hover {
@@ -263,94 +256,189 @@ export default {
         }
         .mailing-right-list {
             width: 70%;
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 20px 15px 0px 0px;
-
-            .search-content {
-                display: flex;
-                justify-content: flex-end;
-                width: 100%;
-                margin-bottom: 30px;
-                .search {
-                    width: 300px;
-                }
-            }
-            .table-td {
-                display: flex;
-                .round {
-                    margin-right: 20px;
-                    margin-top: 3px;
-                }
-            }
-            .table-td-action {
-                display: flex;
-                align-items: center;
-                > div {
-                    margin-left: 20px;
-                }
-                img {
-                    width: 18px;
-                }
-            }
-
-            .create-category {
-                width: 500px;
-                margin: auto;
-                padding-top: 30px;
-                > .title {
-                    font-family: 'Inter';
+            .top-section {
+                margin-top: -22px;
+                margin-bottom: 10px;
+                margin-left: 10px;
+                span {
+                    font-family: 'Arial AMU';
                     font-style: normal;
                     font-weight: 400;
                     font-size: 18px;
                     line-height: 22px;
+                    text-transform: uppercase;
                     color: #253266;
-                    text-align: center;
-                    margin-bottom: 10px;
+                    border-bottom: 1px solid #253266;
                 }
-                .create-category-content {
-                    margin-bottom: 100px;
+            }
+            .mailing-right-list-content {
+                background: #ffffff;
+                padding: 15px;
+                border-radius: 20px 15px 0px 0px;
+                position: relative;
+                .close-page{
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    cursor: pointer;
+                }
+                .search-content {
+                    display: flex;
+                    justify-content: flex-end;
+                    width: 100%;
+                    margin-bottom: 30px;
+                    .search {
+                        width: 300px;
+                    }
+                }
+                .table-td {
+                    display: flex;
+                    .round {
+                        margin-right: 20px;
+                        margin-top: 3px;
+                    }
+                }
+                .table-td-action {
+                    display: flex;
+                    align-items: center;
                     > div {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: flex-end;
+                        margin-left: 20px;
+                    }
+                    img {
+                        width: 18px;
+                    }
+                }
+                .create-category {
+                    width: 500px;
+                    margin: auto;
+                    padding-top: 30px;
+                    > .title {
+                        font-family: 'Inter';
                         font-style: normal;
                         font-weight: 400;
                         font-size: 18px;
-                        line-height: 18px;
+                        line-height: 22px;
                         color: #253266;
-                        .add-photo {
+                        text-align: center;
+                        margin-bottom: 10px;
+                    }
+                    .create-category-content {
+                        margin-bottom: 100px;
+                        > div {
                             display: flex;
-                        }
-                        button {
+                            justify-content: space-between;
+                            align-items: flex-end;
+                            font-style: normal;
                             font-weight: 400;
-                            font-size: 16px;
-                            line-height: 20px;
+                            font-size: 18px;
+                            line-height: 18px;
                             color: #253266;
-                            background: #DADADA;
-                            border: 0.5px solid #DADADA;
-                            border-radius: 5px;
-                            padding: 3px 10px;
+                            .add-photo {
+                                display: flex;
+                            }
+                            &.btn-content {
+                                display: flex;
+                                justify-content: flex-end;
+                            }
+                            button {
+                                font-weight: 400;
+                                font-size: 16px !important;
+                                line-height: 20px !important;
+                                color: #253266;
+                                background: #DADADA;
+                                border: 0.5px solid #DADADA;
+                                border-radius: 5px;
+                                padding: 3px 10px;
+                                text-transform: capitalize;
+                            }
                         }
                     }
                 }
-            }
+                .category-messages-list {
+                    > .header {
+                        display: flex;
+                        padding: 10px 100px;
+                        align-items: center;
+                        justify-content: space-between;
+                        background: #DEE1E4;
+                        border-radius: 5px;
+                        margin-bottom: 25px;
+                        > div {
+                            font-family: 'Inter';
+                            font-style: normal;
+                            font-weight: 400;
+                            font-size: 18px;
+                            line-height: 18px;
+                            color: #253266;
+                        }
+                    }
+                    .items {
+                        .item {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-bottom: 5px;
+                            .checkbox {
+                                width: 20px;
+                                height: 20px;
+                                border-radius: 50%;
+                                border: 1px solid;
+                                margin-right: 20px;
+                            }
+                            .ids {
+                                padding: 10px 15px;
+                                background: #F4F4F4;
+                                border-radius: 15px 0 0 15px;
+                                margin-right: 3px;
+                            }
+                            .last-block {
+                                width: 100%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 10px 20px;
+                                background: #F4F4F4;
+                                border-radius: 0px 15px 15px 0px;
+                                .actions {
+                                    display: flex;
+                                    align-items: center;
+                                    > div {
+                                        margin-left: 20px;
+                                        img {
+                                            cursor: pointer;
+                                        }
+                                    }
+                                    .view-user-info {
+                                        position: relative;
+                                        .user-info {
+                                            width: 250px;
+                                            min-height: 77px;
+                                            position: absolute;
+                                            padding: 5px 10px;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-72%, 25%);
 
-            .mailing-box-content {
-                display: flex;
-                align-items: flex-start;
-                .mailing-box {
-                    margin-top: 30px;
-                }
-                .field {
-                    margin-bottom: 20px;
-                }
-                .close-modal {
-                    width: 10%;
-                    display: flex;
-                    justify-content: flex-end;
-                    i {
-                        cursor: pointer;
+                                            background: #F7F7F7;
+                                            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+                                            border-radius: 18px;
+                                            &:after {
+                                                content: "";
+                                                position: absolute;
+                                                top: -10px;
+                                                left: 72%;
+                                                margin-left: -15px;
+                                                width: 0;
+                                                height: 0;
+                                                border-bottom: solid 15px #F6F6F6;
+                                                border-left: solid 15px transparent;
+                                                border-right: solid 15px transparent;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

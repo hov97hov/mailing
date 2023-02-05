@@ -105,4 +105,18 @@ ul {
     background: #EAEAEA;
 }
 
+.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)>.v-input__control>.v-input__slot {
+    box-shadow: unset !important;
+    background: #EAEAEA !important;
+    color: rgba(0,0,0,.87) !important;
+    border-radius: 15px !important;
+}
+
+.v-text-field.v-text-field--solo .v-input__control {
+    min-height: 40px !important;
+}
+.theme--light.v-text-field--outlined:not(.v-input--is-focused):not(.v-input--has-state)>.v-input__control>.v-input__slot fieldset {
+    background: #EAEAEA !important;
+    border: 0 !important;
+}
 

@@ -12,7 +12,7 @@
                     <div class="header-last">
                         <div class="menu-btns">
                             <v-btn
-                                @click="location.href= '/emails'"
+                                @click="createEmailsPage"
                                 class="create-btn"
                             >
                                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -155,6 +155,9 @@ export default {
         },
         createCategoryPage() {
             location.href = '/groups'
+        },
+        createEmailsPage() {
+            location.href = '/emails'
         },
         async logout() {
             axios.get('/sanctum/csrf-cookie').then(response => {

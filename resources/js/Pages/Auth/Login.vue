@@ -33,7 +33,7 @@
                                 <v-btn
                                     @click.prevent="login"
                                     class="btn btn-primary btn-login text-uppercase fw-bold"
-                                    color="green accent-4"
+                                    color="#253266"
                                     type="submit">Մուտք գործել</v-btn>
                             </div>
                         </div>
@@ -116,9 +116,9 @@ export default {
         background-color: #3b5998;
     }
     .btn-login {
-        background: #00C853 !important;
+        background: #253266 !important;
         color: #ffffff !important;
-        border: 1px solid #00C853;
+        border: 1px solid #253266;
         font-size: 0.9rem;
         letter-spacing: 0.05rem;
         padding: 0.75rem 1rem;
