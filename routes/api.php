@@ -29,20 +29,20 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('check-login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 //CONTACT
-Route::get('get-contacts', [ContactController::class, 'getContacts'])->name('getContacts');
-Route::post('create-contact', [ContactController::class, 'createContact'])->name('createContact');
+Route::get('get-emails', [ContactController::class, 'getEmails'])->name('getEmails');
+Route::post('create-email', [ContactController::class, 'createEmail'])->name('createEmail');
 Route::post('update-contact', [ContactController::class, 'updateContact'])->name('updateContact');
-Route::post('delete-contact', [ContactController::class, 'deleteContact'])->name('deleteContact');
+Route::post('delete-email', [ContactController::class, 'deleteEmail'])->name('deleteEmail');
 Route::post('delete-contacts', [ContactController::class, 'deleteContacts'])->name('deleteContacts');
 Route::post('delete-selected-contacts', [ContactController::class, 'deleteSelectedContact'])->name('deleteSelectedContact');
 Route::post('get-user-emails', [ContactController::class, 'getUserEmails'])->name('getUserEmails');
 Route::post('get-auth-user', [ContactController::class, 'getAuthUser'])->name('getAuthUser');
 //GROUP
-Route::post('create-group', [GroupsController::class, 'createGroup'])->name('createGroup');
+Route::post('create-category', [GroupsController::class, 'createCategory'])->name('createCategory');
 Route::post('edit-group', [GroupsController::class, 'editGroup'])->name('editGroup');
-Route::post('get-groups', [GroupsController::class, 'getGroups'])->name('getGroups');
+Route::post('get-category', [GroupsController::class, 'getCategory'])->name('getCategory');
 Route::post('get-selected-groups', [GroupsController::class, 'getSelectedGroups'])->name('getSelectedGroups');
-Route::post('delete-group', [GroupsController::class, 'deleteGroup'])->name('deleteGroup');
+Route::post('delete-category', [GroupsController::class, 'deleteCategory'])->name('deleteCategory');
 Route::post('delete-selected-group', [GroupsController::class, 'deleteSelectedGroup'])->name('deleteSelectedGroup');
 Route::post('add-contact-group', [GroupsController::class, 'addContactGroup'])->name('addContactGroup');
 Route::post('get-group-contacts', [GroupsController::class, 'getGroupContacts'])->name('getGroupContacts');
@@ -65,10 +65,10 @@ Route::get('get-no-register-message-contact', [MessageController::class, 'getNoR
 //SETTINGS
 Route::post('/create-settings', [SettingController::class, 'createSettings'])->name('createSettings');
 Route::post('/get-settings', [SettingController::class, 'getSettings'])->name('getSettings');
-Route::post('/create-email', [SettingController::class, 'createMail'])->name('createMail');
-Route::post('/get-emails', [SettingController::class, 'getEmails'])->name('getEmails');
+//Route::post('/create-email', [SettingController::class, 'createMail'])->name('createMail');
+//Route::post('/get-emails', [SettingController::class, 'getEmails'])->name('getEmails');
 Route::post('/update-email', [SettingController::class, 'updateEmail'])->name('updateEmail');
-Route::post('/delete-email', [SettingController::class, 'deleteEmail'])->name('deleteEmail');
+//Route::post('/delete-email', [SettingController::class, 'deleteEmail'])->name('deleteEmail');
 Route::post('/create-email-user', [SettingController::class, 'createEmailUser'])->name('createEmailUser');
 //USERS
 Route::post('/get-users', [UserController::class, 'getUsers'])->name('getUsers');

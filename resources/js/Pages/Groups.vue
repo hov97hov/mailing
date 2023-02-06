@@ -52,26 +52,35 @@
                            <div class="create-category-content">
                                <div>
                                    <v-text-field
+                                       v-model="defaultCategoryData.name"
                                        placeholder="Անուն"
                                        filled
                                        rounded
                                        dense
+                                       :error-messages="errors.defaultCategoryData.name"
+                                       @input="checkErrors('defaultCategoryData', 'name')"
                                    ></v-text-field>
                                </div>
                                <div>
                                    <div class="add-photo">
-                                       <div>Ավելացնել նկար</div>
+                                       <div>
+                                           <span>Ավելացնել նկար</span>
+                                           <span>{{errors.defaultCategoryData.image[0]}}</span>
+                                       </div>
                                        <div class="icon">
                                            <v-file-input
+                                               v-model="defaultCategoryData.image"
                                                hide-input
                                                show-size
                                                truncate-length="15"
                                                prepend-icon="mdi-plus"
+                                               :error-messages="errors.defaultCategoryData.image"
+                                               @input="checkErrors('defaultCategoryData', 'image')"
                                            ></v-file-input>
                                        </div>
                                    </div>
                                    <div>
-                                       <button>Ավելացնել</button>
+                                       <button @click="createCategory">Ավելացնել</button>
                                    </div>
                                </div>
                            </div>
@@ -93,17 +102,20 @@
                        <div class="category-messages-list">
                            <div class="category-list">
                                <div class="items">
-                                   <div class="item">
+                                   <div class="item"
+                                        v-for="item in categories"
+                                        :key="item.id"
+                                   >
                                        <div class="checkbox"></div>
                                        <div class="last-block">
                                            <div class="name">
-                                               <img src="/images/company.png" alt="">
-                                               <span>Առողջապահություն</span>
+                                               <img :src="item.image" alt="">
+                                               <span @click="openGroupPage(item.id)">{{item.name}}</span>
                                            </div>
                                            <div class="actions">
                                                <div class="add-user-content">
-                                                   <img @click="isActive = !isActive" src="/images/plus.png" alt="">
-                                                   <div class="add-user" v-if="isActive">
+                                                   <img @click="openPophup(item.id)" src="/images/plus.png" alt="">
+                                                   <div class="add-user" v-if="isActive === item.id">
                                                        <div @click="openCreateEmailDialog" class="btn-content">
                                                            <v-icon color="#253266">mdi-plus</v-icon>
                                                            <span>Ավելացնել Էլ․ հասցե</span>
@@ -119,10 +131,10 @@
                                                    <img src="/images/mail.png" alt="">
                                                </div>
                                                <div>
-                                                   <img src="/images/pencil.png" alt="">
+                                                   <img @click="openGroupPage(item.id)" src="/images/pencil.png" alt="">
                                                </div>
                                                <div>
-                                                   <img src="/images/removeIocn.png" alt="">
+                                                   <img @click="openDialogDeleteCategory(item.id)" src="/images/removeIocn.png" alt="">
                                                </div>
                                            </div>
                                        </div>
@@ -134,7 +146,7 @@
                 </div>
             </div>
         </div>
-        <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
+        <loader v-if="loading" object="#343a40" color1="#ffffff" color2="#253266" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
         <!--CREATE EMAIL-->
@@ -227,6 +239,37 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!--Delete category-->
+        <v-dialog
+            v-model="deleteCategoryDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                   <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="deleteCategoryDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteCategory"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -239,7 +282,7 @@ export default {
     name: "home",
     components: {
         Header,
-        VueEditor
+        VueEditor,
     },
     data: () => {
         return {
@@ -247,11 +290,25 @@ export default {
             loading: false,
             createEmailDialog: false,
             createNewEmailDialog: false,
+            deleteCategoryDialog: false,
             search: '',
+            categories: [],
+            defaultCategoryData: {
+                name: '',
+                image: '',
+            },
+
+            errors: {
+                defaultCategoryData: {
+                    name: '',
+                    image: '',
+                },
+            }
         }
     },
-    async created() {
 
+    async created() {
+        await this.getCategory()
     },
 
     methods: {
@@ -283,6 +340,89 @@ export default {
         closeCreateNewEmailDialog () {
             this.createNewEmailDialog = false
             this.value = []
+        },
+
+        async createCategory() {
+            this.loading = true
+            const formData = new FormData()
+            formData.append('name', this.defaultCategoryData.name)
+            formData.append('image', this.defaultCategoryData.image)
+
+            await axios.post('/api/create-category', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Կատեգորիան ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.getCategory()
+                this.defaultCategoryData.name = ''
+                this.defaultCategoryData.image = ''
+                this.errors.defaultCategoryData.image = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
+
+        async getCategory() {
+            await axios.post('/api/get-category').then(response => {
+                this.categories = response.data.categories
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        openDialogDeleteCategory(id) {
+            this.categoryId = id
+            this.deleteCategoryDialog = true
+        },
+
+        async deleteCategory() {
+            this.loading = true
+            await axios.post('/api/delete-category', {id:this.categoryId}).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Կատեգորիան հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.deleteCategoryDialog = false
+                this.getCategory()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
+
+        openPophup(id) {
+            this.isActive = id
+        },
+
+        openGroupPage(id) {
+            location.href = '/group/'+id
         }
     }
 }
@@ -420,6 +560,21 @@ export default {
                             color: #253266;
                             .add-photo {
                                 display: flex;
+                                > div {
+                                    &:first-child {
+                                        display: flex;
+                                        flex-direction: column;
+                                        span {
+                                            &:last-child {
+                                                margin-top: 65px;
+                                                color: red !important;
+                                                line-height: 12px;
+                                                font-size: 12px;
+                                                word-break: break-word;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             button {
                                 font-weight: 400;
@@ -447,6 +602,22 @@ export default {
                                 border-radius: 20px;
                                 border: 1px solid #000000;
                                 margin-right: 15px;
+                            }
+                            .name {
+                                font-family: 'Arial AMU';
+                                font-style: normal;
+                                font-weight: 400;
+                                font-size: 16px;
+                                line-height: 20px;
+                                color: #253266;
+                                cursor: pointer;
+                                img {
+                                    width: 25px;
+                                    height: 25px;
+                                    border-radius: 50%;
+                                    object-fit: cover;
+                                    margin-right: 10px;
+                                }
                             }
                             .last-block {
                                 width: 100%;
@@ -477,6 +648,7 @@ export default {
                                             padding: 5px 10px;
                                             top: 50%;
                                             left: 50%;
+                                            z-index: 1;
                                             transform: translate(-50%, 25%);
                                             .btn-content {
                                                 cursor: pointer;

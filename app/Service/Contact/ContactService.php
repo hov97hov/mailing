@@ -4,6 +4,7 @@ namespace App\Service\Contact;
 
 use App\Interfaces\Contact\ContactInterface;
 use App\Models\Contact;
+use App\Models\ContactGroup;
 use Illuminate\Support\Facades\Auth;
 
 class ContactService implements ContactInterface
@@ -16,22 +17,13 @@ class ContactService implements ContactInterface
         $contact = Contact::create([
             'name' => $data->name,
             'email' => $data->email,
-            'user_id' => 1,
+            'description' => $data->description,
         ]);
 
-        if ($data->hasFile('image')) {
-
-            $data->validate([
-                'image' => 'mimes:jpeg,jpg,png',
-            ]);
-
-            $image = $data->file('image');
-            $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('storage/images/contacts');
-            $image->move($destinationPath, $name);
-
-            Contact::where('id', $contact->id)->update([
-                'image' => $name
+        foreach ($data->categoryId as $item) {
+            ContactGroup::create([
+                'contact_id' => $contact->id,
+                'group_id' => $item,
             ]);
         }
     }

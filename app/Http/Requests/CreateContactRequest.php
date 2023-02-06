@@ -25,6 +25,7 @@ class CreateContactRequest extends FormRequest
     {
         return [
             'name' => ['required'],
+            'categoryId' => ['required'],
             'email' => ['required', 'email', 'unique:contacts'],
         ];
     }
@@ -32,11 +33,12 @@ class CreateContactRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'Անվան դաշտը պարտադիր է:',
-            'name' => 'Անվան դաշտը պարտադիր է:',
-            'email.required' => 'Էլփոստի դաշտը պարտադիր է:',
-            'email.unique' => 'Էլ. փոստի արդեն գրանցված է:',
-            'email' => 'Էլ. փոստի դաշտը պարտադիր է:',
+            'name.required' => 'դաշտը պարտադիր է լրացնել:',
+            'name' => 'դաշտը պարտադիր է լրացնել:',
+            'email.required' => 'դաշտը պարտադիր է լրացնել:',
+            'email.unique' => 'Էլ․ փոստը արդեն գրանցված է',
+            'email' => 'դաշտը պարտադիր է լրացնել:',
+            'categoryId.required' => 'դաշտը պարտադիր է լրացնել:',
         ];
     }
 }

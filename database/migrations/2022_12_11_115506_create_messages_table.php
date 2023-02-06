@@ -16,14 +16,8 @@ class CreateMessagesTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->text('message');
-            $table->enum('archived', [0,1]);
             $table->string('subject');
             $table->string('email')->nullable();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
             $table->unsignedBigInteger('contact_id')->nullable();
             $table->foreign('contact_id')
                 ->references('id')

@@ -39,7 +39,7 @@ class ContactController extends Controller
     /**
      * @param CreateContactRequest $request
      */
-    public function createContact(CreateContactRequest $request)
+    public function createEmail(CreateContactRequest $request)
     {
         return $this->contact->createContact($request);
     }
@@ -47,10 +47,10 @@ class ContactController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getContacts(): JsonResponse
+    public function getEmails(): JsonResponse
     {
-        return \response()->json([
-            'contacts' => Contact::all()
+        return response()->json([
+            'emails' => Contact::query()->with('group')->get()
         ]);
     }
 
@@ -65,7 +65,7 @@ class ContactController extends Controller
     /**
      * @param Request $request
      */
-    public function deleteContact(Request $request)
+    public function deleteEmail(Request $request)
     {
         $this->contact->deleteContact($request->id);
     }

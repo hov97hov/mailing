@@ -53,30 +53,43 @@
                             <div class="create-category-content">
                                 <div>
                                     <v-text-field
+                                        v-model="defaultEmailData.name"
                                         placeholder="Անուն"
                                         filled
                                         rounded
                                         dense
+                                        :error-messages="errors.defaultEmailData.name"
+                                        @input="checkErrors('defaultEmailData', 'name')"
                                     ></v-text-field>
                                 </div>
                                 <div>
                                     <v-text-field
+                                        v-model="defaultEmailData.email"
                                         placeholder="Էլ․ փոստ"
                                         filled
                                         rounded
                                         dense
+                                        :error-messages="errors.defaultEmailData.email"
+                                        @input="checkErrors('defaultEmailData', 'email')"
                                     ></v-text-field>
                                 </div>
                                 <div>
                                     <v-select
-                                        :items="items"
+                                        v-model="defaultEmailData.categoryId"
+                                        :items="categories"
+                                        item-text="name"
+                                        item-value="id"
+                                        chips
                                         label="Ընտրել Կատեգորիան"
-                                        rounded
+                                        multiple
                                         solo
+                                        :error-messages="errors.defaultEmailData.categoryId"
+                                        @input="checkErrors('defaultEmailData', 'categoryId')"
                                     ></v-select>
                                 </div>
                                 <div>
                                     <v-textarea
+                                        v-model="defaultEmailData.description"
                                         rows="1"
                                         placeholder="..."
                                         height="120"
@@ -84,7 +97,7 @@
                                     ></v-textarea>
                                 </div>
                                 <div class="btn-content">
-                                    <v-btn>Հաստատել</v-btn>
+                                    <v-btn @click="createMail">Հաստատել</v-btn>
                                 </div>
                             </div>
                         </div>
@@ -110,24 +123,30 @@
                                 <div></div>
                             </div>
                             <div class="items">
-                                <div class="item">
+                                <div class="item" v-for="item in emails">
                                     <div class="checkbox"></div>
-                                    <div class="ids">1</div>
+                                    <div class="ids">{{item.id}}</div>
                                     <div class="last-block">
-                                        <div class="name">ArtmedMedical</div>
-                                        <div class="email">info@teghekatu.am</div>
-                                        <div class="category">Առողջապահություն</div>
+                                        <div class="name">{{item.name}}</div>
+                                        <div class="email">{{item.email}}</div>
+                                        <div class="category">
+                                            <span v-for="group in item.group">
+                                                <span>{{group.name}}</span> <br>
+                                            </span>
+                                        </div>
                                         <div class="actions">
                                             <div>
-                                                <img src="/images/pencil.png" alt="">
+                                                <img @click="editEmailModal(item)" src="/images/pencil.png" alt="">
                                             </div>
                                             <div class="view-user-info">
                                                 <img @click="isActive = !isActive" src="/images/Subtract.png" alt="">
                                                 <div class="user-info" v-if="isActive">
-                                                   ...
+                                                   {{item.description}}
                                                 </div>
                                             </div>
-                                            <div><img src="/images/removeIocn.png" alt=""></div>
+                                            <div>
+                                                <img @click="openDeleteEmailDialog(item.id)" src="/images/removeIocn.png" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -137,9 +156,128 @@
                 </div>
             </div>
         </div>
-        <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
+        <loader v-if="loading" object="#343a40" color1="#ffffff" color2="#253266" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
+        <!--Delete category-->
+        <v-dialog
+            v-model="deleteEmailDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                    <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="deleteEmailDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteEmail"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!--CREATE EMAIL-->
+        <v-dialog
+            v-model="editEmailDialog"
+            width="500"
+            persistent
+        >
+            <v-card>
+                <v-card-title class="text-h5 grey lighten-2">
+                    Ավելացնել նոր Էլ․ հասցե
+                </v-card-title>
+
+                <v-card-text>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-text-field
+                                v-model="editEmailData.name"
+                                placeholder="Անուն"
+                                filled
+                                rounded
+                                dense
+                                :error-messages="errors.editEmailData.name"
+                                @input="checkErrors('editEmailData', 'name')"
+                            ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-text-field
+                                v-model="editEmailData.email"
+                                placeholder="Էլ․ հասցե"
+                                filled
+                                rounded
+                                dense
+                                :error-messages="errors.editEmailData.email"
+                                @input="checkErrors('editEmailData', 'email')"
+                            ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-select
+                                v-model="editEmailData.categoryId"
+                                :items="categories"
+                                item-text="name"
+                                item-value="id"
+                                chips
+                                label="Ընտրել Կատեգորիան"
+                                multiple
+                                solo
+                                :error-messages="errors.editEmailData.categoryId"
+                                @input="checkErrors('editEmailData', 'categoryId')"
+                            ></v-select>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-textarea
+                                v-model="editEmailData.description"
+                                rows="1"
+                                placeholder="..."
+                                height="120"
+                                solo
+                            ></v-textarea>
+                        </div>
+                    </div>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="red"
+                        text
+                        @click="editEmailDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="updateEmail"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -159,11 +297,38 @@ export default {
             loading: false,
             isActive: false,
             dialog: false,
+            deleteEmailDialog: false,
+            editEmailDialog: false,
             search: '',
+            emailId: '',
+            categories: [],
+            emails: [],
+            defaultEmailData: {
+                name: '',
+                categoryId: [],
+                description: '',
+            },
+            editEmailData: {
+                name: '',
+                categoryId: [],
+                description: '',
+            },
+            errors: {
+                defaultEmailData: {
+                    name: '',
+                    categoryId: '',
+                },
+                editEmailData: {
+                    name: '',
+                    categoryId: '',
+                    description: '',
+                },
+            }
         }
     },
     async created() {
-
+        await this.getAllCategories()
+        await this.getAllEmails()
     },
 
     methods: {
@@ -182,6 +347,92 @@ export default {
         closePage() {
             location.href = '/'
         },
+
+        async getAllCategories() {
+            await axios.post('/api/get-category').then(response => {
+                this.categories = response.data.categories
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+        async getAllEmails() {
+            await axios.get('/api/get-emails').then(response => {
+                this.emails = response.data.emails
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+        async createMail() {
+            this.loading = true
+
+            await axios.post('/api/create-email', this.defaultEmailData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+
+                this.defaultEmailData.name = ''
+                this.defaultEmailData.description = ''
+                this.defaultEmailData.email = ''
+                this.defaultEmailData.categoryId = ''
+                this.loading = false
+                this.getAllEmails()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultEmailData = Object.assign(this.errors.defaultEmailData, error.response.data.errors)
+            })
+        },
+
+        openDeleteEmailDialog(id) {
+            this.emailId = id
+            this.deleteEmailDialog = true
+        },
+
+        async deleteEmail() {
+            this.loading = true
+            await axios.post('/api/delete-email', {id:this.emailId}).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.deleteEmailDialog = false
+                this.getAllEmails()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                console.log(error)
+            })
+        },
+        editEmailModal(data) {
+            this.editEmailData.name = data.name
+            this.editEmailData.email = data.email
+            this.editEmailData.description = data.description
+            data.group.map(item => {
+                this.editEmailData.categoryId.push(item.id)
+            })
+
+            this.editEmailDialog = true
+        }
     }
 }
 </script>
@@ -378,6 +629,7 @@ export default {
                             align-items: center;
                             justify-content: space-between;
                             margin-bottom: 5px;
+                            color: #253266;
                             .checkbox {
                                 width: 20px;
                                 height: 20px;
@@ -411,6 +663,7 @@ export default {
                                     .view-user-info {
                                         position: relative;
                                         .user-info {
+                                            z-index: 1;
                                             width: 250px;
                                             min-height: 77px;
                                             position: absolute;
@@ -445,7 +698,7 @@ export default {
         }
     }
 }
-
-
-
+.v-card__text {
+    margin-top: 20px;
+}
 </style>

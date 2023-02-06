@@ -52,7 +52,7 @@ class GroupsController extends Controller
     /**
      * @param CreateGroupRequest $request
      */
-    public function createGroup(CreateGroupRequest $request)
+    public function createCategory(CreateGroupRequest $request)
     {
         $this->group->createGroup($request);
     }
@@ -69,17 +69,10 @@ class GroupsController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getGroups(): JsonResponse
+    public function getCategory(): JsonResponse
     {
         return \response()->json([
-           'groups' => Group::orderBy('sort', 'ASC')->with('contact')->get()
-        ]);
-    }
-
-    public function getSelectedGroups(Request $request): JsonResponse
-    {
-        return \response()->json([
-            'groups' => Group::whereIn('id', $request->ids)->orderBy('id', 'DESC')->with('contact')->get()
+           'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->get()
         ]);
     }
 
@@ -87,7 +80,7 @@ class GroupsController extends Controller
     /**
      * @param Request $request
      */
-    public function deleteGroup(Request $request)
+    public function deleteCategory(Request $request)
     {
         return Group::where('id', $request->id)->delete();
     }

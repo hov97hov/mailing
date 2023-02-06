@@ -25,7 +25,7 @@ class CreateGroupRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'color' => 'required',
+            'image' => 'required',
         ];
     }
 
@@ -33,7 +33,7 @@ class CreateGroupRequest extends FormRequest
     {
         return [
             'name.required' => 'դաշտը պարտադիր է:',
-            'color.required' => 'դաշտը պարտադիր է:',
+            'image.required' => 'դաշտը պարտադիր է:',
         ];
     }
 }

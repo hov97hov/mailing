@@ -17,18 +17,11 @@ class UsersTableSeeder extends Seeder
         $userDefaultData = [
             [
                 'id' => 1,
-                'name' => 'super_admin_1',
-                'email' => 'superadmin12023@gmail.com',
-                'password' => bcrypt('superadmin1-2023!'),
+                'name' => 'Mailing',
+                'email' => 'admin@mailing.am',
+                'password' => bcrypt('superadmin2023!'),
                 'role' => 1,
             ],
-            [
-                'id' => 2,
-                'name' => 'super_admin_2',
-                'email' => 'superadmin22023@gmail.com',
-                'password' => bcrypt('superadmin2-2023!'),
-                'role' => 1,
-            ]
         ];
 
         foreach ($userDefaultData as $userDefaultDatum) {
