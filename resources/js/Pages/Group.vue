@@ -48,19 +48,39 @@
                             <div>
                                 <div>
                                     <v-text-field
+                                        v-model="category.name"
                                         placeholder="Անուն"
                                         filled
                                         rounded
                                         value="Կրթություն"
+                                        @change="updateCategory"
                                         dense
                                     ></v-text-field>
                                 </div>
+
                                 <div class="img-content">
                                     <div>
-                                        <img class="category-img" src="/images/large.png" alt="">
+                                        <img class="category-img" :src="category.image" alt="">
                                     </div>
                                     <div>
-                                        <img src="/images/LargeReload.png" alt="">
+                                        <v-btn
+                                            color="#253266"
+                                            class="text-none"
+                                            round
+                                            depressed
+                                            :loading="isSelecting"
+                                            @click="onButtonClick"
+                                        >
+                                            <img src="/images/LargeReload.png" alt="">
+                                            {{ buttonText }}
+                                        </v-btn>
+                                        <input
+                                            ref="uploader"
+                                            class="d-none"
+                                            type="file"
+                                            accept="image/*"
+                                            @change="onFileChanged"
+                                        >
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +98,7 @@
                     </div>
                     <div class="search-content">
                         <div class="header">
-                            <div>Օգտատերերի քանակ 8</div>
+                            <div>Օգտատերերի քանակ {{category.contact.length}}</div>
                             <div class="search">
                                 <v-text-field
                                     v-model="search"
@@ -95,34 +115,11 @@
                     </div>
                     <div class="category-messages-list">
                         <div class="items">
-                            <div class="item">
+                            <div class="item" v-for="item in category.contact">
                                 <div class="checkbox"></div>
-                                <div class="ids">1</div>
+                                <div class="ids">{{item.id}}</div>
                                 <div class="last-block">
-                                    <div class="name">info@teghekatu.am</div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="checkbox">
-
-                                </div>
-                                <div class="ids">1</div>
-                                <div class="last-block">
-                                    <div class="name">info@teghekatu.am</div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="checkbox"></div>
-                                <div class="ids">1</div>
-                                <div class="last-block">
-                                    <div class="name">info@teghekatu.am</div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="checkbox"></div>
-                                <div class="ids">1</div>
-                                <div class="last-block">
-                                    <div class="name">info@teghekatu.am</div>
+                                    <div class="name">{{item.email}}</div>
                                 </div>
                             </div>
                         </div>
@@ -246,13 +243,35 @@ export default {
             loading: false,
             dialog: false,
             search: '',
+            defaultButtonText: '',
+            selectedFile: null,
+            isSelecting: false
         }
     },
+    props: ['category'],
     async created() {
 
     },
 
+    computed: {
+        buttonText() {
+            return this.selectedFile ? this.selectedFile.name : this.defaultButtonText
+        }
+    },
+
     methods: {
+        onButtonClick() {
+            this.isSelecting = true
+            window.addEventListener('focus', () => {
+                this.isSelecting = false
+            }, { once: true })
+
+            this.$refs.uploader.click()
+        },
+        onFileChanged(e) {
+            this.selectedFile = e.target.files[0]
+        },
+
         openMessageBox() {
             location.href = '/'
         },
@@ -281,7 +300,67 @@ export default {
         closeCreateNewEmailDialog () {
             this.createNewEmailDialog = false
             this.value = []
-        }
+        },
+
+        async updateCategory(name) {
+            this.loading = true
+
+            await axios.post('/api/update-category', {
+                name: name,
+                id: this.category.id
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Կատեգորիան թարմացվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
+
+        async changeImageCategory() {
+            this.loading = true
+
+            await axios.post('/api/update-category-image', {
+                id: this.category.id,
+                image: this.selectedFile
+            }, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նկարը թարմացվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
     }
 }
 </script>
@@ -419,6 +498,12 @@ export default {
                                 height: 80px;
                                 border-radius: 50%;
                                 object-fit: cover;
+                            }
+                            button {
+                                background: transparent!important;
+                                img {
+                                    margin-right: 10px;
+                                }
                             }
                         }
                     }

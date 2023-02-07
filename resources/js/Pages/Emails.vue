@@ -190,7 +190,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!--CREATE EMAIL-->
+        <!--UPDATE EMAIL-->
         <v-dialog
             v-model="editEmailDialog"
             width="500"
@@ -309,6 +309,7 @@ export default {
                 description: '',
             },
             editEmailData: {
+                id: '',
                 name: '',
                 categoryId: [],
                 description: '',
@@ -355,6 +356,7 @@ export default {
                 console.log(error)
             })
         },
+
         async getAllEmails() {
             await axios.get('/api/get-emails').then(response => {
                 this.emails = response.data.emails
@@ -362,6 +364,7 @@ export default {
                 console.log(error)
             })
         },
+
         async createMail() {
             this.loading = true
 
@@ -423,16 +426,47 @@ export default {
                 console.log(error)
             })
         },
+
         editEmailModal(data) {
+            this.editEmailData.id = data.id
             this.editEmailData.name = data.name
             this.editEmailData.email = data.email
             this.editEmailData.description = data.description
+            this.editEmailData.categoryId = []
             data.group.map(item => {
                 this.editEmailData.categoryId.push(item.id)
             })
 
             this.editEmailDialog = true
-        }
+        },
+
+        async updateEmail() {
+            this.loading = true
+
+            await axios.post('/api/update-email', this.editEmailData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը թարմացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+
+                this.loading = false
+                this.editEmailDialog = false
+                this.getAllEmails()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.editEmailData = Object.assign(this.errors.editEmailData, error.response.data.errors)
+            })
+        },
     }
 }
 </script>

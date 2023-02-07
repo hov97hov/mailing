@@ -20,11 +20,22 @@ class ContactService implements ContactInterface
             'description' => $data->description,
         ]);
 
-        foreach ($data->categoryId as $item) {
-            ContactGroup::create([
-                'contact_id' => $contact->id,
-                'group_id' => $item,
-            ]);
+        if (gettype($data->categoryId) === 'string') {
+            $exploderIds = explode(',', $data->categoryId);
+
+            foreach ($exploderIds as $item) {
+                ContactGroup::create([
+                    'contact_id' => $contact->id,
+                    'group_id' => $item,
+                ]);
+            }
+        } else {
+            foreach ($data->categoryId as $item) {
+                ContactGroup::create([
+                    'contact_id' => $contact->id,
+                    'group_id' => $item,
+                ]);
+            }
         }
     }
 
@@ -33,7 +44,18 @@ class ContactService implements ContactInterface
      */
     public function updateContact($data)
     {
-        return Contact::where('id', $data['id'])->update($data);
+        Contact::where('id', $data['id'])->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'description' => $data['description'],
+        ]);
+
+        foreach ($data['categoryId'] as $item) {
+            ContactGroup::updateOrCreate([
+                'contact_id' =>$data['id'],
+                'group_id' => $item,
+            ]);
+        }
     }
 
     /**

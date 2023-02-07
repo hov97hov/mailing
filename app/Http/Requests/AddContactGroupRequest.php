@@ -24,7 +24,14 @@ class AddContactGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'contacts' => 'required'
+            'contact_ids' => 'required'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'contact_ids.required' => 'դաշտը պարտադիր է:',
         ];
     }
 }

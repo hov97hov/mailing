@@ -116,11 +116,11 @@
                                                <div class="add-user-content">
                                                    <img @click="openPophup(item.id)" src="/images/plus.png" alt="">
                                                    <div class="add-user" v-if="isActive === item.id">
-                                                       <div @click="openCreateEmailDialog" class="btn-content">
+                                                       <div @click="openCreateEmailDialog(item.id)" class="btn-content">
                                                            <v-icon color="#253266">mdi-plus</v-icon>
                                                            <span>Ավելացնել Էլ․ հասցե</span>
                                                        </div>
-                                                       <div @click="openCreateNewEmailDialog" class="btn-content">
+                                                       <div @click="openCreateNewEmailDialog(item.id)" class="btn-content">
                                                            <v-icon color="#253266">mdi-plus</v-icon>
                                                            <span>Ավելացնել նոր Էլ․ հասցե</span>
                                                        </div>
@@ -163,12 +163,16 @@
                 <v-card-text>
                     <div class="text-filed-content">
                         <v-select
-                            v-model="value"
-                            :items="items"
+                            v-model="emailsData"
+                            :items="emails"
                             chips
                             placeholder="Էլ․ Հասցե"
+                            item-value="id"
+                            item-text="name"
                             multiple
                             solo
+                            :error-messages="errors.emailIds.contact_ids"
+                            @input="checkErrors('emailIds', 'contact_ids')"
                         ></v-select>
                     </div>
                 </v-card-text>
@@ -187,14 +191,14 @@
                     <v-btn
                         color="primary"
                         text
-                        @click="createEmailDialog = false"
+                        @click="addEmailCategory"
                     >
                         Հաստատել
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!--CREATE EMAIL-->
+        <!--CREATE NEW EMAIL-->
         <v-dialog
             v-model="createNewEmailDialog"
             width="500"
@@ -209,11 +213,38 @@
                     <div class="text-filed-content">
                         <div>
                             <v-text-field
+                                v-model="createNewEmailData.name"
+                                placeholder="Անուն"
+                                filled
+                                rounded
+                                dense
+                                :error-messages="errors.createNewEmailData.name"
+                                @input="checkErrors('createNewEmailData', 'name')"
+                            ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-text-field
+                                v-model="createNewEmailData.email"
                                 placeholder="Էլ․ հասցե"
                                 filled
                                 rounded
                                 dense
+                                :error-messages="errors.createNewEmailData.email"
+                                @input="checkErrors('createNewEmailData', 'email')"
                             ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-textarea
+                                v-model="createNewEmailData.description"
+                                rows="1"
+                                placeholder="..."
+                                height="120"
+                                solo
+                            ></v-textarea>
                         </div>
                     </div>
                 </v-card-text>
@@ -223,16 +254,16 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="primary"
+                        color="red"
                         text
-                        @click="closeCreateNewEmailDialog"
+                        @click="createNewEmailDialog = false"
                     >
                         Չեղարկել
                     </v-btn>
                     <v-btn
-                        color="primary"
+                        color="#253266"
                         text
-                        @click="createEmailDialog = false"
+                        @click="createMail"
                     >
                         Հաստատել
                     </v-btn>
@@ -292,23 +323,38 @@ export default {
             createNewEmailDialog: false,
             deleteCategoryDialog: false,
             search: '',
+            emailsData: [],
             categories: [],
+            emails: [],
+            createNewEmailData: {
+                name: '',
+                categoryId: [],
+                description: '',
+            },
             defaultCategoryData: {
                 name: '',
                 image: '',
             },
-
             errors: {
                 defaultCategoryData: {
                     name: '',
                     image: '',
                 },
+                createNewEmailData: {
+                    name: '',
+                    categoryId: [],
+                    description: '',
+                },
+                emailIds: {
+                    contact_ids: ''
+                }
             }
         }
     },
 
     async created() {
         await this.getCategory()
+        await this.getAllEmails()
     },
 
     methods: {
@@ -327,15 +373,17 @@ export default {
             location.href = '/'
         },
 
-        openCreateEmailDialog() {
+        openCreateEmailDialog(id) {
             this.createEmailDialog = true
+            this.categoryId = id
+            this.emailsData = []
         },
         closeCreateEmailDialog () {
             this.createEmailDialog = false
-            this.value = []
         },
-        openCreateNewEmailDialog() {
+        openCreateNewEmailDialog(id) {
             this.createNewEmailDialog = true
+            this.categoryId = id
         },
         closeCreateNewEmailDialog () {
             this.createNewEmailDialog = false
@@ -422,7 +470,83 @@ export default {
         },
 
         openGroupPage(id) {
-            location.href = '/group/'+id
+            location.href = '/group/' + id
+        },
+
+        async createMail() {
+            this.loading = true
+            const formData = new FormData()
+            formData.append('name', this.createNewEmailData.name)
+            formData.append('description', this.createNewEmailData.description)
+            formData.append('email', this.createNewEmailData.email)
+            formData.append('categoryId', this.categoryId)
+
+            await axios.post('/api/create-email', formData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+
+                this.createNewEmailData.name = ''
+                this.createNewEmailData.description = ''
+                this.createNewEmailData.email = ''
+                this.createNewEmailData.categoryId = ''
+                this.createNewEmailDialog = false
+                this.loading = false
+                this.getCategory()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.createNewEmailData = Object.assign(this.errors.createNewEmailData, error.response.data.errors)
+            })
+        },
+
+        async getAllEmails() {
+            await axios.get('/api/get-emails').then(response => {
+                this.emails = response.data.emails
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        async addEmailCategory() {
+            this.loading = true
+            const formData = new FormData()
+            formData.append('contact_ids', this.emailsData)
+            formData.append('categoryId', this.categoryId)
+
+            await axios.post('/api/add-email-category', formData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.emailsData = []
+                this.createEmailDialog = false
+                this.getCategory()
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.emailIds = Object.assign(this.errors.emailIds, error.response.data.errors)
+            })
         }
     }
 }

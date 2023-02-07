@@ -24,8 +24,21 @@ class UpdateContactRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required',
+            'name' => ['required'],
+            'categoryId' => ['required'],
+            'email' => ['required', 'email'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'դաշտը պարտադիր է լրացնել:',
+            'name' => 'դաշտը պարտադիր է լրացնել:',
+            'email.required' => 'դաշտը պարտադիր է լրացնել:',
+            'email.unique' => 'Էլ․ փոստը արդեն գրանցված է',
+            'email' => 'դաշտը պարտադիր է լրացնել:',
+            'categoryId.required' => 'դաշտը պարտադիր է լրացնել:',
         ];
     }
 }

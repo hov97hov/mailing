@@ -15,6 +15,7 @@ class GroupService implements GroupInterface
             'name' => $data->name,
         ]);
 
+
         if($data->hasFile('image')) {
             $name = $data->image->getClientOriginalName();
             $data->image->move(public_path() . '/storage/groups/', $name);
@@ -33,17 +34,14 @@ class GroupService implements GroupInterface
 
     public function createContactGroup($data)
     {
-        $contacts = explode(',', $data->contacts);
-        foreach ($contacts as $contact) {
+        $emails = explode(',', $data->contact_ids);
+        foreach ($emails as $email) {
 
-            ContactGroup::firstOrCreate(
+            ContactGroup::updateOrCreate(
                 [
-                    'contact_id' => (int) $contact,
-                    'group_id' => $data->group_id,
+                    'contact_id' => (int) $email,
+                    'group_id' => $data->categoryId,
                 ],
-                [
-                    'user_id' => 1,
-                ]
             );
         }
     }

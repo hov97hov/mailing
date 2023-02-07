@@ -34,8 +34,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //contacts
     Route::get('/emails', [EmailController::class, 'index']);
     Route::middleware([UserPermision::class])->group(function () {
-        //register
-        Route::get('/register', [LoginController::class, 'register'])->name('register');
+    //register
+    Route::get('/register', [LoginController::class, 'register'])->name('register');
 
     });
 

@@ -44,8 +44,9 @@ class GroupsController extends Controller
      */
     public function groupPage($id): Response
     {
+        $category = Group::where('id', $id)->with('contact')->first();
         return Inertia::render('Group', [
-            'groupId' => $id
+            'category' => $category
         ]);
     }
 
@@ -57,12 +58,10 @@ class GroupsController extends Controller
         $this->group->createGroup($request);
     }
 
-    public function editGroup(CreateGroupRequest $request)
+    public function updateCategory(CreateGroupRequest $request)
     {
         return Group::where('id', $request->id)->update([
             'name' => $request->name,
-            'color' => $request->color,
-            'sort' => $request->sort,
         ]);
     }
 
@@ -90,7 +89,7 @@ class GroupsController extends Controller
         return Group::whereIn('id', $request->ids)->delete();
     }
 
-    public function addContactGroup(AddContactGroupRequest $request)
+    public function addEmailCategory(AddContactGroupRequest $request)
     {
         $this->group->createContactGroup($request);
 
@@ -252,5 +251,10 @@ class GroupsController extends Controller
         return \response()->json([
             'status' => 200
         ]);
+    }
+
+    public function updateCategoryImage(Request $request)
+    {
+        dd($request->all());
     }
 }

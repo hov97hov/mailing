@@ -57,7 +57,7 @@ class ContactController extends Controller
     /**
      * @param UpdateContactRequest $request
      */
-    public function updateContact(UpdateContactRequest $request)
+    public function updateEmail(UpdateContactRequest $request)
     {
         $this->contact->updateContact($request->all());
     }
