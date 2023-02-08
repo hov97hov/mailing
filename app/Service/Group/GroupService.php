@@ -18,8 +18,8 @@ class GroupService implements GroupInterface
 
         if($data->hasFile('image')) {
             $name = $data->image->getClientOriginalName();
-            $data->image->move(public_path() . '/storage/groups/', $name);
-            $filePath = '/storage/groups/'. $name;
+            $data->image->move(public_path() . '/storage/groups/'.$createGroup->id.'/', $name);
+            $filePath = '/storage/groups/'.$createGroup->id.'/'. $name;
 
             Group::where('id', $createGroup->id)->update([
                 'image' => $filePath

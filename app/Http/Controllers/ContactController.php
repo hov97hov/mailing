@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateContactRequest;
 use App\Interfaces\Contact\ContactInterface;
 use App\Models\Contact;
 use App\Models\Email;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -97,5 +98,16 @@ class ContactController extends Controller
         return \response()->json([
             'authUser' => User::where('id', Auth::id())->first()
         ]);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+//        $categories = Group::where('id', $request->categoryId)->with(['contact' => function($query) use ($request) {
+//            $query->where('name', 'like', '%' . $request['query'] . '%');
+//        }])->get();
+
+//        return response()->json([
+//            'category' => $categories
+//        ]);
     }
 }

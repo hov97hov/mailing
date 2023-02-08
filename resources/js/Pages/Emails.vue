@@ -124,7 +124,10 @@
                             </div>
                             <div class="items">
                                 <div class="item" v-for="item in emails">
-                                    <div class="checkbox"></div>
+                                    <label class="checkbox-content">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
                                     <div class="ids">{{item.id}}</div>
                                     <div class="last-block">
                                         <div class="name">{{item.name}}</div>

@@ -46,7 +46,7 @@ class GroupsController extends Controller
     {
         $category = Group::where('id', $id)->with('contact')->first();
         return Inertia::render('Group', [
-            'category' => $category
+            'id' => $category->id
         ]);
     }
 
@@ -75,12 +75,22 @@ class GroupsController extends Controller
         ]);
     }
 
+    public function getFirstCategory(Request $request): JsonResponse
+    {
+        return \response()->json([
+            'category' => Group::where('id', $request->id)->orderBy('sorting', 'ASC')->with('contact')->first()
+        ]);
+    }
+
 
     /**
      * @param Request $request
      */
     public function deleteCategory(Request $request)
     {
+        $category = Group::where('id', $request->id)->first();
+        unlink(public_path($category->image));
+
         return Group::where('id', $request->id)->delete();
     }
 
@@ -255,6 +265,31 @@ class GroupsController extends Controller
 
     public function updateCategoryImage(Request $request)
     {
-        dd($request->all());
+        if($request->hasFile('image')) {
+
+            $group = Group::where('id', $request->id)->first();
+            unlink(public_path($group->image));
+
+            $name = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/groups/', $name);
+            $filePath = '/storage/groups/'. $name;
+
+            Group::where('id', $request->id)->update([
+                'image' => $filePath
+            ]);
+        }
+
+        return \response()->json([
+            'success' =>  200
+        ]);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        $category = Group::where('name', 'like', '%' . $request['query'] . '%')->get();
+
+        return response()->json([
+            'categories' => $category
+        ]);
     }
 }

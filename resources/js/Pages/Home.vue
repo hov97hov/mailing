@@ -120,7 +120,10 @@
                             </div>
                             <div class="list">
                                 <div>
-                                    <div class="checkbox"></div>
+                                    <label class="checkbox-content">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
                                     <div class="img"><img src="/images/Group.png" alt=""></div>
                                     <div class="name">hovo1997mkrtchyan@gmail.com</div>
                                 </div>
@@ -137,7 +140,10 @@
                             </div>
                             <div class="list">
                                 <div>
-                                    <div class="checkbox"></div>
+                                    <label class="checkbox-content">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
                                     <div class="img"><img src="/images/Group.png" alt=""></div>
                                     <div class="name">hovo1997mkrtchyan@gmail.com</div>
                                 </div>

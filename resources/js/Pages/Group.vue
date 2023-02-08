@@ -72,7 +72,6 @@
                                             @click="onButtonClick"
                                         >
                                             <img src="/images/LargeReload.png" alt="">
-                                            {{ buttonText }}
                                         </v-btn>
                                         <input
                                             ref="uploader"
@@ -101,7 +100,7 @@
                             <div>Օգտատերերի քանակ {{category.contact.length}}</div>
                             <div class="search">
                                 <v-text-field
-                                    v-model="search"
+                                    v-model="searchMails"
                                     prepend-inner-icon="mdi-magnify"
                                     filled
                                     rounded
@@ -109,6 +108,7 @@
                                     hi
                                     hide-details
                                     color="#253266"
+                                    @input="search"
                                 ></v-text-field>
                             </div>
                         </div>
@@ -116,7 +116,10 @@
                     <div class="category-messages-list">
                         <div class="items">
                             <div class="item" v-for="item in category.contact">
-                                <div class="checkbox"></div>
+                                <label class="checkbox-content">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
                                 <div class="ids">{{item.id}}</div>
                                 <div class="last-block">
                                     <div class="name">{{item.email}}</div>
@@ -144,12 +147,16 @@
                 <v-card-text>
                     <div class="text-filed-content">
                         <v-select
-                            v-model="value"
-                            :items="items"
+                            v-model="emailsData"
+                            :items="emails"
                             chips
                             placeholder="Էլ․ Հասցե"
+                            item-value="id"
+                            item-text="name"
                             multiple
                             solo
+                            :error-messages="errors.emailIds.contact_ids"
+                            @input="checkErrors('emailIds', 'contact_ids')"
                         ></v-select>
                     </div>
                 </v-card-text>
@@ -168,14 +175,14 @@
                     <v-btn
                         color="primary"
                         text
-                        @click="createEmailDialog = false"
+                        @click="addEmailCategory"
                     >
                         Հաստատել
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!--CREATE EMAIL-->
+        <!--CREATE NEW EMAIL-->
         <v-dialog
             v-model="createNewEmailDialog"
             width="500"
@@ -190,11 +197,38 @@
                     <div class="text-filed-content">
                         <div>
                             <v-text-field
+                                v-model="createNewEmailData.name"
+                                placeholder="Անուն"
+                                filled
+                                rounded
+                                dense
+                                :error-messages="errors.createNewEmailData.name"
+                                @input="checkErrors('createNewEmailData', 'name')"
+                            ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-text-field
+                                v-model="createNewEmailData.email"
                                 placeholder="Էլ․ հասցե"
                                 filled
                                 rounded
                                 dense
+                                :error-messages="errors.createNewEmailData.email"
+                                @input="checkErrors('createNewEmailData', 'email')"
                             ></v-text-field>
+                        </div>
+                    </div>
+                    <div class="text-filed-content">
+                        <div>
+                            <v-textarea
+                                v-model="createNewEmailData.description"
+                                rows="1"
+                                placeholder="..."
+                                height="120"
+                                solo
+                            ></v-textarea>
                         </div>
                     </div>
                 </v-card-text>
@@ -204,16 +238,16 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="primary"
+                        color="red"
                         text
-                        @click="closeCreateNewEmailDialog"
+                        @click="createNewEmailDialog = false"
                     >
                         Չեղարկել
                     </v-btn>
                     <v-btn
-                        color="primary"
+                        color="#253266"
                         text
-                        @click="createEmailDialog = false"
+                        @click="createMail"
                     >
                         Հաստատել
                     </v-btn>
@@ -237,20 +271,39 @@ export default {
     data: () => {
         return {
             value: [],
+            emailsData: [],
+            emails: [],
             createEmailDialog: false,
             createNewEmailDialog: false,
             items: ['foo', 'bar', 'fizz', 'buzz'],
             loading: false,
             dialog: false,
-            search: '',
+            searchMails: '',
             defaultButtonText: '',
             selectedFile: null,
-            isSelecting: false
+            isSelecting: false,
+            category: [],
+            createNewEmailData: {
+                name: '',
+                categoryId: [],
+                description: '',
+            },
+            errors: {
+                createNewEmailData: {
+                    name: '',
+                    categoryId: [],
+                    description: '',
+                },
+                emailIds: {
+                    contact_ids: ''
+                }
+            }
         }
     },
-    props: ['category'],
+    props: ['id'],
     async created() {
-
+        await this.getCategory()
+        await this.getAllEmails()
     },
 
     computed: {
@@ -260,6 +313,91 @@ export default {
     },
 
     methods: {
+
+        async getCategory() {
+            await axios.post('/api/get-first-category', {id: this.id}).then(response => {
+                this.category = response.data.category
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        async addEmailCategory() {
+            this.loading = true
+            const formData = new FormData()
+            formData.append('contact_ids', this.emailsData)
+            formData.append('categoryId', this.category.id)
+
+            await axios.post('/api/add-email-category', formData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.emailsData = []
+                this.createEmailDialog = false
+                this.getCategory()
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.emailIds = Object.assign(this.errors.emailIds, error.response.data.errors)
+            })
+        },
+
+        async createMail() {
+            this.loading = true
+            const formData = new FormData()
+            formData.append('name', this.createNewEmailData.name)
+            formData.append('description', this.createNewEmailData.description)
+            formData.append('email', this.createNewEmailData.email)
+            formData.append('categoryId', this.category.id)
+
+            await axios.post('/api/create-email', formData).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը ավելացված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+
+                this.createNewEmailData.name = ''
+                this.createNewEmailData.description = ''
+                this.createNewEmailData.email = ''
+                this.createNewEmailData.categoryId = ''
+                this.createNewEmailDialog = false
+                this.loading = false
+                this.getCategory()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.createNewEmailData = Object.assign(this.errors.createNewEmailData, error.response.data.errors)
+            })
+        },
+
+        async getAllEmails() {
+            await axios.get('/api/get-emails').then(response => {
+                this.emails = response.data.emails
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
         onButtonClick() {
             this.isSelecting = true
             window.addEventListener('focus', () => {
@@ -268,8 +406,10 @@ export default {
 
             this.$refs.uploader.click()
         },
+
         onFileChanged(e) {
             this.selectedFile = e.target.files[0]
+            this.changeImageCategory()
         },
 
         openMessageBox() {
@@ -294,12 +434,13 @@ export default {
             this.createEmailDialog = false
             this.value = []
         },
+
         openCreateNewEmailDialog() {
             this.createNewEmailDialog = true
         },
+
         closeCreateNewEmailDialog () {
             this.createNewEmailDialog = false
-            this.value = []
         },
 
         async updateCategory(name) {
@@ -333,14 +474,16 @@ export default {
         async changeImageCategory() {
             this.loading = true
 
-            await axios.post('/api/update-category-image', {
-                id: this.category.id,
-                image: this.selectedFile
-            }, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+            const formData = new FormData()
+            formData.append('image', this.selectedFile)
+            formData.append('id', this.category.id)
+
+            await axios.post('/api/update-category-image',formData , {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
             }).then(response => {
+                this.getCategory()
                 this.$notify({
                     group: 'auth',
                     type: 'success',
@@ -359,6 +502,18 @@ export default {
                     speed: 1000
                 })
                 this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
+
+        async search() {
+            const formData =  new FormData()
+            formData.append('categoryId', this.category.id)
+            formData.append('query', this.searchMails)
+
+            await axios.post('/api/search-emails', formData).then(response => {
+                this.categories = response.data.categories
+            }).catch(error => {
+                console.log(error)
             })
         },
     }
@@ -569,4 +724,5 @@ export default {
 .text-filed-content {
     margin-top: 20px;
 }
+
 </style>

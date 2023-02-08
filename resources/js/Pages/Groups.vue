@@ -68,27 +68,40 @@
                                            <span>{{errors.defaultCategoryData.image[0]}}</span>
                                        </div>
                                        <div class="icon">
-                                           <v-file-input
-                                               v-model="defaultCategoryData.image"
-                                               hide-input
-                                               show-size
-                                               truncate-length="15"
-                                               prepend-icon="mdi-plus"
-                                               :error-messages="errors.defaultCategoryData.image"
-                                               @input="checkErrors('defaultCategoryData', 'image')"
-                                           ></v-file-input>
+                                           <div>
+                                               <v-btn
+                                                   color="#253266"
+                                                   class="text-none"
+                                                   round
+                                                   depressed
+                                                   :loading="isSelecting"
+                                                   @click="onButtonClick"
+                                               >
+                                                  <div>
+                                                      <img src="/images/uploadImage.png" alt="">
+                                                  </div>
+                                               </v-btn>
+                                               <input
+                                                   ref="uploader"
+                                                   class="d-none"
+                                                   type="file"
+                                                   accept="image/*"
+                                                   @change="onFileChanged"
+                                               >
+                                           </div>
                                        </div>
                                    </div>
                                    <div>
                                        <button @click="createCategory">Ավելացնել</button>
                                    </div>
                                </div>
+                               {{ buttonText }}
                            </div>
                        </div>
                        <div class="search-content">
                            <div class="search">
                                <v-text-field
-                                   v-model="search"
+                                   v-model="searchCategories"
                                    prepend-inner-icon="mdi-magnify"
                                    filled
                                    rounded
@@ -96,17 +109,22 @@
                                    hi
                                    hide-details
                                    color="#253266"
+                                   @input="search"
                                ></v-text-field>
                            </div>
                        </div>
                        <div class="category-messages-list">
                            <div class="category-list">
                                <div class="items">
+                                   {{selectedCategory}}
                                    <div class="item"
                                         v-for="item in categories"
                                         :key="item.id"
                                    >
-                                       <div class="checkbox"></div>
+                                       <label class="checkbox-content">
+                                           <input @change="selectCategory(item.id)" type="checkbox">
+                                           <span class="checkmark"></span>
+                                       </label>
                                        <div class="last-block">
                                            <div class="name">
                                                <img :src="item.image" alt="">
@@ -319,10 +337,13 @@ export default {
         return {
             isActive: false,
             loading: false,
+            isSelecting: false,
             createEmailDialog: false,
             createNewEmailDialog: false,
             deleteCategoryDialog: false,
-            search: '',
+            selectedFile: '',
+            searchCategories: '',
+            selectedCategory: [],
             emailsData: [],
             categories: [],
             emails: [],
@@ -356,8 +377,15 @@ export default {
         await this.getCategory()
         await this.getAllEmails()
     },
+    computed: {
+        buttonText() {
+            return this.selectedFile ? this.selectedFile.name : this.defaultButtonText
+        }
+    },
 
     methods: {
+
+
         openMessageBox() {
           location.href = '/'
         },
@@ -367,6 +395,18 @@ export default {
             } else {
                 this.errors[field] = ''
             }
+        },
+
+        onButtonClick() {
+            this.isSelecting = true
+            window.addEventListener('focus', () => {
+                this.isSelecting = false
+            }, { once: true })
+
+            this.$refs.uploader.click()
+        },
+        onFileChanged(e) {
+            this.selectedFile = e.target.files[0]
         },
 
         closePage() {
@@ -394,7 +434,7 @@ export default {
             this.loading = true
             const formData = new FormData()
             formData.append('name', this.defaultCategoryData.name)
-            formData.append('image', this.defaultCategoryData.image)
+            formData.append('image', this.selectedFile)
 
             await axios.post('/api/create-category', formData, {
                 headers: {
@@ -413,6 +453,7 @@ export default {
                 this.defaultCategoryData.image = ''
                 this.errors.defaultCategoryData.image = ''
                 this.loading = false
+                this.selectedFile = []
             }).catch(error => {
                 this.loading = false
                 this.$notify({
@@ -547,7 +588,18 @@ export default {
                 })
                 this.errors.emailIds = Object.assign(this.errors.emailIds, error.response.data.errors)
             })
-        }
+        },
+
+        async search() {
+            const formData =  new FormData()
+            formData.append('query', this.searchCategories)
+
+            await axios.post('/api/search-categories', formData).then(response => {
+                this.categories = response.data.categories
+            }).catch(error => {
+                console.log(error)
+            })
+        },
     }
 }
 </script>
@@ -684,6 +736,20 @@ export default {
                             color: #253266;
                             .add-photo {
                                 display: flex;
+                                > .icon {
+                                    button {
+                                        width: 80px !important;
+                                        height: 80px !important;
+                                        border-radius: 50% !important;
+                                        font-weight: 400;
+                                        font-size: 16px;
+                                        line-height: 20px;
+                                        color: #253266;
+                                        background: #DADADA !important;
+                                        border: 0.5px solid #DADADA !important;
+                                        padding: 3px 10px;
+                                    }
+                                }
                                 > div {
                                     &:first-child {
                                         display: flex;
@@ -705,8 +771,8 @@ export default {
                                 font-size: 16px;
                                 line-height: 20px;
                                 color: #253266;
-                                background: #DADADA;
-                                border: 0.5px solid #DADADA;
+                                background: #DADADA !important;
+                                border: 0.5px solid #DADADA !important;
                                 border-radius: 5px;
                                 padding: 3px 10px;
                             }

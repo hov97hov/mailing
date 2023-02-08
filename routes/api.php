@@ -37,10 +37,12 @@ Route::post('delete-contacts', [ContactController::class, 'deleteContacts'])->na
 Route::post('delete-selected-contacts', [ContactController::class, 'deleteSelectedContact'])->name('deleteSelectedContact');
 Route::post('get-user-emails', [ContactController::class, 'getUserEmails'])->name('getUserEmails');
 Route::post('get-auth-user', [ContactController::class, 'getAuthUser'])->name('getAuthUser');
+Route::post('search-emails', [ContactController::class, 'search'])->name('search');
 //GROUP
 Route::post('create-category', [GroupsController::class, 'createCategory'])->name('createCategory');
 Route::post('update-category', [GroupsController::class, 'updateCategory'])->name('updateCategory');
 Route::post('get-category', [GroupsController::class, 'getCategory'])->name('getCategory');
+Route::post('get-first-category', [GroupsController::class, 'getFirstCategory'])->name('getFirstCategory');
 Route::post('get-selected-groups', [GroupsController::class, 'getSelectedGroups'])->name('getSelectedGroups');
 Route::post('delete-category', [GroupsController::class, 'deleteCategory'])->name('deleteCategory');
 Route::post('delete-selected-group', [GroupsController::class, 'deleteSelectedGroup'])->name('deleteSelectedGroup');
@@ -53,6 +55,7 @@ Route::post('delete-selected-contact-group', [GroupsController::class, 'deleteSe
 Route::post('create-new-contact-group', [GroupsController::class, 'addNewContactGroup'])->name('addNewContactGroup');
 Route::post('add-contacts-groups', [GroupsController::class, 'addContactsGroups'])->name('addContactsGroups');
 Route::post('update-category-image', [GroupsController::class, 'updateCategoryImage'])->name('updateCategoryImage');
+Route::post('search-categories', [GroupsController::class, 'search'])->name('search');
 //MESSAGES
 Route::get('get-all-messages', [MessageController::class, 'getAllMessages'])->name('getAllMessages');
 Route::post('add-archive-message', [MessageController::class, 'addArchiveMessage'])->name('addArchiveMessage');
