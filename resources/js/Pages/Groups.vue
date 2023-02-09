@@ -116,7 +116,6 @@
                        <div class="category-messages-list">
                            <div class="category-list">
                                <div class="items">
-                                   {{selectedCategory}}
                                    <div class="item"
                                         v-for="item in categories"
                                         :key="item.id"

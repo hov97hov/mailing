@@ -12,4 +12,9 @@ class EmailController extends Controller
     {
         return Inertia::render('Emails');
     }
+
+    public function addEmailSetting(): Response
+    {
+        return Inertia::render('AddEmailsPage');
+    }
 }

@@ -69,10 +69,10 @@ Route::get('get-no-register-message-contact', [MessageController::class, 'getNoR
 //SETTINGS
 Route::post('/create-settings', [SettingController::class, 'createSettings'])->name('createSettings');
 Route::post('/get-settings', [SettingController::class, 'getSettings'])->name('getSettings');
-//Route::post('/create-email', [SettingController::class, 'createMail'])->name('createMail');
-//Route::post('/get-emails', [SettingController::class, 'getEmails'])->name('getEmails');
-//Route::post('/update-email', [SettingController::class, 'updateEmail'])->name('updateEmail');
-//Route::post('/delete-email', [SettingController::class, 'deleteEmail'])->name('deleteEmail');
+Route::post('/create-email-setting', [SettingController::class, 'createMail'])->name('createMail');
+Route::post('/get-emails-setting', [SettingController::class, 'getEmails'])->name('getEmails');
+Route::post('/update-email-setting', [SettingController::class, 'updateEmail'])->name('updateEmail');
+Route::post('/delete-email-setting', [SettingController::class, 'deleteEmail'])->name('deleteEmail');
 Route::post('/create-email-user', [SettingController::class, 'createEmailUser'])->name('createEmailUser');
 //USERS
 Route::post('/get-users', [UserController::class, 'getUsers'])->name('getUsers');

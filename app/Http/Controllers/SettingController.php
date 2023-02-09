@@ -49,7 +49,7 @@ class SettingController extends Controller
 
     public function createMail(CreateEmailRequest $request)
     {
-        $createEmail = Email::create([
+        Email::create([
             'email' => $request->email,
             'host' => $request->host,
             'from' => $request->from,

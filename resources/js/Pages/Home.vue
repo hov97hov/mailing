@@ -38,6 +38,12 @@
                                    <span>Էլ․ փոստեր</span>
                                </a>
                            </li>
+                           <li>
+                               <a href="/add-emails">
+                                   <img src="/images/mail.png">
+                                   <span>Ավելացնել Էլ․ հասցե</span>
+                               </a>
+                           </li>
                        </ul>
                    </div>
                </div>
@@ -58,8 +64,18 @@
                                 </v-select>
                             </div>
                             <div class="field">
-                                <v-select
+                                <v-text-field
                                     label="Ում"
+                                    solo
+                                    color="#253266"
+                                    class="rounded-lg"
+                                    hide-details
+                                >
+                                </v-text-field>
+                            </div>
+                            <div class="field">
+                                <v-select
+                                    label="Ընտրել կատեգորիա"
                                     solo
                                     color="#253266"
                                     class="rounded-lg"
@@ -77,13 +93,42 @@
                                 >
                                 </v-text-field>
                             </div>
+                            <div class="field-attachment">
+                                <div>
+                                    <v-file-input
+                                        label="Ընտրել վերևի նկար"
+                                        outlined
+                                        dense
+                                        color="#253266"
+                                        hide-details
+                                    ></v-file-input>
+                                </div>
+                                <div>
+                                    <v-file-input
+                                        label="Ընտրել ներքևի նկար"
+                                        outlined
+                                        dense
+                                        hide-details
+                                        color="#253266"
+                                    ></v-file-input>
+                                </div>
+                                <div class="btn-content">
+                                    <button @click="addBtnText = true">Ավելացնել հղում</button>
+                                </div>
+                            </div>
                             <div class="field">
                                 <vue-editor
 
                                 >
                                 </vue-editor>
                             </div>
-                            <div class="fields">
+                            <div class="bottom-field">
+                                <div>
+                                    <label class="checkbox-content">
+                                        <input @change="selectCategory(item.id)" type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
                                 <div>
                                     <img src="/images/mailing.png" alt="">
                                 </div>
@@ -166,6 +211,46 @@
         <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
+        <!--Delete category-->
+        <v-dialog
+            v-model="addBtnText"
+            max-width="350"
+        >
+            <v-card>
+                <v-card-title>
+                    <div style="width: 100%;" class="mb-3">
+                        <v-text-field
+                            label="Գրել կոճակի անունը"
+                            solo
+                            color="#253266"
+                            hide-details
+                        >
+                        </v-text-field>
+                    </div>
+                    <div style="width: 100%;">
+                        <v-text-field
+                            label="Գրել հղումը"
+                            solo
+                            color="#253266"
+                            hide-details
+                        >
+                        </v-text-field>
+                    </div>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="addBtnText = false"
+                    >
+                        Փակել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -183,10 +268,15 @@ export default {
     data: () => {
         return {
             loading: false,
+            addBtnText: false,
             messageList: false,
             messageBox: true,
             dialog: false,
             search: '',
+            isSelectingTopImg: false,
+            isSelectingBottomImg: false,
+            selectedFileTopImg: null,
+            selectedFileBottomImg: null,
             headers: [
                 {text: 'Ումից', value: 'from',},
                 { text: 'Ում', value: 'to' },
@@ -216,6 +306,10 @@ export default {
         }
     },
 
+    computed: {
+
+    },
+
     methods: {
         checkErrors(obj, field) {
             if (obj) {
@@ -223,6 +317,14 @@ export default {
             } else {
                 this.errors[field] = ''
             }
+        },
+
+        async getEmailSetting() {
+            await axios.post('/api/email').then(response => {
+                this.categories = response.data.categories
+            }).catch(error => {
+                console.log(error)
+            })
         },
 
         closeMessageBox() {
@@ -238,6 +340,52 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    .field-attachment {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        .btn-content {
+            margin-left: 10px;
+            margin-top: -6px;
+        }
+        > div {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            button {
+                width: 100%;
+                background: #EAEAEA;
+                height: 45px;
+                border-radius: 5px;
+                color: #253266;
+                font-family: "Inter";
+                font-style: normal;
+                font-weight: 400;
+                font-size: 18px;
+                line-height: 18px;
+            }
+        }
+    }
+    .btn-text {
+        width: 140px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        word-break: break-all;
+        margin-top: 10px;
+    }
+    .bottom-field {
+        display: flex;
+        align-items: center;
+        > div {
+            &:first-child {
+                width: 20px;
+            }
+        }
+    }
     .mailing-wrapper {
         display: flex;
         .mailing-content {
