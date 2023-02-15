@@ -51,6 +51,13 @@ class ContactController extends Controller
     public function getEmails(): JsonResponse
     {
         return response()->json([
+            'emails' => Contact::query()->with('group')->paginate(10)
+        ]);
+    }
+
+    public function getAllEmails(): JsonResponse
+    {
+        return response()->json([
             'emails' => Contact::query()->with('group')->get()
         ]);
     }

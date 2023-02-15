@@ -154,7 +154,9 @@
                                                    </div>
                                                </div>
                                                <div>
-                                                   <img src="/images/mail.png" alt="">
+                                                   <a href="/">
+                                                       <img src="/images/mail.png" alt="">
+                                                   </a>
                                                </div>
                                                <div>
                                                    <img @click="openGroupPage(item.id)" src="/images/pencil.png" alt="">
@@ -165,6 +167,14 @@
                                            </div>
                                        </div>
                                    </div>
+                                   <v-pagination
+                                       class="paginate-content"
+                                       v-model="pagination.current"
+                                       :length="pagination.total"
+                                       :total-visible="7"
+                                       @input="onPageChange"
+                                       color="#253266"
+                                   ></v-pagination>
                                </div>
                            </div>
                        </div>
@@ -194,7 +204,7 @@
                             chips
                             placeholder="Էլ․ Հասցե"
                             item-value="id"
-                            item-text="name"
+                            item-text="email"
                             multiple
                             solo
                             :error-messages="errors.emailIds.contact_ids"
@@ -390,6 +400,10 @@ export default {
             categories: [],
             emails: [],
             selectedGroups: [],
+            pagination: {
+                current: 1,
+                total: 0
+            },
             createNewEmailData: {
                 name: '',
                 categoryId: [],
@@ -428,6 +442,11 @@ export default {
     },
 
     methods: {
+
+        onPageChange() {
+            this.getCategory();
+        },
+
         toggle () {
             this.opened = true
         },
@@ -518,8 +537,10 @@ export default {
         },
 
         async getCategory() {
-            await axios.post('/api/get-category').then(response => {
-                this.categories = response.data.categories
+            await axios.get('/api/get-category?page=' + this.pagination.current).then(response => {
+                this.categories =  response.data.categories.data
+                this.pagination.current = response.data.categories.current_page;
+                this.pagination.total = response.data.categories.last_page;
             }).catch(error => {
                 console.log(error)
             })
@@ -629,7 +650,7 @@ export default {
         },
 
         async getAllEmails() {
-            await axios.get('/api/get-emails').then(response => {
+            await axios.get('/api/get-all-emails').then(response => {
                 this.emails = response.data.emails
             }).catch(error => {
                 console.log(error)

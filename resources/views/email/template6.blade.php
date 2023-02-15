@@ -10,7 +10,7 @@
 <body>
     <div>
         <div>
-            <img style="width: 100%" src="{{env('app_url').$data['image'][0][1]}}" alt="">
+            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image'][0][1]}}" alt="">
         </div>
         <br>
         <br>
@@ -22,7 +22,7 @@
         <br>
         <br>
         <div style="text-align: center">
-            <a style="padding: 10px 30px; border-radius: 6px; border: 0; background: #253266; color: #ffffff; text-decoration: none" href="{{$data['btnLink']}}">
+            <a target="_blank" style="padding: 10px 30px; border-radius: 6px; border: 0; background: #253266; color: #ffffff; text-decoration: none" href="{{$data['btnLink']}}">
                 {{$data['btnName']}}
             </a>
         </div>
@@ -31,14 +31,14 @@
         <br>
         <br>
         <div>
-            <img style="width: 100%" src="{{env('app_url').$data['image2'][0][1]}}" alt="">
+            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image2'][0][1]}}" alt="">
         </div>
     </div>
     <br>
     <div>
         @if($files)
             @foreach($files as $file)
-                ֆայլ - <a href="{{env('app_url').$file[1]}}" download>{{$file[0]}}</a> <br> <br>
+                ֆայլ - <a target="_blank" href="https://ymail.yerevak.am{{$file[1]}}" download>{{$file[0]}}</a> <br> <br>
             @endforeach
         @endif
     </div>
@@ -46,7 +46,9 @@
     <br>
     <div>
         @if($data['mailingImg'] != 'null')
-            <img  src="{{env('app_url').$data['mailingImg']}}">
+            <a target="_blank" href="{{$data['bottom_img_link']}}">
+                <img src="https://ymail.yerevak.am{{$file[1]}}{{$data['mailingImg']}}">
+            </a>
         @endif
     </div>
 </body>

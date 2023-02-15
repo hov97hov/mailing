@@ -30,6 +30,7 @@ Route::post('check-login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 //CONTACT
 Route::get('get-emails', [ContactController::class, 'getEmails'])->name('getEmails');
+Route::get('get-all-emails', [ContactController::class, 'getAllEmails'])->name('getAllEmails');
 Route::post('create-email', [ContactController::class, 'createEmail'])->name('createEmail');
 Route::post('update-email', [ContactController::class, 'updateEmail'])->name('updateEmail');
 Route::post('delete-email', [ContactController::class, 'deleteEmail'])->name('deleteEmail');
@@ -42,7 +43,9 @@ Route::post('search-contacts', [ContactController::class, 'searchContact'])->nam
 //GROUP
 Route::post('create-category', [GroupsController::class, 'createCategory'])->name('createCategory');
 Route::post('update-category', [GroupsController::class, 'updateCategory'])->name('updateCategory');
-Route::post('get-category', [GroupsController::class, 'getCategory'])->name('getCategory');
+Route::get('get-category', [GroupsController::class, 'getCategory'])->name('getCategory');
+Route::post('get-all-category', [GroupsController::class, 'getAllCategory'])->name('getAllCategory');
+Route::post('get-category-contact', [GroupsController::class, 'getCategoryContact'])->name('getCategoryContact');
 Route::post('get-first-category', [GroupsController::class, 'getFirstCategory'])->name('getFirstCategory');
 Route::post('get-selected-groups', [GroupsController::class, 'getSelectedGroups'])->name('getSelectedGroups');
 Route::post('delete-category', [GroupsController::class, 'deleteCategory'])->name('deleteCategory');

@@ -124,7 +124,7 @@
                     </div>
                     <div class="category-messages-list">
                         <div class="items">
-                            <div class="item" v-for="item in category.contact">
+                            <div class="item" v-for="item in categoryContact">
                                 <label class="checkbox-content">
                                     <input v-model="selectedEmails" :value="item.id" type="checkbox">
                                     <span class="checkmark"></span>
@@ -135,6 +135,14 @@
                                 </div>
                             </div>
                         </div>
+                        <v-pagination
+                            class="paginate-content"
+                            v-model="pagination.current"
+                            :length="pagination.total"
+                            :total-visible="7"
+                            @input="onPageChange"
+                            color="#253266"
+                        ></v-pagination>
                     </div>
                 </div>
             </div>
@@ -324,6 +332,11 @@ export default {
             selectedFile: null,
             isSelecting: false,
             category: [],
+            categoryContact: [],
+            pagination: {
+                current: 1,
+                total: 0
+            },
             createNewEmailData: {
                 name: '',
                 categoryId: [],
@@ -345,6 +358,7 @@ export default {
     async created() {
         await this.getCategory()
         await this.getAllEmails()
+        await this.getCategoryContact()
     },
 
     computed: {
@@ -354,6 +368,20 @@ export default {
     },
 
     methods: {
+
+        onPageChange() {
+            this.getCategoryContact();
+        },
+
+        async getCategoryContact() {
+            await axios.post('/api/get-category-contact?page=' + this.pagination.current, {id: this.category.id}).then(response => {
+                this.categoryContact =  response.data.categoryContact.data
+                this.pagination.current = response.data.categoryContact.current_page;
+                this.pagination.total = response.data.categoryContact.last_page;
+            }).catch(error => {
+                console.log(error)
+            })
+        },
 
         async deleteSelectedEmails() {
             this.loading = true
@@ -372,7 +400,7 @@ export default {
                 this.deleteEmailsDialog = false
                 this.selectedEmails = ''
                 this.getCategory()
-                this.getAllEmails()
+                this.getCategoryContact()
             }).catch(error => {
                 this.loading = false
                 this.$notify({
@@ -448,7 +476,7 @@ export default {
                 this.createNewEmailData.categoryId = ''
                 this.createNewEmailDialog = false
                 this.loading = false
-                this.getCategory()
+                this.getCategoryContact()
             }).catch(error => {
                 this.loading = false
                 this.$notify({
@@ -463,7 +491,7 @@ export default {
         },
 
         async getAllEmails() {
-            await axios.get('/api/get-emails').then(response => {
+            await axios.get('/api/get-all-emails').then(response => {
                 this.emails = response.data.emails
             }).catch(error => {
                 console.log(error)
@@ -585,7 +613,7 @@ export default {
             formData.append('query', this.searchMails)
 
             await axios.post('/api/search-contacts', formData).then(response => {
-                this.category.contact = response.data.categories
+                this.categoryContact = response.data.categories
             }).catch(error => {
                 console.log(error)
             })

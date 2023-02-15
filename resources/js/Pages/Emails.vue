@@ -164,6 +164,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <v-pagination
+                                class="paginate-content"
+                                v-model="pagination.current"
+                                :length="pagination.total"
+                                :total-visible="7"
+                                @input="onPageChange"
+                                color="#253266"
+                            ></v-pagination>
                         </div>
                     </div>
                 </div>
@@ -350,6 +358,10 @@ export default {
             categories: [],
             emails: [],
             selectedEmails: [],
+            pagination: {
+                current: 1,
+                total: 0
+            },
             defaultEmailData: {
                 name: '',
                 categoryId: [],
@@ -384,6 +396,10 @@ export default {
           location.href = '/'
         },
 
+        onPageChange() {
+            this.getAllEmails();
+        },
+
         async searchEmails() {
             const formData =  new FormData()
             formData.append('query', this.search)
@@ -416,7 +432,7 @@ export default {
         },
 
         async getAllCategories() {
-            await axios.post('/api/get-category').then(response => {
+            await axios.post('/api/get-all-category').then(response => {
                 this.categories = response.data.categories
             }).catch(error => {
                 console.log(error)
@@ -424,8 +440,10 @@ export default {
         },
 
         async getAllEmails() {
-            await axios.get('/api/get-emails').then(response => {
-                this.emails = response.data.emails
+            await axios.get('/api/get-emails?page=' + this.pagination.current).then(response => {
+                this.emails =  response.data.emails.data
+                this.pagination.current = response.data.emails.current_page;
+                this.pagination.total = response.data.emails.last_page;
             }).catch(error => {
                 console.log(error)
             })

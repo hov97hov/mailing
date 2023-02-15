@@ -140,8 +140,18 @@
                                                <span class="checkmark"></span>
                                            </label>
                                        </div>
-                                       <div>
+                                       <div class="mb-2">
                                            <img src="/images/mailing.png" alt="">
+                                       </div>
+                                       <div>
+                                           <v-text-field
+                                               v-model="imgLinkData.bottomImgLink"
+                                               label="Գրել Հղում"
+                                               solo
+                                               color="#253266"
+                                               class="rounded-lg"
+                                           >
+                                           </v-text-field>
                                        </div>
                                    </div>
                                     <div>
@@ -165,7 +175,6 @@
                                                         ref="uploader"
                                                         class="d-none"
                                                         type="file"
-                                                        accept="image/*"
                                                         @change="onFileChanged"
                                                     >
                                                 </div>
@@ -271,6 +280,16 @@
                                         </div>
                                         <div>
                                             <img src="/images/mailing.png" alt="">
+                                        </div>
+                                        <div>
+                                            <v-text-field
+                                                v-model="imgBtnData.bottomImgLink"
+                                                label="Գրել Հղում"
+                                                solo
+                                                color="#253266"
+                                                class="rounded-lg"
+                                            >
+                                            </v-text-field>
                                         </div>
                                     </div>
                                     <div>
@@ -378,6 +397,16 @@
                                         </div>
                                         <div>
                                             <img src="/images/mailing.png" alt="">
+                                        </div>
+                                        <div>
+                                            <v-text-field
+                                                v-model="imgTextData.bottomImgLink"
+                                                label="Գրել Հղում"
+                                                solo
+                                                color="#253266"
+                                                class="rounded-lg"
+                                            >
+                                            </v-text-field>
                                         </div>
                                     </div>
                                     <div>
@@ -512,6 +541,16 @@
                                         <div>
                                             <img src="/images/mailing.png" alt="">
                                         </div>
+                                        <v-text-field
+                                            v-model="imgTextButtonData.imgLink"
+                                            label="Գրել նկարի հղումը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.imgLinkData.imgLink"
+                                            @input="checkErrors('imgLinkData', 'imgLink')"
+                                        >
+                                        </v-text-field>
                                     </div>
                                     <div>
                                         <div class="attach-file-text">{{ buttonText }}</div>
@@ -634,6 +673,16 @@
                                         </div>
                                         <div>
                                             <img src="/images/mailing.png" alt="">
+                                        </div>
+                                        <div>
+                                            <v-text-field
+                                                v-model="textButtonData.bottomImgLink"
+                                                label="Գրել Հղում"
+                                                solo
+                                                color="#253266"
+                                                class="rounded-lg"
+                                            >
+                                            </v-text-field>
                                         </div>
                                     </div>
                                     <div>
@@ -776,6 +825,16 @@
                                         <div>
                                             <img src="/images/mailing.png" alt="">
                                         </div>
+                                        <div>
+                                            <v-text-field
+                                                v-model="imgTextButtonImgData.bottomImgLink"
+                                                label="Գրել Հղում"
+                                                solo
+                                                color="#253266"
+                                                class="rounded-lg"
+                                            >
+                                            </v-text-field>
+                                        </div>
                                     </div>
                                     <div>
                                         <div class="attach-file-text">{{ buttonText }}</div>
@@ -867,19 +926,20 @@
                                     <div>{{item.created_at}}</div>
                                 </div>
                             </div>
-<!--                            <v-pagination-->
-<!--                                class="users-pagination"-->
-<!--                                v-model="pagination.current"-->
-<!--                                :length="pagination.total"-->
-<!--                                :total-visible="7"-->
-<!--                                @input="onPageChange"-->
-<!--                            ></v-pagination>-->
+                            <v-pagination
+                                class="paginate-content"
+                                v-model="pagination.current"
+                                :length="pagination.total"
+                                :total-visible="7"
+                                @input="onPageChange"
+                                color="#253266"
+                            ></v-pagination>
                         </div>
                     </div>
                 </div>
            </div>
         </div>
-        <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
+        <loader v-if="loading" object="#343a40" color1="#ffffff" color2="#253266" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
         <v-dialog
@@ -893,18 +953,18 @@
                 <v-card-text>
                     <div class="container message-modal-block">
                         <div v-for="item in messageData.file" class="image-content">
-                            <a v-if="item.image_path" :href="item.image_link">
+                            <a target="_blank" v-if="item.image_path" :href="item.image_link">
                                 <img style="width: 100%" :src="item.image_path" alt="">
                             </a>
                         </div>
                         <div class="message-content" v-html="messageData.message"></div>
                         <div class="btn-content">
-                            <a v-if="messageData.btn_link" :href="messageData.btn_link">
+                            <a target="_blank"  v-if="messageData.btn_link" :href="messageData.btn_link">
                                {{messageData.btn_name}}
                             </a>
                         </div>
                         <div v-for="item in messageData.file" class="image-content">
-                            <a v-if="item.image_bottom_path" :href="item.image_link">
+                            <a target="_blank"  v-if="item.image_bottom_path" :href="item.image_link">
                                 <img style="width: 100%" :src="item.image_bottom_path" alt="">
                             </a>
                         </div>
@@ -912,7 +972,7 @@
                             <img v-if="messageData.mailing_image == 1" src="/images/mailing.png" alt="">
                         </div>
                         <div v-for="item in messageData.file" class="image-content">
-                           <a v-if="item.file_path" :href="item.file_path">Ֆայլ - {{item.file_name}}</a>
+                           <a target="_blank"  v-if="item.file_path" :href="item.file_path">Ֆայլ - {{item.file_name}}</a>
                         </div>
                     </div>
                 </v-card-text>
@@ -975,10 +1035,6 @@ export default {
     },
     data: () => {
         return {
-            pagination: {
-                current: 1,
-                total: 0
-            },
             loading: false,
             imgLink: true,
             imgButton: false,
@@ -1002,6 +1058,10 @@ export default {
             categories: [],
             messages: [],
             messageData: [],
+            pagination: {
+                current: 1,
+                total: 0
+            },
             mailingImg: null,
             imgLinkData: {
                 from: '',
@@ -1010,6 +1070,7 @@ export default {
                 subject: '',
                 image: null,
                 imgLink: '',
+                bottomImgLink: ''
             },
 
             imgBtnData: {
@@ -1020,6 +1081,7 @@ export default {
                 image: null,
                 btnName: '',
                 btnLink: '',
+                bottomImgLink: ''
             },
 
             imgTextData: {
@@ -1029,6 +1091,7 @@ export default {
                 subject: '',
                 image: null,
                 text: '',
+                bottomImgLink: ''
             },
 
             imgTextButtonData: {
@@ -1040,6 +1103,7 @@ export default {
                 text: '',
                 btnName: '',
                 btnLink: '',
+                bottomImgLink: ''
             },
 
             textButtonData: {
@@ -1050,6 +1114,7 @@ export default {
                 text: '',
                 btnName: '',
                 btnLink: '',
+                bottomImgLink: ''
             },
 
             imgTextButtonImgData: {
@@ -1062,6 +1127,7 @@ export default {
                 text: '',
                 btnName: '',
                 btnLink: '',
+                bottomImgLink: ''
             },
 
             errors: {
@@ -1162,7 +1228,7 @@ export default {
 
 
         onPageChange() {
-            this.getUsers();
+            this.getMessages();
         },
 
         async searchMessageData() {
@@ -1183,9 +1249,9 @@ export default {
 
         async getMessages() {
             await axios.get('/api/get-messages?page=' + this.pagination.current).then(response => {
-                this.messages = response.data.messages
-                this.pagination.current = response.data.current_page;
-                this.pagination.total = response.data.last_page;
+                this.messages = response.data.messages.data
+                this.pagination.current = response.data.messages.current_page;
+                this.pagination.total = response.data.messages.last_page;
             }).catch(error => {
                 console.log(error)
             })
@@ -1267,7 +1333,7 @@ export default {
         },
 
         async getCategory() {
-            await axios.post('/api/get-category').then(response => {
+            await axios.post('/api/get-all-category').then(response => {
                 this.categories = response.data.categories
             }).catch(error => {
                 console.log(error)
@@ -1295,6 +1361,7 @@ export default {
             formData.append('imgLink', this.imgLinkData.imgLink)
             formData.append('file', this.selectedFile)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+            formData.append('bottomImgLink', this.imgLinkData.bottomImgLink)
 
             await axios.post('/api/send-email-img-link', formData, {
                 headers: {
@@ -1314,6 +1381,7 @@ export default {
                 this.imgLinkData.subject = ''
                 this.imgLinkData.image = ''
                 this.imgLinkData.imgLink = ''
+                this.imgLinkData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1342,6 +1410,7 @@ export default {
             formData.append('btnLink', this.imgBtnData.btnLink)
             formData.append('btnName', this.imgBtnData.btnName)
             formData.append('file', this.selectedFile)
+            formData.append('bottomImgLink', this.imgBtnData.bottomImgLink)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
 
             await axios.post('/api/send-email-img-btn', formData, {
@@ -1363,6 +1432,7 @@ export default {
                 this.imgBtnData.image = ''
                 this.imgBtnData.btnLink = ''
                 this.imgBtnData.btnName = ''
+                this.imgBtnData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1391,6 +1461,7 @@ export default {
             formData.append('text', this.imgTextData.text)
             formData.append('file', this.selectedFile)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+            formData.append('bottomImgLink', this.imgTextData.bottomImgLink)
 
             await axios.post('/api/send-email-img-text', formData, {
                 headers: {
@@ -1410,6 +1481,7 @@ export default {
                 this.imgTextData.subject = ''
                 this.imgTextData.image = ''
                 this.imgTextData.text = ''
+                this.imgTextData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1440,6 +1512,7 @@ export default {
             formData.append('btnName', this.imgTextButtonData.btnName)
             formData.append('file', this.selectedFile)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+            formData.append('bottomImgLink', this.imgTextButtonData.bottomImgLink)
 
             await axios.post('/api/send-email-img-text-btn', formData, {
                 headers: {
@@ -1461,6 +1534,7 @@ export default {
                 this.imgTextButtonData.btnLink = ''
                 this.imgTextButtonData.btnName = ''
                 this.imgTextButtonData.text = ''
+                this.imgTextButtonData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1490,6 +1564,7 @@ export default {
             formData.append('btnName', this.textButtonData.btnName)
             formData.append('file', this.selectedFile)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+            formData.append('bottomImgLink', this.textButtonData.bottomImgLink)
 
             await axios.post('/api/send-email-text-btn', formData, {
                 headers: {
@@ -1510,6 +1585,7 @@ export default {
                 this.textButtonData.btnLink = ''
                 this.textButtonData.btnName = ''
                 this.textButtonData.text = ''
+                this.textButtonData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1541,6 +1617,7 @@ export default {
             formData.append('image2', this.imgTextButtonImgData.image2 ?? '')
             formData.append('file', this.selectedFile)
             formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+            formData.append('bottomImgLink', this.imgTextButtonImgData.bottomImgLink)
 
             await axios.post('/api/send-email-img-text-btn-img', formData, {
                 headers: {
@@ -1563,6 +1640,7 @@ export default {
                 this.imgTextButtonImgData.text = ''
                 this.imgTextButtonImgData.image = ''
                 this.imgTextButtonImgData.image2 = ''
+                this.imgTextButtonImgData.bottomImgLink = ''
                 this.selectedFile = ''
                 this.mailingImg = ''
                 this.loading = false
@@ -1702,9 +1780,8 @@ export default {
         justify-content: space-between;
         margin-bottom: 20px;
         > .btn-content {
-            margin-left: 10px;
-            margin-top: -6px;
             button {
+                height: 30px;
                 &.active {
                     background: #253266;
                     color: #ffffff;

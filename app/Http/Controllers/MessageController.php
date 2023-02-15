@@ -31,6 +31,7 @@ class MessageController extends Controller
                 'email' => $request->to,
                 'from' => $request->from,
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -42,6 +43,7 @@ class MessageController extends Controller
                 'group_id' => $category->id,
                 'message' => $request->text,
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -90,14 +92,15 @@ class MessageController extends Controller
 
         foreach ($emails as $email) {
             $details = [
-                'from' => $request->from,
-                'email' => $email,
-                'subject' => $request->subject,
+                'from' => $request->from ?? '',
+                'email' => $email ?? '',
+                'subject' => $request->subject ?? '',
                 'file' => $filesData ?? '',
                 'image' => $image ?? '',
                 'imgLink' => $request->imgLink ?? '',
                 'mailingImg' => $request->mailingImg ?? '',
-                'template' => 'template1'
+                'template' => 'template1' ?? '' ,
+                'bottom_img_link' => $request->bottomImgLink ?? ''
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -119,6 +122,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -132,6 +136,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -188,6 +193,7 @@ class MessageController extends Controller
                 'btnLink' => $request->btnLink ?? '',
                 'mailingImg' => $request->mailingImg ?? '',
                 'template' => 'template2',
+                'bottom_img_link' => $request->bottomImgLink
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -207,6 +213,7 @@ class MessageController extends Controller
                 'email' => $request->to,
                 'from' => $request->from,
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -218,6 +225,7 @@ class MessageController extends Controller
                 'message' => $request->text,
                 'from' => $request->from,
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -273,6 +281,7 @@ class MessageController extends Controller
                 'text' => $request->text,
                 'mailingImg' => $request->mailingImg ?? '',
                 'template' => 'template3',
+                'bottom_img_link' => $request->bottomImgLink
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -294,6 +303,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -307,6 +317,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -364,6 +375,7 @@ class MessageController extends Controller
                 'btnLink' => $request->btnLink,
                 'mailingImg' => $request->mailingImg ?? '',
                 'template' => 'template4',
+                'bottom_img_link' => $request->bottomImgLink
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -385,6 +397,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -398,6 +411,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -454,6 +468,7 @@ class MessageController extends Controller
                 'btnLink' => $request->btnLink,
                 'mailingImg' => $request->mailingImg ?? '',
                 'template' => 'template5',
+                'bottom_img_link' => $request->bottomImgLink
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -475,6 +490,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
         }
@@ -488,6 +504,7 @@ class MessageController extends Controller
                 'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
                 'btn_name' => $request->btnName,
                 'btn_link' => $request->btnLink,
+                'bottom_img_link' => $request->bottomImgLink
             ]);
             $messageIds[] = $createMessages->id;
 
@@ -562,6 +579,7 @@ class MessageController extends Controller
                 'image2' => $image2,
                 'mailingImg' => $request->mailingImg ?? '',
                 'template' => 'template6',
+                'bottom_img_link' => $request->bottomImgLink
             ];
             dispatch(new SendEmailJob($details));
         }
@@ -571,7 +589,7 @@ class MessageController extends Controller
     public function getMessages(): JsonResponse
     {
         return response()->json([
-            'messages' =>  Message::with(['group', 'file'])->get()
+            'messages' =>  Message::with(['group', 'file'])->orderBy('id', 'DESC')->paginate(10)
         ]);
     }
 

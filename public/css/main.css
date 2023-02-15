@@ -185,3 +185,11 @@ ul {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+.v-pagination li button {
+    border-radius: 50%;
+    border: 1px solid #253266;
+    color: #253266;
+}
+
+

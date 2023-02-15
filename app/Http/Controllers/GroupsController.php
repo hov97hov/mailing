@@ -71,7 +71,14 @@ class GroupsController extends Controller
     public function getCategory(): JsonResponse
     {
         return \response()->json([
-           'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->get()
+           'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->paginate(10)
+        ]);
+    }
+
+    public function getAllCategory()
+    {
+        return \response()->json([
+            'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->get()
         ]);
     }
 
@@ -319,7 +326,16 @@ class GroupsController extends Controller
     public function deleteSelectedEmailGroup(Request $request)
     {
         foreach ($request->ids as $key => $item) {
-            ContactGroup::where(['id' => $item, 'group_id' => $request->categoryId])->delete();
+            ContactGroup::where(['contact_id' => $item, 'group_id' => $request->categoryId])->delete();
         }
+    }
+
+    public function getCategoryContact(Request $request): JsonResponse
+    {
+        return \response()->json([
+           'categoryContact' => Contact::whereHas('group', function ($query) use ($request) {
+               $query->where('group_id', $request->id);
+           })->paginate(10)
+        ]);
     }
 }

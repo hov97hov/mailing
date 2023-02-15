@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Email;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -21,6 +22,15 @@ class SendEmail extends Mailable
     public function __construct($data)
     {
         $this->data = $data;
+
+        $settings = Email::where('email',$this->data['from'])->first();
+        Config::set('mail.mailers.smtp.host', $settings->host);
+        Config::set('mail.mailers.smtp.port', $settings->port);
+        Config::set('mail.mailers.smtp.encryption', $settings->encryption);
+        Config::set('mail.mailers.smtp.username', $settings->username);
+        Config::set('mail.mailers.smtp.password', $settings->password);
+        Config::set('mail.mailers.smtp.from', $settings->email);
+        Config::set('mail.mailers.smtp.header', $settings->header);
     }
 
     /**

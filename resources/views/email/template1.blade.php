@@ -11,7 +11,7 @@
     <div style="width: 300px; text-align: center">
         <div>
             <a href="{{$data['imgLink']}}">
-                <img style="width: 100%" src="{{env('app_url').$data['image'][0][1]}}" alt="">
+                <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image'][0][1]}}" alt="">
             </a>
         </div>
     </div>
@@ -19,7 +19,7 @@
     <div>
         @if($files)
             @foreach($files as $file)
-                ֆայլ - <a href="{{env('app_url').$file[1]}}" download>{{$file[0]}}</a> <br> <br>
+                ֆայլ - <a target="_blank" href="https://ymail.yerevak.am{{$file[1]}}" download>{{$file[0]}}</a> <br> <br>
             @endforeach
         @endif
     </div>
@@ -27,7 +27,9 @@
     <br>
     <div>
         @if($data['mailingImg'] != 'null')
-            <img  src="{{env('app_url').$data['mailingImg']}}">
+            <a href="{{$data['bottom_img_link']}}" target="_blank">
+                <img src="{{$data['mailingImg']}}">
+            </a>
         @endif
     </div>
 </body>
