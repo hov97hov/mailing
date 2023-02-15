@@ -36,6 +36,12 @@
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="/add-email-setting">
+                                    <img src="/images/mail.png">
+                                    <span>Ավելացնել Էլ․ հասցե</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -99,6 +105,9 @@
                         <div class="header">
                             <div>Օգտատերերի քանակ {{category.contact.length}}</div>
                             <div class="search">
+                                <div>
+                                    <img v-if="selectedEmails.length" @click="deleteEmailsDialog = true" src="/images/removeIcon.png" alt="">
+                                </div>
                                 <v-text-field
                                     v-model="searchMails"
                                     prepend-inner-icon="mdi-magnify"
@@ -117,7 +126,7 @@
                         <div class="items">
                             <div class="item" v-for="item in category.contact">
                                 <label class="checkbox-content">
-                                    <input type="checkbox">
+                                    <input v-model="selectedEmails" :value="item.id" type="checkbox">
                                     <span class="checkmark"></span>
                                 </label>
                                 <div class="ids">{{item.id}}</div>
@@ -254,6 +263,36 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog
+            v-model="deleteEmailsDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                    <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="deleteEmailsDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteSelectedEmails"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -272,7 +311,9 @@ export default {
         return {
             value: [],
             emailsData: [],
+            selectedEmails: [],
             emails: [],
+            deleteEmailsDialog: false,
             createEmailDialog: false,
             createNewEmailDialog: false,
             items: ['foo', 'bar', 'fizz', 'buzz'],
@@ -313,6 +354,37 @@ export default {
     },
 
     methods: {
+
+        async deleteSelectedEmails() {
+            this.loading = true
+            await axios.post('/api/delete-selected-email-group', {
+                ids: this.selectedEmails,
+                categoryId: this.category.id,
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.deleteEmailsDialog = false
+                this.selectedEmails = ''
+                this.getCategory()
+                this.getAllEmails()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                console.log(error)
+            })
+        },
 
         async getCategory() {
             await axios.post('/api/get-first-category', {id: this.id}).then(response => {
@@ -415,6 +487,7 @@ export default {
         openMessageBox() {
             location.href = '/'
         },
+
         checkErrors(obj, field) {
             if (obj) {
                 this.errors[obj][field] = ''
@@ -430,6 +503,7 @@ export default {
         openCreateEmailDialog() {
             this.createEmailDialog = true
         },
+
         closeCreateEmailDialog () {
             this.createEmailDialog = false
             this.value = []
@@ -510,8 +584,8 @@ export default {
             formData.append('categoryId', this.category.id)
             formData.append('query', this.searchMails)
 
-            await axios.post('/api/search-emails', formData).then(response => {
-                this.categories = response.data.categories
+            await axios.post('/api/search-contacts', formData).then(response => {
+                this.category.contact = response.data.categories
             }).catch(error => {
                 console.log(error)
             })
@@ -529,7 +603,7 @@ export default {
         .mailing-left-menu {
             height: 100vh;
             background: #E8E8E8;
-            width: 350px;
+            min-width: 350px;
             padding: 50px;
             border-radius: 15px 0 0 15px;
             .menu {
@@ -617,7 +691,11 @@ export default {
                     color: #253266;
                 }
                 .search {
+                    display: flex;
                     width: 300px;
+                    img {
+                        margin-right: 30px;
+                    }
                 }
             }
             .create-category {

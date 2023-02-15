@@ -2,171 +2,581 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SendMessageContactRequest;
+use App\Http\Requests\sendEmailImgBtnRequest;
+use App\Http\Requests\sendEmailImgLinkRequest;
+use App\Http\Requests\sendEmailImgTextButtonImgRequest;
+use App\Http\Requests\sendEmailImgTextButtonRequest;
+use App\Http\Requests\sendEmailImgTextRequest;
+use App\Http\Requests\sendEmailTextButtonRequest;
 use App\Jobs\SendEmailJob;
 use App\Models\Attachment;
-use App\Models\Contact;
 use App\Models\Group;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 
 class MessageController extends Controller
 {
-    /**
-     * @return JsonResponse
-     */
-    public function getAllMessages(): JsonResponse
+
+    public function sendEmailImgLink(sendEmailImgLinkRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'from' => $request->from,
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                    'image_link' => $request->imgLink,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'image' => $image ?? '',
+                'imgLink' => $request->imgLink ?? '',
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template1'
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function sendEmailImgBtn(sendEmailImgBtnRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'image' => $image ?? '',
+                'btnName' => $request->btnName ?? '',
+                'btnLink' => $request->btnLink ?? '',
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template2',
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function sendEmailImgText(sendEmailImgTextRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'image' => $image,
+                'text' => $request->text,
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template3',
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function sendEmailImgTextButton(sendEmailImgTextButtonRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'image' => $image,
+                'text' => $request->text,
+                'btnName' => $request->btnName,
+                'btnLink' => $request->btnLink,
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template4',
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function sendEmailTextButton(sendEmailTextButtonRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'text' => $request->text,
+                'btnName' => $request->btnName,
+                'btnLink' => $request->btnLink,
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template5',
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function sendEmailImgTextImgButton(sendEmailImgTextButtonImgRequest $request)
+    {
+        $categoryIds = explode(',', $request->categoryIds);
+        $categories = Group::whereIn('id', $categoryIds)->with('contact')->get();
+        $emails = [];
+
+        if (isset($request->to)) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'message' => $request->text,
+                'email' => $request->to,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+        }
+
+        foreach ($categories as $category) {
+            $createMessages = Message::create([
+                'subject' => $request->subject,
+                'group_id' => $category->id,
+                'message' => $request->text,
+                'from' => $request->from,
+                'mailing_image' => $request->mailingImg === '/images/mailing.png' ? 1 : 0,
+                'btn_name' => $request->btnName,
+                'btn_link' => $request->btnLink,
+            ]);
+            $messageIds[] = $createMessages->id;
+
+            foreach ($category->contact as $contact) {
+                $emails[] = $contact->email;
+            }
+        }
+
+        if($request->hasFile('file')) {
+            $name = $request->file->getClientOriginalName();
+            $request->file->move(public_path() . '/storage/mails/category/', $name);
+            $filePath = '/storage/mails/category/'. $name;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'file_path' => $filePath,
+                    'file_name' => $name,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $filesData[] = [$name,$filePath];
+        }
+        if($request->hasFile('image')) {
+            $imgName = $request->image->getClientOriginalName();
+            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_path' => $imgFilePath,
+                    'image_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image[] = [$imgName,$imgFilePath];
+        }
+        if($request->hasFile('image2')) {
+            $imgName = $request->image2->getClientOriginalName();
+            $request->image2->move(public_path() . '/storage/mails/category/', $imgName);
+            $imgFilePath = '/storage/mails/category/'. $imgName;
+
+            foreach ($messageIds as $id) {
+                Attachment::create([
+                    'message_id' => $id,
+                    'image_bottom_path' => $imgFilePath,
+                    'image_bottom_name' => $imgName,
+                    'from' => $request->from,
+                ]);
+            }
+
+            $image2[] = [$imgName,$imgFilePath];
+        }
+
+        if ($request->to) {
+            $emails[] = $request->to;
+        }
+
+        foreach ($emails as $email) {
+            $details = [
+                'from' => $request->from,
+                'email' => $email,
+                'subject' => $request->subject,
+                'file' => $filesData ?? '',
+                'text' => $request->text,
+                'btnName' => $request->btnName,
+                'btnLink' => $request->btnLink,
+                'image' => $image,
+                'image2' => $image2,
+                'mailingImg' => $request->mailingImg ?? '',
+                'template' => 'template6',
+            ];
+            dispatch(new SendEmailJob($details));
+        }
+
+    }
+
+    public function getMessages(): JsonResponse
     {
         return response()->json([
-            'allMessages' => Message::where(['user_id' => Auth::id(), 'archived' => '0'])->whereHas('contact')->with(['contact' => function($query) {
-                $query->with('group');
-            }])->get()
-        ]);
-    }
-
-    public function addArchiveMessage(Request $request)
-    {
-        return Message::where('id', $request->id)->update([
-            'archived' => $request->archived
-        ]);
-    }
-
-    /**
-     * @return JsonResponse
-     */
-    public function getArchiveMessages(): JsonResponse
-    {
-        return response()->json([
-            'archiveMessages' => Message::where(['user_id' => '1', 'archived' => '1'])->with(['contact' => function($query) {
-                $query->with('group');
-            }])->get()
-        ]);
-    }
-
-    public function deleteMessage(Request $request)
-    {
-        return Message::where('id', $request->id)->delete();
-    }
-
-    public function getOneMessage(Request $request)
-    {
-        return response()->json([
-            'oneMessage' => Message::where('id', $request->id)->with('file')->first()
+            'messages' =>  Message::with(['group', 'file'])->get()
         ]);
     }
 
     public function deleteSelectedMessage(Request $request)
     {
-        return Message::whereIn('id', $request->message_ids)->delete();
-    }
-
-    public function addSelectedArchived(Request $request)
-    {
-        return Message::whereIn('id', $request->message_ids)->update([
-            'archived' => 1
-        ]);
-    }
-
-    public function sendMessage(SendMessageContactRequest $request)
-    {
-        $contacts = [];
-
-        if (isset($request->contacts)) {
-            foreach (explode(',', $request->contacts) as $contactItem) {
-                $getContacts = Contact::where('id', $contactItem)->first();
-                $contacts[] = $getContacts;
-            }
-        }
-
-        if(isset($request->groupId)) {
-            $group = Group::where('id', $request->groupId)->whereHas('contact')->with('contact')->first();
-            foreach ($group->contact as $groupContact) {
-                $contacts[] = $groupContact;
-            }
-        }
-
-        if ($request->groups) {
-            $groupContacts = explode(',', $request->groups);
-            $contact = Contact::whereIn('id', $groupContacts)->get();
-            foreach ($contact as $item) {
-                $contacts[] = $item;
-            }
-        }
-
-        if (isset($request->to)) {
-            $email = Contact::where('email', $request->to)->first();
-            if ($email) {
-                $contacts[] = $email;
-            }
-            if (!$email) {
-                $email = Contact::create([
-                    'name' => $request->to,
-                    'email' => $request->to,
-                    'user_id' => Auth::id()
-                ]);
-                $contacts[] = $email;
-            }
-        }
-
-
-        $createMessagesId = [];
-        foreach ($contacts as $contactEmail) {
-            $createMessages = Message::create([
-                'subject' => $request->subject,
-                'email' => $contactEmail->email,
-                'user_id' => Auth::id(),
-                'contact_id' => $contactEmail->id,
-                'message' => $request->text,
-            ]);
-            $createMessagesId[] = $createMessages->id;
-        }
-
-        if($request->hasFile('files')) {
-            foreach ($request->files as $file) {
-                foreach ($file as $item) {
-                    $name = $item->getClientOriginalName();
-                    if ($request->groupId === 'contact') {
-                        $item->move(public_path() . '/storage/mails/contacts/', $name);
-                        $filePath = '/storage/mails/contacts/'. $name;
-                    }else {
-                        $item->move(public_path() . '/storage/mails/'.$request->groupId, $name);
-                        $filePath = '/storage/mails/'.$request->groupId.'/'. $name;
-                    }
-                    foreach ($createMessagesId as $id) {
-                        Attachment::create([
-                            'message_id' => $id,
-                            'file_path' => $filePath,
-                            'file_name' => $name,
-                        ]);
-                    }
-
-                    $filesData[] = [$name,$filePath];
-                }
-            }
-        }
-
-        foreach ($contacts as $contactEmail) {
-            $details = [
-                'subject' => $request->subject,
-                'from' => $request->from,
-                'email' => $contactEmail,
-                'text' => $request->text,
-                'design' => $request->design,
-                'files' => $filesData ?? '',
-                'link' => $request->link ?? null,
-            ];
-
-            dispatch(new SendEmailJob($details));
-        }
-    }
-
-    public function getNoRegisterContactMessages()
-    {
-        return response()->json([
-            'noRegisterContactData' => Message::where(['user_id' => 1, 'contact_id' => null])->get()
-        ]);
+        return Message::whereIn('id', $request->ids)->delete();
     }
 }

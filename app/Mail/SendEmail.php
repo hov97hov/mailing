@@ -2,12 +2,9 @@
 
 namespace App\Mail;
 
-use App\Models\Setting;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 
 class SendEmail extends Mailable
@@ -34,12 +31,12 @@ class SendEmail extends Mailable
     public function build()
     {
         try{
-            $this->view('email.'.$this->data['design'])
-                ->from('info@teghekatu.am')
+            $this->view('email.'.$this->data['template'])
+                ->from($this->data['from'])
                 ->subject($this->data['subject'])
                 ->with([
                     'data' => $this->data ?? '',
-                    'files' => $this->data['files'] ?? ''
+                    'files' => $this->data['file'] ?? ''
                 ]);
 
             $this->withSwiftMessage(function ($message) {

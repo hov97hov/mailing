@@ -11,7 +11,7 @@
                                     v-model="formData.email"
                                     outlined
                                     dense
-                                    label="Էլ․ փոստ"
+                                    placeholder="Էլ․ փոստ"
                                     hide-details="auto"
                                     :error-messages="errors.formData.email"
                                     @input="checkErrors('formData', 'email')"
@@ -20,7 +20,7 @@
                             <div class="form-input">
                                 <v-text-field
                                     v-model="formData.password"
-                                    label="Գաղտնաբառ"
+                                    placeholder="Գաղտնաբառ"
                                     outlined
                                     dense
                                     hide-details="auto"

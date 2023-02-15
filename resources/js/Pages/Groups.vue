@@ -36,6 +36,12 @@
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="/add-email-setting">
+                                    <img src="/images/mail.png">
+                                    <span>Ավելացնել Էլ․ հասցե</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -99,6 +105,9 @@
                            </div>
                        </div>
                        <div class="search-content">
+                           <div>
+                               <img v-if="selectedGroups.length" @click="deleteGroupDialog = true" src="/images/removeIcon.png" alt="">
+                           </div>
                            <div class="search">
                                <v-text-field
                                    v-model="searchCategories"
@@ -115,16 +124,16 @@
                        </div>
                        <div class="category-messages-list">
                            <div class="category-list">
-                               <div class="items">
+                               <div class="items" v-click-outside="hide">
                                    <div class="item"
                                         v-for="item in categories"
                                         :key="item.id"
                                    >
                                        <label class="checkbox-content">
-                                           <input @change="selectCategory(item.id)" type="checkbox">
+                                           <input v-model="selectedGroups" :value="item.id" type="checkbox">
                                            <span class="checkmark"></span>
                                        </label>
-                                       <div class="last-block">
+                                       <div class="last-block" >
                                            <div class="name">
                                                <img :src="item.image" alt="">
                                                <span @click="openGroupPage(item.id)">{{item.name}}</span>
@@ -137,11 +146,11 @@
                                                            <v-icon color="#253266">mdi-plus</v-icon>
                                                            <span>Ավելացնել Էլ․ հասցե</span>
                                                        </div>
-                                                       <div @click="openCreateNewEmailDialog(item.id)" class="btn-content">
+                                                       <div  @click="openCreateNewEmailDialog(item.id)" class="btn-content">
                                                            <v-icon color="#253266">mdi-plus</v-icon>
                                                            <span>Ավելացնել նոր Էլ․ հասցե</span>
                                                        </div>
-                                                       <div class="user-count"><span>Օգտատերերի քանակ 7</span></div>
+                                                       <div class="user-count"><span>Օգտատերերի քանակ {{item.contact.length}}</span></div>
                                                    </div>
                                                </div>
                                                <div>
@@ -318,6 +327,37 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!--Delete category-->
+        <v-dialog
+            v-model="deleteGroupDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                    <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="deleteGroupDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteCategories"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -325,6 +365,8 @@
 import axios from "axios";
 import Header from '../../../resources/js/Components/Header'
 import { VueEditor } from "vue2-editor";
+import ClickOutside from 'vue-click-outside'
+
 
 export default {
     name: "home",
@@ -339,6 +381,7 @@ export default {
             isSelecting: false,
             createEmailDialog: false,
             createNewEmailDialog: false,
+            deleteGroupDialog: false,
             deleteCategoryDialog: false,
             selectedFile: '',
             searchCategories: '',
@@ -346,6 +389,7 @@ export default {
             emailsData: [],
             categories: [],
             emails: [],
+            selectedGroups: [],
             createNewEmailData: {
                 name: '',
                 categoryId: [],
@@ -376,6 +420,7 @@ export default {
         await this.getCategory()
         await this.getAllEmails()
     },
+
     computed: {
         buttonText() {
             return this.selectedFile ? this.selectedFile.name : this.defaultButtonText
@@ -383,7 +428,13 @@ export default {
     },
 
     methods: {
+        toggle () {
+            this.opened = true
+        },
 
+        hide () {
+            this.isActive = false
+        },
 
         openMessageBox() {
           location.href = '/'
@@ -505,6 +556,33 @@ export default {
             })
         },
 
+        async deleteCategories() {
+            this.loading = true
+            await axios.post('/api/delete-categories', {ids:this.selectedGroups}).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Կատեգորիաները հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.deleteGroupDialog = false
+                this.selectedGroups = ''
+                this.getCategory()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
+
         openPophup(id) {
             this.isActive = id
         },
@@ -599,6 +677,10 @@ export default {
                 console.log(error)
             })
         },
+    },
+
+    directives: {
+        ClickOutside
     }
 }
 </script>
@@ -612,7 +694,7 @@ export default {
         .mailing-left-menu {
             height: 100vh;
             background: #E8E8E8;
-            width: 350px;
+            min-width: 350px;
             padding: 50px;
             border-radius: 15px 0 0 15px;
             .menu {
@@ -704,6 +786,9 @@ export default {
                     justify-content: flex-end;
                     width: 100%;
                     margin-bottom: 30px;
+                     img {
+                        margin-right: 20px;
+                    }
                     .search {
                         width: 300px;
                     }

@@ -33,11 +33,12 @@ Route::get('get-emails', [ContactController::class, 'getEmails'])->name('getEmai
 Route::post('create-email', [ContactController::class, 'createEmail'])->name('createEmail');
 Route::post('update-email', [ContactController::class, 'updateEmail'])->name('updateEmail');
 Route::post('delete-email', [ContactController::class, 'deleteEmail'])->name('deleteEmail');
+Route::post('delete-selected-emails', [ContactController::class, 'deleteSelectedEmails'])->name('deleteSelectedEmails');
 Route::post('delete-contacts', [ContactController::class, 'deleteContacts'])->name('deleteContacts');
 Route::post('delete-selected-contacts', [ContactController::class, 'deleteSelectedContact'])->name('deleteSelectedContact');
 Route::post('get-user-emails', [ContactController::class, 'getUserEmails'])->name('getUserEmails');
 Route::post('get-auth-user', [ContactController::class, 'getAuthUser'])->name('getAuthUser');
-Route::post('search-emails', [ContactController::class, 'search'])->name('search');
+Route::post('search-contacts', [ContactController::class, 'searchContact'])->name('search');
 //GROUP
 Route::post('create-category', [GroupsController::class, 'createCategory'])->name('createCategory');
 Route::post('update-category', [GroupsController::class, 'updateCategory'])->name('updateCategory');
@@ -45,6 +46,7 @@ Route::post('get-category', [GroupsController::class, 'getCategory'])->name('get
 Route::post('get-first-category', [GroupsController::class, 'getFirstCategory'])->name('getFirstCategory');
 Route::post('get-selected-groups', [GroupsController::class, 'getSelectedGroups'])->name('getSelectedGroups');
 Route::post('delete-category', [GroupsController::class, 'deleteCategory'])->name('deleteCategory');
+Route::post('delete-categories', [GroupsController::class, 'deleteSelectedCategories'])->name('deleteSelectedCategories');
 Route::post('delete-selected-group', [GroupsController::class, 'deleteSelectedGroup'])->name('deleteSelectedGroup');
 Route::post('add-email-category', [GroupsController::class, 'addEmailCategory'])->name('addEmailCategory');
 Route::post('get-group-contacts', [GroupsController::class, 'getGroupContacts'])->name('getGroupContacts');
@@ -56,16 +58,18 @@ Route::post('create-new-contact-group', [GroupsController::class, 'addNewContact
 Route::post('add-contacts-groups', [GroupsController::class, 'addContactsGroups'])->name('addContactsGroups');
 Route::post('update-category-image', [GroupsController::class, 'updateCategoryImage'])->name('updateCategoryImage');
 Route::post('search-categories', [GroupsController::class, 'search'])->name('search');
+Route::post('search-messages', [GroupsController::class, 'searchMessages'])->name('search');
+Route::post('search-emails', [GroupsController::class, 'searchEmails'])->name('searchEmails');
+Route::post('delete-selected-email-group', [GroupsController::class, 'deleteSelectedEmailGroup'])->name('deleteSelectedEmailGroup');
 //MESSAGES
-Route::get('get-all-messages', [MessageController::class, 'getAllMessages'])->name('getAllMessages');
-Route::post('add-archive-message', [MessageController::class, 'addArchiveMessage'])->name('addArchiveMessage');
-Route::get('get-archive-message', [MessageController::class, 'getArchiveMessages'])->name('getArchiveMessages');
-Route::post('delete-message', [MessageController::class, 'deleteMessage'])->name('deleteMessage');
-Route::post('get-message', [MessageController::class, 'getOneMessage'])->name('getOneMessage');
+Route::post('send-email-img-link', [MessageController::class, 'sendEmailImgLink'])->name('sendMessage');
+Route::post('send-email-img-btn', [MessageController::class, 'sendEmailImgBtn'])->name('sendEmailImgBtn');
+Route::post('send-email-img-text', [MessageController::class, 'sendEmailImgText'])->name('sendEmailImgText');
+Route::post('send-email-img-text-btn', [MessageController::class, 'sendEmailImgTextButton'])->name('sendEmailImgText');
+Route::post('send-email-text-btn', [MessageController::class, 'sendEmailTextButton'])->name('sendEmailTextButton');
+Route::post('send-email-img-text-btn-img', [MessageController::class, 'sendEmailImgTextImgButton'])->name('sendEmailTextButton');
+Route::get('get-messages', [MessageController::class, 'getMessages'])->name('getMessages');
 Route::post('delete-selected-messages', [MessageController::class, 'deleteSelectedMessage'])->name('deleteSelectedMessage');
-Route::post('add-archive-selected-message', [MessageController::class, 'addSelectedArchived'])->name('addSelectedArchived');
-Route::post('send-message', [MessageController::class, 'sendMessage'])->name('sendMessage');
-Route::get('get-no-register-message-contact', [MessageController::class, 'getNoRegisterContactMessages'])->name('getNoRegisterContactMessages');
 //SETTINGS
 Route::post('/create-settings', [SettingController::class, 'createSettings'])->name('createSettings');
 Route::post('/get-settings', [SettingController::class, 'getSettings'])->name('getSettings');

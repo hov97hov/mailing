@@ -10,6 +10,7 @@ class Setting extends Model
     use HasFactory;
 
     protected $fillable = [
+        'email',
         'host',
         'from',
         'header',
@@ -17,6 +18,5 @@ class Setting extends Model
         'encryption',
         'username',
         'password',
-        'user_id',
     ];
 }

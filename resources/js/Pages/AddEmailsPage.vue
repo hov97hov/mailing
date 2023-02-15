@@ -32,10 +32,16 @@
                                     <span>Կատեգորիաներ</span>
                                 </a>
                             </li>
-                            <li class="emails">
+                            <li>
                                 <a href="/emails">
                                     <img src="/images/mail.png">
                                     <span>Էլ․ փոստեր</span>
+                                </a>
+                            </li>
+                            <li class="emails-setting">
+                                <a href="/add-email-setting">
+                                    <img src="/images/mail.png">
+                                    <span>Ավելացնել Էլ․ հասցե</span>
                                 </a>
                             </li>
                         </ul>
@@ -554,7 +560,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.emails-setting {
+    background: #D3D4DA;
+}
 .mailing-wrapper {
     display: flex;
     .mailing-content {
@@ -563,7 +571,7 @@ export default {
         .mailing-left-menu {
             height: 100vh;
             background: #E8E8E8;
-            width: 350px;
+            min-width: 350px;
             padding: 50px;
             border-radius: 15px 0 0 15px;
             .menu {

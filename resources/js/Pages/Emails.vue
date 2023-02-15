@@ -38,6 +38,12 @@
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="/add-email-setting">
+                                    <img src="/images/mail.png">
+                                    <span>Ավելացնել Էլ․ հասցե</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -102,6 +108,9 @@
                             </div>
                         </div>
                         <div class="search-content">
+                            <div>
+                                <img v-if="selectedEmails.length" @click="deleteEmailsDialog = true" src="/images/removeIcon.png" alt="">
+                            </div>
                             <div class="search">
                                 <v-text-field
                                     v-model="search"
@@ -112,6 +121,7 @@
                                     hi
                                     hide-details
                                     color="#253266"
+                                    @input="searchEmails"
                                 ></v-text-field>
                             </div>
                         </div>
@@ -122,10 +132,10 @@
                                 <div>Կատեգորիա</div>
                                 <div></div>
                             </div>
-                            <div class="items">
+                            <div class="items" v-click-outside="hide">
                                 <div class="item" v-for="item in emails">
                                     <label class="checkbox-content">
-                                        <input type="checkbox">
+                                        <input v-model="selectedEmails" :value="item.id" type="checkbox">
                                         <span class="checkmark"></span>
                                     </label>
                                     <div class="ids">{{item.id}}</div>
@@ -142,8 +152,8 @@
                                                 <img @click="editEmailModal(item)" src="/images/pencil.png" alt="">
                                             </div>
                                             <div class="view-user-info">
-                                                <img @click="isActive = !isActive" src="/images/Subtract.png" alt="">
-                                                <div class="user-info" v-if="isActive">
+                                                <img @click="openModal(item.id)" src="/images/Subtract.png" alt="">
+                                                <div class="user-info" v-if="isActive === item.id">
                                                    {{item.description}}
                                                 </div>
                                             </div>
@@ -281,6 +291,37 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!--Delete category-->
+        <v-dialog
+            v-model="deleteEmailsDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                    <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
+                </v-card-title>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="red"
+                        text
+                        @click="deleteEmailsDialog = false"
+                    >
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteSelectedEmails"
+                    >
+                        Հաստատել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
@@ -288,6 +329,7 @@
 import axios from "axios";
 import Header from '../../../resources/js/Components/Header'
 import { VueEditor } from "vue2-editor";
+import ClickOutside from "vue-click-outside";
 
 export default {
     name: "home",
@@ -301,11 +343,13 @@ export default {
             isActive: false,
             dialog: false,
             deleteEmailDialog: false,
+            deleteEmailsDialog: false,
             editEmailDialog: false,
             search: '',
             emailId: '',
             categories: [],
             emails: [],
+            selectedEmails: [],
             defaultEmailData: {
                 name: '',
                 categoryId: [],
@@ -338,6 +382,25 @@ export default {
     methods: {
         openMessageBox() {
           location.href = '/'
+        },
+
+        async searchEmails() {
+            const formData =  new FormData()
+            formData.append('query', this.search)
+
+            await axios.post('/api/search-emails', formData).then(response => {
+                this.emails = response.data.emails
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        hide () {
+            this.isActive = false
+        },
+
+        openModal(id) {
+           this.isActive =  id
         },
 
         checkErrors(obj, field) {
@@ -430,6 +493,32 @@ export default {
             })
         },
 
+        async deleteSelectedEmails() {
+            this.loading = true
+            await axios.post('/api/delete-selected-emails', {ids:this.selectedEmails}).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Էլ․ փոստը հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.deleteEmailsDialog = false
+                this.getAllEmails()
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                console.log(error)
+            })
+        },
+
         editEmailModal(data) {
             this.editEmailData.id = data.id
             this.editEmailData.name = data.name
@@ -470,6 +559,10 @@ export default {
                 this.errors.editEmailData = Object.assign(this.errors.editEmailData, error.response.data.errors)
             })
         },
+
+        directives: {
+            ClickOutside
+        }
     }
 }
 </script>
@@ -484,7 +577,7 @@ export default {
         .mailing-left-menu {
             height: 100vh;
             background: #E8E8E8;
-            width: 350px;
+            min-width: 350px;
             padding: 50px;
             border-radius: 15px 0 0 15px;
             .menu {
@@ -575,6 +668,9 @@ export default {
                     justify-content: flex-end;
                     width: 100%;
                     margin-bottom: 30px;
+                    img {
+                        margin-right: 30px;
+                    }
                     .search {
                         width: 300px;
                     }
@@ -704,7 +800,7 @@ export default {
                                             width: 250px;
                                             min-height: 77px;
                                             position: absolute;
-                                            padding: 5px 10px;
+                                            padding: 10px;
                                             top: 50%;
                                             left: 50%;
                                             transform: translate(-72%, 25%);

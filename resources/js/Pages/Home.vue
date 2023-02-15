@@ -39,7 +39,7 @@
                                </a>
                            </li>
                            <li>
-                               <a href="/add-emails">
+                               <a href="/add-email-setting">
                                    <img src="/images/mail.png">
                                    <span>Ավելացնել Էլ․ հասցե</span>
                                </a>
@@ -53,84 +53,759 @@
                     </div>
                     <div v-if="messageBox" class="mailing-box-content">
                         <div class="mailing-box">
-                            <div class="field">
-                                <v-select
-                                    label="Ում կողմից"
-                                    solo
-                                    color="#253266"
-                                    class="rounded-lg"
-                                    hide-details
-                                >
-                                </v-select>
-                            </div>
-                            <div class="field">
-                                <v-text-field
-                                    label="Ում"
-                                    solo
-                                    color="#253266"
-                                    class="rounded-lg"
-                                    hide-details
-                                >
-                                </v-text-field>
-                            </div>
-                            <div class="field">
-                                <v-select
-                                    label="Ընտրել կատեգորիա"
-                                    solo
-                                    color="#253266"
-                                    class="rounded-lg"
-                                    hide-details
-                                >
-                                </v-select>
-                            </div>
-                            <div class="field">
-                                <v-text-field
-                                    label="Թեմա"
-                                    solo
-                                    color="#253266"
-                                    class="rounded-lg"
-                                    hide-details
-                                >
-                                </v-text-field>
-                            </div>
                             <div class="field-attachment">
-                                <div>
-                                    <v-file-input
-                                        label="Ընտրել վերևի նկար"
-                                        outlined
-                                        dense
-                                        color="#253266"
-                                        hide-details
-                                    ></v-file-input>
-                                </div>
-                                <div>
-                                    <v-file-input
-                                        label="Ընտրել ներքևի նկար"
-                                        outlined
-                                        dense
-                                        hide-details
-                                        color="#253266"
-                                    ></v-file-input>
-                                </div>
                                 <div class="btn-content">
-                                    <button @click="addBtnText = true">Ավելացնել հղում</button>
+                                    <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                    <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                    <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                    <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                    <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                    <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
                                 </div>
                             </div>
-                            <div class="field">
-                                <vue-editor
-
-                                >
-                                </vue-editor>
-                            </div>
-                            <div class="bottom-field">
-                                <div>
-                                    <label class="checkbox-content">
-                                        <input @change="selectCategory(item.id)" type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
+                            <div v-if="imgLink">
+                                <div class="field select-field">
+                                    <select v-model="imgLinkData.from" @input="checkErrors('imgLinkData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.imgLinkData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
                                 </div>
-                                <div>
-                                    <img src="/images/mailing.png" alt="">
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgLinkData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="imgLinkData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.imgLinkData.categoryIds"
+                                        @input="checkErrors('imgLinkData', 'categoryIds')"
+                                    >
+                                    </v-select>
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgLinkData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgLinkData.subject"
+                                        @input="checkErrors('imgLinkData', 'subject')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="fields">
+                                    <v-file-input
+                                        v-model="imgLinkData.image"
+                                        label="Ընտրել նկար"
+                                        prepend-icon="mdi-camera"
+                                        :error-messages="errors.imgLinkData.image"
+                                        @change="checkErrors('imgLinkData', 'image')"
+                                    ></v-file-input>
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgLinkData.imgLink"
+                                        label="Գրել նկարի հղումը"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgLinkData.imgLink"
+                                        @input="checkErrors('imgLinkData', 'imgLink')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="bottom-field">
+                                   <div>
+                                       <div>
+                                           <label class="checkbox-content">
+                                               <input
+                                                   v-model="mailingImg"
+                                                   type="checkbox">
+                                               <span class="checkmark"></span>
+                                           </label>
+                                       </div>
+                                       <div>
+                                           <img src="/images/mailing.png" alt="">
+                                       </div>
+                                   </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailImgLink">Ուղարկել</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imgButton">
+                                <div class="field select-field">
+                                    <select v-model="imgBtnData.from" @input="checkErrors('imgBtnData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.imgBtnData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgBtnData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgBtnData.to"
+                                        @input="checkErrors('imgBtnData', 'to')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="imgBtnData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.imgBtnData.categoryIds"
+                                        @input="checkErrors('imgBtnData', 'categoryIds')"
+                                    >
+                                    </v-select>
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgBtnData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgBtnData.subject"
+                                        @input="checkErrors('imgBtnData', 'subject')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-file-input
+                                        v-model="imgBtnData.image"
+                                        label="Ընտրել նկար"
+                                        outlined
+                                        dense
+                                        :error-messages="errors.imgBtnData.image"
+                                        @change="checkErrors('imgBtnData', 'image')"
+                                    ></v-file-input>
+                                </div>
+                                <div class="fields">
+                                   <div>
+                                       <v-text-field
+                                           v-model="imgBtnData.btnName"
+                                           label="Գրել կոճակի անունը"
+                                           solo
+                                           color="#253266"
+                                           class="rounded-lg"
+                                           :error-messages="errors.imgBtnData.btnName"
+                                           @input="checkErrors('imgBtnData', 'btnName')"
+                                       >
+                                       </v-text-field>
+                                   </div>
+                                   <div>
+                                       <v-text-field
+                                           v-model="imgBtnData.btnLink"
+                                           label="Գրել կոճակի հղումը"
+                                           solo
+                                           color="#253266"
+                                           class="rounded-lg"
+                                           :error-messages="errors.imgBtnData.btnLink"
+                                           @input="checkErrors('imgBtnData', 'btnLink')"
+                                       >
+                                       </v-text-field>
+                                   </div>
+                                </div>
+                                <div class="bottom-field">
+                                    <div>
+                                        <div>
+                                            <label class="checkbox-content">
+                                                <input
+                                                    v-model="mailingImg"
+                                                    type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <img src="/images/mailing.png" alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailImgBtn">Ուղարկել</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imgText">
+                                <div class="field select-field">
+                                    <select v-model="imgTextData.from" @input="checkErrors('imgTextData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.imgTextData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="imgTextData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.imgTextData.categoryIds"
+                                        @input="checkErrors('imgTextData', 'categoryIds')"
+                                    />
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgTextData.categoryIds"
+                                        @input="checkErrors('imgTextData', 'categoryIds')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-file-input
+                                        v-model="imgTextData.image"
+                                        label="Ընտրել նկար"
+                                        outlined
+                                        dense
+                                        :error-messages="errors.imgTextData.image"
+                                        @change="checkErrors('imgTextData', 'image')"
+                                    ></v-file-input>
+                                </div>
+                                <div class="field">
+                                    <vue-editor
+                                        v-model="imgTextData.text"
+                                        @input="checkErrors('imgTextData', 'text')"
+                                    ></vue-editor>
+                                    <p class="error-message">{{errors.imgTextData.text[0]}}</p>
+                                </div>
+                                <div class="bottom-field">
+                                    <div>
+                                        <div>
+                                            <label class="checkbox-content">
+                                                <input
+                                                    v-model="mailingImg"
+                                                    type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <img src="/images/mailing.png" alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailImgTextData">Ուղարկել</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imgTextButton">
+                                <div class="field select-field">
+                                    <select v-model="imgTextButtonData.from" @input="checkErrors('imgTextButtonData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.imgTextButtonData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextButtonData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="imgTextButtonData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.imgTextButtonData.categoryIds"
+                                        @input="checkErrors('imgTextButtonData', 'categoryIds')"
+                                    />
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextButtonData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgTextButtonData.subject"
+                                        @input="checkErrors('imgTextButtonData', 'subject')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-file-input
+                                        v-model="imgTextButtonData.image"
+                                        label="Ընտրել նկար"
+                                        outlined
+                                        dense
+                                        :error-messages="errors.imgTextButtonData.image"
+                                        @change="checkErrors('imgTextButtonData', 'image')"
+                                    ></v-file-input>
+                                </div>
+                                <div class="fields">
+                                    <div>
+                                        <v-text-field
+                                            v-model="imgTextButtonData.btnName"
+                                            label="Գրել կոճակի անունը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.imgTextButtonData.btnName"
+                                            @input="checkErrors('imgTextButtonData', 'btnName')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                    <div>
+                                        <v-text-field
+                                            v-model="imgTextButtonData.btnLink"
+                                            label="Գրել կոճակի հղումը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.imgTextButtonData.btnLink"
+                                            @input="checkErrors('imgTextButtonData', 'btnLink')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <vue-editor
+                                        v-model="imgTextButtonData.text"
+                                        @input="checkErrors('imgTextButtonData', 'text')"
+                                    ></vue-editor>
+                                    <p class="error-message">{{errors.imgTextButtonData.text[0]}}</p>
+                                </div>
+                                <div class="bottom-field">
+                                    <div>
+                                        <div>
+                                            <label class="checkbox-content">
+                                                <input
+                                                    v-model="mailingImg"
+                                                    type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <img src="/images/mailing.png" alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailImgTextButton">Ուղարկել</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="textButton">
+                                <div class="field select-field">
+                                    <select v-model="textButtonData.from" @input="checkErrors('textButtonData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.textButtonData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="textButtonData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="textButtonData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.textButtonData.categoryIds"
+                                        @input="checkErrors('textButtonData', 'categoryIds')"
+                                    />
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="textButtonData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.textButtonData.subject"
+                                        @input="checkErrors('textButtonData', 'subject')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="fields">
+                                    <div>
+                                        <v-text-field
+                                            v-model="textButtonData.btnName"
+                                            label="Գրել կոճակի անունը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.textButtonData.btnName"
+                                            @input="checkErrors('textButtonData', 'btnName')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                    <div>
+                                        <v-text-field
+                                            v-model="textButtonData.btnLink"
+                                            label="Գրել կոճակի հղումը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.textButtonData.btnLink"
+                                            @input="checkErrors('textButtonData', 'btnLink')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <vue-editor
+                                        v-model="textButtonData.text"
+                                        @input="checkErrors('textButtonData', 'text')"
+                                    ></vue-editor>
+                                    <p class="error-message">{{errors.textButtonData.text[0]}}</p>
+                                </div>
+                                <div class="bottom-field">
+                                    <div>
+                                        <div>
+                                            <label class="checkbox-content">
+                                                <input
+                                                    v-model="mailingImg"
+                                                    type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <img src="/images/mailing.png" alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailTextButton">Ուղարկել</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="imgTextButtonImg">
+                                <div class="field select-field">
+                                    <select v-model="imgTextButtonImgData.from" @input="checkErrors('imgTextButtonImgData', 'from')">
+                                        <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
+                                    </select>
+                                    <p class="error-message setting">{{errors.imgTextButtonImgData.from[0]}}</p>
+                                    <img src="/images/icon.png" alt="">
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextButtonImgData.to"
+                                        label="Ում"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="field">
+                                    <v-select
+                                        v-model="imgTextButtonImgData.categoryIds"
+                                        label="Ընտրել կատեգորիա"
+                                        solo
+                                        :items="categories"
+                                        color="#253266"
+                                        item-value="id"
+                                        item-text="name"
+                                        class="rounded-lg"
+                                        multiple
+                                        :error-messages="errors.imgTextButtonImgData.categoryIds"
+                                        @input="checkErrors('imgTextButtonImgData', 'categoryIds')"
+                                    />
+                                </div>
+                                <div class="field">
+                                    <v-text-field
+                                        v-model="imgTextButtonImgData.subject"
+                                        label="Թեմա"
+                                        solo
+                                        color="#253266"
+                                        class="rounded-lg"
+                                        :error-messages="errors.imgTextButtonImgData.subject"
+                                        @input="checkErrors('imgTextButtonImgData', 'subject')"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="fields">
+                                    <v-file-input
+                                        v-model="imgTextButtonImgData.image"
+                                        label="Ընտրել առաջին նկարը"
+                                        outlined
+                                        dense
+                                        :error-messages="errors.imgTextButtonImgData.image"
+                                        @change="checkErrors('imgTextButtonImgData', 'image')"
+                                    ></v-file-input>
+                                    <v-file-input
+                                        v-model="imgTextButtonImgData.image2"
+                                        label="Ընտրել երկրորդ նկարը"
+                                        outlined
+                                        dense
+                                        :error-messages="errors.imgTextButtonImgData.image2"
+                                        @change="checkErrors('imgTextButtonImgData', 'image2')"
+                                    ></v-file-input>
+                                </div>
+                                <div class="fields">
+                                    <div>
+                                        <v-text-field
+                                            v-model="imgTextButtonImgData.btnName"
+                                            label="Գրել կոճակի անունը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.imgTextButtonImgData.btnName"
+                                            @input="checkErrors('imgTextButtonImgData', 'btnName')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                    <div>
+                                        <v-text-field
+                                            v-model="imgTextButtonImgData.btnLink"
+                                            label="Գրել կոճակի հղումը"
+                                            solo
+                                            color="#253266"
+                                            class="rounded-lg"
+                                            :error-messages="errors.imgTextButtonImgData.btnLink"
+                                            @input="checkErrors('imgTextButtonImgData', 'btnLink')"
+                                        >
+                                        </v-text-field>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <vue-editor
+                                        v-model="imgTextButtonImgData.text"
+                                        @input="checkErrors('imgTextButtonImgData', 'text')"
+                                    ></vue-editor>
+                                    <p class="error-message">{{errors.imgTextButtonImgData.text[0]}}</p>
+                                </div>
+                                <div class="bottom-field">
+                                    <div>
+                                        <div>
+                                            <label class="checkbox-content">
+                                                <input
+                                                    v-model="mailingImg"
+                                                    type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <img src="/images/mailing.png" alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="attach-file-text">{{ buttonText }}</div>
+                                        <div class="add-photo">
+                                            <div class="icon">
+                                                <div>
+                                                    <v-btn
+                                                        color="#253266"
+                                                        class="text-none"
+                                                        round
+                                                        depressed
+                                                        :loading="isSelecting"
+                                                        @click="onButtonClick"
+                                                    >
+                                                        <div class="attach-file-content">
+                                                            <v-icon>mdi-attachment</v-icon>
+                                                        </div>
+                                                    </v-btn>
+                                                    <input
+                                                        ref="uploader"
+                                                        class="d-none"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        @change="onFileChanged"
+                                                    >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button @click="sendEmailImgTextButtonImg">Ուղարկել</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -150,10 +825,11 @@
                                     hi
                                     hide-details
                                     color="#253266"
+                                    @input="searchMessageData"
                                 ></v-text-field>
                             </div>
                            <div>
-                               <img src="/images/removeIcon.png" alt="">
+                               <img v-if="selectedMessages.length" @click="deleteMessageDialog = true" src="/images/removeIcon.png" alt="">
                            </div>
                        </div>
                         <div class="message-list">
@@ -163,46 +839,41 @@
                                 <div>Թեմա</div>
                                 <div>Ամսաթիվ</div>
                             </div>
-                            <div class="list">
+                            <div v-for="item in messages" class="list">
                                 <div>
                                     <label class="checkbox-content">
-                                        <input type="checkbox">
+                                        <input v-model="selectedMessages" :value="item.id" type="checkbox">
                                         <span class="checkmark"></span>
                                     </label>
                                     <div class="img"><img src="/images/Group.png" alt=""></div>
-                                    <div class="name">hovo1997mkrtchyan@gmail.com</div>
+                                    <div style="cursor: pointer" @click="openModalDialog(item)" class="name">{{item.from}}</div>
                                 </div>
                                 <div>
-                                    <img src="/images/company.png" alt="">
-                                    <div>Առողջապահություն</div>
+                                    <img style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover" :src="item.group ? item.group.image : '/images/Group.png'" alt="">
+                                    <div>{{item.group ? item.group.name : item.email}}</div>
                                 </div>
                                 <div>
-                                   <div>Եթե Ձեր ամբողջ ...</div>
+                                   <div style="
+                                        width: 100px;
+                                        overflow: hidden;
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 1;
+                                        -webkit-box-orient: vertical;
+                                        word-break: break-all;"
+                                        v-html="item.subject"
+                                   ></div>
                                 </div>
                                 <div>
-                                    <div>19.01.2023</div>
+                                    <div>{{item.created_at}}</div>
                                 </div>
                             </div>
-                            <div class="list">
-                                <div>
-                                    <label class="checkbox-content">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <div class="img"><img src="/images/Group.png" alt=""></div>
-                                    <div class="name">hovo1997mkrtchyan@gmail.com</div>
-                                </div>
-                                <div>
-                                    <img src="/images/company.png" alt="">
-                                    <div>Առողջապահություն</div>
-                                </div>
-                                <div>
-                                    <div>Եթե Ձեր ամբողջ ...</div>
-                                </div>
-                                <div>
-                                    <div>19.01.2023</div>
-                                </div>
-                            </div>
+<!--                            <v-pagination-->
+<!--                                class="users-pagination"-->
+<!--                                v-model="pagination.current"-->
+<!--                                :length="pagination.total"-->
+<!--                                :total-visible="7"-->
+<!--                                @input="onPageChange"-->
+<!--                            ></v-pagination>-->
                         </div>
                     </div>
                 </div>
@@ -211,31 +882,60 @@
         <loader v-if="loading" object="#03c200" color1="#ffffff" color2="#1fd13d" size="5" speed="2" bg="#343a40" objectbg="#999793" opacity="80" disableScrolling="false" name="dots"></loader>
         <!--NOTIFICATION-->
         <notifications group="auth"/>
-        <!--Delete category-->
         <v-dialog
-            v-model="addBtnText"
-            max-width="350"
+            v-model="dialog"
+            width="500"
         >
             <v-card>
-                <v-card-title>
-                    <div style="width: 100%;" class="mb-3">
-                        <v-text-field
-                            label="Գրել կոճակի անունը"
-                            solo
-                            color="#253266"
-                            hide-details
-                        >
-                        </v-text-field>
+                <v-card-title class="dialog-message-title">
+                    <span class="text-h5">ՈՒՂԱՐԿՎԱԾ ՆԱՄԱԿ</span>
+                </v-card-title>
+                <v-card-text>
+                    <div class="container message-modal-block">
+                        <div v-for="item in messageData.file" class="image-content">
+                            <a v-if="item.image_path" :href="item.image_link">
+                                <img style="width: 100%" :src="item.image_path" alt="">
+                            </a>
+                        </div>
+                        <div class="message-content" v-html="messageData.message"></div>
+                        <div class="btn-content">
+                            <a v-if="messageData.btn_link" :href="messageData.btn_link">
+                               {{messageData.btn_name}}
+                            </a>
+                        </div>
+                        <div v-for="item in messageData.file" class="image-content">
+                            <a v-if="item.image_bottom_path" :href="item.image_link">
+                                <img style="width: 100%" :src="item.image_bottom_path" alt="">
+                            </a>
+                        </div>
+                        <div class="checked-img">
+                            <img v-if="messageData.mailing_image == 1" src="/images/mailing.png" alt="">
+                        </div>
+                        <div v-for="item in messageData.file" class="image-content">
+                           <a v-if="item.file_path" :href="item.file_path">Ֆայլ - {{item.file_name}}</a>
+                        </div>
                     </div>
-                    <div style="width: 100%;">
-                        <v-text-field
-                            label="Գրել հղումը"
-                            solo
-                            color="#253266"
-                            hide-details
-                        >
-                        </v-text-field>
-                    </div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="#253266 dark"
+                        variant="text"
+                        @click="dialog = false"
+                    >
+                        Փակել
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!--Delete Message-->
+        <v-dialog
+            v-model="deleteMessageDialog"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="text-h5">
+                    <span style="font-size: 16px; color: #253266">Վստահ եք որ ուզում եք ջնջել?</span>
                 </v-card-title>
 
                 <v-card-actions>
@@ -244,9 +944,17 @@
                     <v-btn
                         color="red"
                         text
-                        @click="addBtnText = false"
+                        @click="deleteMessageDialog = false"
                     >
-                        Փակել
+                        Չեղարկել
+                    </v-btn>
+
+                    <v-btn
+                        color="#253266"
+                        text
+                        @click="deleteSelectedMessages"
+                    >
+                        Հաստատել
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -267,8 +975,19 @@ export default {
     },
     data: () => {
         return {
+            pagination: {
+                current: 1,
+                total: 0
+            },
             loading: false,
-            addBtnText: false,
+            imgLink: true,
+            imgButton: false,
+            isSelecting: false,
+            imgText: false,
+            imgTextButton: false,
+            textButton: false,
+            deleteMessageDialog: false,
+            imgTextButtonImg: false,
             messageList: false,
             messageBox: true,
             dialog: false,
@@ -277,29 +996,149 @@ export default {
             isSelectingBottomImg: false,
             selectedFileTopImg: null,
             selectedFileBottomImg: null,
-            headers: [
-                {text: 'Ումից', value: 'from',},
-                { text: 'Ում', value: 'to' },
-                { text: 'Թեմա', value: 'subject' },
-                { text: 'Ամսաթիվ', value: 'date' },
-            ],
-            desserts: [
-                {
-                    from: 'Frozen Yogurt',
-                    to: 'Առողջապահություն',
-                    subject: 'Եթե Ձեր ամբողջ ...',
-                    date: '19.01.2023',
+            selectedFile: null,
+            selectedMessages: [],
+            emailSettings: [],
+            categories: [],
+            messages: [],
+            messageData: [],
+            mailingImg: null,
+            imgLinkData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                image: null,
+                imgLink: '',
+            },
+
+            imgBtnData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                image: null,
+                btnName: '',
+                btnLink: '',
+            },
+
+            imgTextData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                image: null,
+                text: '',
+            },
+
+            imgTextButtonData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                image: null,
+                text: '',
+                btnName: '',
+                btnLink: '',
+            },
+
+            textButtonData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                text: '',
+                btnName: '',
+                btnLink: '',
+            },
+
+            imgTextButtonImgData: {
+                from: '',
+                to: '',
+                categoryIds: '',
+                subject: '',
+                image: null,
+                image2: null,
+                text: '',
+                btnName: '',
+                btnLink: '',
+            },
+
+            errors: {
+                imgLinkData: {
+                    from: '',
+                    categoryIds: '',
+                    subject: '',
+                    image: '',
+                    imgLink: '',
                 },
-                {
-                    from: 'Frozen Yogurt',
-                    to: 'Առողջապահություն',
-                    subject: 'Եթե Ձեր ամբողջ ...',
-                    date: '19.01.2023',
+
+                imgBtnData: {
+                    from: '',
+                    to: '',
+                    categoryIds: '',
+                    subject: '',
+                    image: '',
+                    btnName: '',
+                    btnLink: '',
                 },
-            ],
+
+                imgTextData: {
+                    from: '',
+                    to: '',
+                    categoryIds: '',
+                    subject: '',
+                    image: '',
+                    text: '',
+                },
+
+                imgTextButtonData: {
+                    from: '',
+                    to: '',
+                    categoryIds: '',
+                    subject: '',
+                    image: '',
+                    text: '',
+                    btnName: '',
+                    btnLink: '',
+                },
+
+                textButtonData: {
+                    from: '',
+                    to: '',
+                    categoryIds: '',
+                    subject: '',
+                    text: '',
+                    btnName: '',
+                    btnLink: '',
+                },
+
+                imgTextButtonImgData: {
+                    from: '',
+                    to: '',
+                    categoryIds: '',
+                    subject: '',
+                    image: '',
+                    image2: '',
+                    text: '',
+                    btnName: '',
+                    btnLink: '',
+                },
+            }
         }
     },
+
     async created() {
+        await this.getEmailSetting()
+        await this.getCategory()
+        await this.getMessages()
+        this.imgLinkData.from = this.emailSettings[0].email
+        this.imgBtnData.from = this.emailSettings[0].email
+        this.imgTextData.from = this.emailSettings[0].email
+        this.imgTextButtonData.from = this.emailSettings[0].email
+        this.textButtonData.from = this.emailSettings[0].email
+        this.imgTextButtonImgData.from = this.emailSettings[0].email
+
         if (window.location.search === '?messages') {
             this.messageBox = false
             this.messageList = true
@@ -307,7 +1146,9 @@ export default {
     },
 
     computed: {
-
+        buttonText() {
+            return this.selectedFile ? this.selectedFile.name : this.defaultButtonText
+        }
     },
 
     methods: {
@@ -319,8 +1160,114 @@ export default {
             }
         },
 
+
+        onPageChange() {
+            this.getUsers();
+        },
+
+        async searchMessageData() {
+            const formData =  new FormData()
+            formData.append('query', this.search)
+
+            await axios.post('/api/search-messages', formData).then(response => {
+                this.messages = response.data.messages
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        openModalDialog(data) {
+            this.messageData = data
+            this.dialog = true
+        },
+
+        async getMessages() {
+            await axios.get('/api/get-messages?page=' + this.pagination.current).then(response => {
+                this.messages = response.data.messages
+                this.pagination.current = response.data.current_page;
+                this.pagination.total = response.data.last_page;
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        onButtonClick() {
+            this.isSelecting = true
+            window.addEventListener('focus', () => {
+                this.isSelecting = false
+            }, { once: true })
+
+            this.$refs.uploader.click()
+        },
+
+        onFileChanged(e) {
+            this.selectedFile = e.target.files[0]
+        },
+
+        openImgLink() {
+            this.imgLink = true
+            this.imgButton = false
+            this.imgText = false
+            this.imgTextButton = false
+            this.textButton = false
+            this.imgTextButtonImg = false
+        },
+
+        openImgButton() {
+            this.imgLink = false
+            this.imgButton = true
+            this.imgText = false
+            this.imgTextButton = false
+            this.textButton = false
+            this.imgTextButtonImg = false
+        },
+
+        openImgText() {
+            this.imgLink = false
+            this.imgButton = false
+            this.imgText = true
+            this.imgTextButton = false
+            this.textButton = false
+            this.imgTextButtonImg = false
+        },
+
+        openImgTextButton() {
+            this.imgLink = false
+            this.imgButton = false
+            this.imgText = false
+            this.imgTextButton = true
+            this.textButton = false
+            this.imgTextButtonImg = false
+        },
+
+        openTextButton() {
+            this.imgLink = false
+            this.imgButton = false
+            this.imgText = false
+            this.imgTextButton = false
+            this.textButton = true
+            this.imgTextButtonImg = false
+        },
+
+        openImgTextButtonImg() {
+            this.imgLink = false
+            this.imgButton = false
+            this.imgText = false
+            this.imgTextButton = false
+            this.textButton = false
+            this.imgTextButtonImg = true
+        },
+
         async getEmailSetting() {
-            await axios.post('/api/email').then(response => {
+            await axios.post('/api/get-emails-setting').then(response => {
+                this.emailSettings = response.data.emails
+            }).catch(error => {
+                console.log(error)
+            })
+        },
+
+        async getCategory() {
+            await axios.post('/api/get-category').then(response => {
                 this.categories = response.data.categories
             }).catch(error => {
                 console.log(error)
@@ -331,31 +1278,446 @@ export default {
             this.messageBox = false
             this.messageList = true
         },
+
         openMessageBox() {
             this.messageBox = true
             this.messageList = false
-        }
+        },
+
+        async sendEmailImgLink() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.imgLinkData.from)
+            formData.append('to', this.imgLinkData.to)
+            formData.append('categoryIds', this.imgLinkData.categoryIds)
+            formData.append('subject', this.imgLinkData.subject)
+            formData.append('image', this.imgLinkData.image ?? '')
+            formData.append('imgLink', this.imgLinkData.imgLink)
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-img-link', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.imgLinkData.from = ''
+                this.imgLinkData.to = ''
+                this.imgLinkData.categoryIds = ''
+                this.imgLinkData.subject = ''
+                this.imgLinkData.image = ''
+                this.imgLinkData.imgLink = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.imgLinkData = Object.assign(this.errors.imgLinkData, error.response.data.errors)
+            })
+
+        },
+
+        async sendEmailImgBtn() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.imgBtnData.from)
+            formData.append('to', this.imgBtnData.to)
+            formData.append('categoryIds', this.imgBtnData.categoryIds)
+            formData.append('subject', this.imgBtnData.subject)
+            formData.append('image', this.imgBtnData.image ?? '')
+            formData.append('btnLink', this.imgBtnData.btnLink)
+            formData.append('btnName', this.imgBtnData.btnName)
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-img-btn', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.imgBtnData.from = ''
+                this.imgBtnData.to = ''
+                this.imgBtnData.categoryIds = ''
+                this.imgBtnData.subject = ''
+                this.imgBtnData.image = ''
+                this.imgBtnData.btnLink = ''
+                this.imgBtnData.btnName = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.imgBtnData = Object.assign(this.errors.imgBtnData, error.response.data.errors)
+            })
+
+        },
+
+        async sendEmailImgTextData() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.imgTextData.from)
+            formData.append('to', this.imgTextData.to)
+            formData.append('categoryIds', this.imgTextData.categoryIds)
+            formData.append('subject', this.imgTextData.subject)
+            formData.append('image', this.imgTextData.image ?? '')
+            formData.append('text', this.imgTextData.text)
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-img-text', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.imgTextData.from = ''
+                this.imgTextData.to = ''
+                this.imgTextData.categoryIds = ''
+                this.imgTextData.subject = ''
+                this.imgTextData.image = ''
+                this.imgTextData.text = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.imgTextData = Object.assign(this.errors.imgTextData, error.response.data.errors)
+            })
+
+        },
+
+        async sendEmailImgTextButton() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.imgTextButtonData.from)
+            formData.append('to', this.imgTextButtonData.to)
+            formData.append('categoryIds', this.imgTextButtonData.categoryIds)
+            formData.append('subject', this.imgTextButtonData.subject)
+            formData.append('image', this.imgTextButtonData.image ?? '')
+            formData.append('text', this.imgTextButtonData.text)
+            formData.append('btnLink', this.imgTextButtonData.btnLink)
+            formData.append('btnName', this.imgTextButtonData.btnName)
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-img-text-btn', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.imgTextButtonData.from = ''
+                this.imgTextButtonData.to = ''
+                this.imgTextButtonData.categoryIds = ''
+                this.imgTextButtonData.subject = ''
+                this.imgTextButtonData.image = ''
+                this.imgTextButtonData.btnLink = ''
+                this.imgTextButtonData.btnName = ''
+                this.imgTextButtonData.text = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.imgTextButtonData = Object.assign(this.errors.imgTextButtonData, error.response.data.errors)
+            })
+
+        },
+
+        async sendEmailTextButton() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.textButtonData.from)
+            formData.append('to', this.textButtonData.to)
+            formData.append('categoryIds', this.textButtonData.categoryIds)
+            formData.append('subject', this.textButtonData.subject)
+            formData.append('text', this.textButtonData.text)
+            formData.append('btnLink', this.textButtonData.btnLink)
+            formData.append('btnName', this.textButtonData.btnName)
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-text-btn', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.textButtonData.from = ''
+                this.textButtonData.to = ''
+                this.textButtonData.categoryIds = ''
+                this.textButtonData.subject = ''
+                this.textButtonData.btnLink = ''
+                this.textButtonData.btnName = ''
+                this.textButtonData.text = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.textButtonData = Object.assign(this.errors.textButtonData, error.response.data.errors)
+            })
+
+        },
+
+        async sendEmailImgTextButtonImg() {
+            this.loading = true;
+            const formData = new FormData()
+            formData.append('from', this.imgTextButtonImgData.from)
+            formData.append('to', this.imgTextButtonImgData.to)
+            formData.append('categoryIds', this.imgTextButtonImgData.categoryIds)
+            formData.append('subject', this.imgTextButtonImgData.subject)
+            formData.append('text', this.imgTextButtonImgData.text)
+            formData.append('btnLink', this.imgTextButtonImgData.btnLink)
+            formData.append('btnName', this.imgTextButtonImgData.btnName)
+            formData.append('image', this.imgTextButtonImgData.image ?? '')
+            formData.append('image2', this.imgTextButtonImgData.image2 ?? '')
+            formData.append('file', this.selectedFile)
+            formData.append('mailingImg', this.mailingImg ? '/images/mailing.png' : null)
+
+            await axios.post('/api/send-email-img-text-btn-img', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակը հաջողությամբ ուղարկված է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.imgTextButtonImgData.from = ''
+                this.imgTextButtonImgData.to = ''
+                this.imgTextButtonImgData.categoryIds = ''
+                this.imgTextButtonImgData.subject = ''
+                this.imgTextButtonImgData.btnLink = ''
+                this.imgTextButtonImgData.btnName = ''
+                this.imgTextButtonImgData.text = ''
+                this.imgTextButtonImgData.image = ''
+                this.imgTextButtonImgData.image2 = ''
+                this.selectedFile = ''
+                this.mailingImg = ''
+                this.loading = false
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.imgTextButtonImgData = Object.assign(this.errors.imgTextButtonImgData, error.response.data.errors)
+            })
+
+        },
+
+        async deleteSelectedMessages() {
+            this.loading = true
+            await axios.post('/api/delete-selected-messages', {ids:this.selectedMessages}).then(response => {
+                this.$notify({
+                    group: 'auth',
+                    type: 'success',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Նամակները հաջողությամբ ջնջվել է' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.loading = false
+                this.getEmailSetting()
+                this.getCategory()
+                this.getMessages()
+                this.deleteMessageDialog  = false
+                this.selectedMessages  = ''
+            }).catch(error => {
+                this.loading = false
+                this.$notify({
+                    group: 'auth',
+                    type: 'Danger',
+                    text: '<i class="fa fa-check-circle" aria-hidden="true"></i> Գործողությունը չհաջողվեց' ,
+                    duration: 1000,
+                    speed: 1000
+                })
+                this.errors.defaultCategoryData = Object.assign(this.errors.defaultCategoryData, error.response.data.errors)
+            })
+        },
     }
 }
 </script>
 
 <style scoped lang="scss">
+.dialog-message-title {
+    font-family: 'Arial AMU';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 34px;
+    color: #253266;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #253266;
+    justify-content: center;
+}
+.field {
+    select {
+        width: 100%;
+        height: 40px;
+        box-shadow: unset !important;
+        background: #EAEAEA !important;
+        color: rgba(0,0,0,.87) !important;
+        border-radius: 15px !important;
+        padding: 0 12px;
+        outline: 0;
+    }
+    .error-message {
+        &.setting {
+            margin-bottom: 25px;
+        }
+    }
+}
+.select-field {
+    position: relative;
+    > img {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+}
+.message-modal-block {
+    .image-content {
+        margin-bottom: 30px;
+    }
+    .message-content {
+        margin-bottom: 30px;
+    }
+    .btn-content {
+        display: flex;
+        justify-content: center;
+        a {
+            background: #253266;
+            color: #ffffff;
+            padding: 10px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            line-height: 22px;
+            border-radius: 6px;
+        }
+    }
+}
+.error-message {
+    color: red !important;
+    font-size: 12px;
+    line-height: 12px;
+    margin: 5px 0;
+}
+.text-none {
+    height: 45px !important;
+    margin-right: 15px;
+}
+.attach-file-text {
+    width: 90px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+    margin-right: 10px;
+}
+    .fields {
+        display: flex;
+        justify-content: space-between;
+        > div {
+            width: calc(100% / 2 - 20px);
+        }
+    }
     .field-attachment {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 20px;
-        .btn-content {
+        > .btn-content {
             margin-left: 10px;
             margin-top: -6px;
+            button {
+                &.active {
+                    background: #253266;
+                    color: #ffffff;
+                }
+            }
         }
         > div {
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
+            flex-wrap: wrap;
             button {
-                width: 100%;
+                width: 30%;
                 background: #EAEAEA;
                 height: 45px;
                 border-radius: 5px;
@@ -365,6 +1727,8 @@ export default {
                 font-weight: 400;
                 font-size: 18px;
                 line-height: 18px;
+                margin-right: 20px;
+                margin-bottom: 20px;
             }
         }
     }
@@ -380,9 +1744,28 @@ export default {
     .bottom-field {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         > div {
-            &:first-child {
-                width: 20px;
+            &:last-child {
+                display: flex;
+            }
+        }
+        button {
+            height: 45px;
+            padding: 0 50px;
+            border: 0;
+            background: #253266;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        img {
+            margin-left: 20px;
+        }
+        .checkbox-content {
+            margin: 0;
+            .checkmark {
+                top: 20px;
             }
         }
     }
@@ -394,7 +1777,7 @@ export default {
             .mailing-left-menu {
                 height: 100vh;
                 background: #E8E8E8;
-                width: 350px;
+                min-width: 350px;
                 padding: 50px;
                 border-radius: 15px 0 0 15px;
                 .menu {
@@ -476,9 +1859,6 @@ export default {
                     align-items: flex-start;
                     .mailing-box {
                         margin-top: 30px;
-                    }
-                    .field {
-                        margin-bottom: 20px;
                     }
                     .close-modal {
                         width: 10%;

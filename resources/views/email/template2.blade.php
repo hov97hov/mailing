@@ -8,50 +8,31 @@
     <title>Document</title>
 </head>
 <body>
-    <div style="width: 100%">
+    <div style="width: 300px; text-align: center">
         <div>
-            @if($files)
-                @foreach($files as $file)
-                    ներբեռնել ֆայլ - <a href="{{asset($file[1])}}" target="_blank" download>{{$file[0]}}</a> <br> <br>
-                @endforeach
-            @endif
+            <img style="width: 100%" src="{{env('app_url').$data['image'][0][1]}}" alt="">
         </div>
-        <div style="width: 100%">
-            <img style="width: 100%" src="{{asset('/images/template/1.jpg')}}">
-        </div>
-        <div style="margin: 20px 0">
-            {!! $data['text'] ?? ''!!}
-        </div>
-        <div style="width: 100%; position: relative">
-            @if(isset($data['link']))
-                <div style="
-                background-image: url({{asset('/images/template/2.jpg')}});
-                background-size: 100%;
-                background-repeat: no-repeat;
-                height: 293px;
-                width: 100%;
-                display: flex;
-                ">
-
-                    <a style="
-                   color: #59639a;
-                    border: 2px solid #59639a;
-                    border-radius: 5px;
-                    text-decoration: none;
-                    font-size: 16px;
-                    width: 180px;
-                    text-align: center;
-                    height: 30px;
-                    margin: 27% auto;
-                    padding-top: 5px;
-                     "
-                     href="{{$data['link']}}"
-                    >
-                        Անցնել հղմամբ
-                    </a>
-                </div>
-            @endif
-        </div>
+        <br>
+        <br>
+        <a style="padding: 10px 30px; border-radius: 6px; border: 0; background: #253266; color: #ffffff; text-decoration: none" href="{{$data['btnLink']}}">
+            {{$data['btnName']}}
+        </a>
+    </div>
+    <br>
+    <br>
+    <div>
+        @if($files)
+            @foreach($files as $file)
+                ֆայլ - <a href="{{env('app_url').$file[1]}}" download>{{$file[0]}}</a> <br> <br>
+            @endforeach
+        @endif
+    </div>
+    <br>
+    <br>
+    <div>
+        @if($data['mailingImg'] != 'null')
+            <img  src="{{env('app_url').$data['mailingImg']}}">
+        @endif
     </div>
 </body>
 </html>

@@ -67,8 +67,9 @@ class SettingController extends Controller
 
     public function getEmails()
     {
+        $emails = Email::query()->get();
         return response()->json([
-            'emails' => Email::query()->get()
+            'emails' => $emails
         ]);
     }
 

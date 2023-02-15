@@ -12,6 +12,11 @@ class Attachment extends Model
     protected $fillable = [
         'file_name',
         'file_path',
-        'message_id'
+        'message_id',
+        'image_name',
+        'image_path',
+        'image_bottom_name',
+        'image_bottom_path',
+        'image_link',
     ];
 }

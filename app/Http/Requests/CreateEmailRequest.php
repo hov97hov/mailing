@@ -44,7 +44,7 @@ class CreateEmailRequest extends FormRequest
             'from.required' => 'դաշտը պարտադիր է:',
             'header.required' => 'դաշտը պարտադիր է:',
             'port.required' => 'դաշտը պարտադիր է:',
-            'encryption.required' => 'Էլփոստի դաշտը պարտադիր է:',
+            'encryption.required' => 'դաշտը պարտադիր է:',
             'username.required' => 'դաշտը պարտադիր է:',
             'password.required' => 'դաշտը պարտադիր է:',
         ];

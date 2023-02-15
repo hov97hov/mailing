@@ -292,4 +292,34 @@ class GroupsController extends Controller
             'categories' => $category
         ]);
     }
+
+    public function searchMessages(Request $request): JsonResponse
+    {
+        $messages = Message::where('subject', 'like', '%' . $request['query'] . '%')->with('group')->get();
+
+        return response()->json([
+            'messages' => $messages
+        ]);
+    }
+
+    public function searchEmails(Request $request): JsonResponse
+    {
+        $emails = Contact::where('name', 'like', '%' . $request['query'] . '%')->with('group')->get();
+
+        return response()->json([
+            'emails' => $emails
+        ]);
+    }
+
+    public function deleteSelectedCategories(Request $request)
+    {
+        return Group::whereIn('id', $request->ids)->delete();
+    }
+
+    public function deleteSelectedEmailGroup(Request $request)
+    {
+        foreach ($request->ids as $key => $item) {
+            ContactGroup::where(['id' => $item, 'group_id' => $request->categoryId])->delete();
+        }
+    }
 }

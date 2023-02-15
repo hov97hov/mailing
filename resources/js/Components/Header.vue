@@ -27,6 +27,12 @@
                                 <span>Ավելացնել կատեգորիա</span>
                             </v-btn>
                         </div>
+                        <div class="img-content" v-click-outside="hide">
+                            <img @click="isActive = !isActive" src="/images/Group.png" alt="">
+                            <div v-if="isActive" class="logout">
+                                <div @click="logout">Դուրս գալ</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -135,12 +141,13 @@
 
 <script>
 import axios from "axios";
-
+import ClickOutside from 'vue-click-outside'
 export default {
     name: "home",
     data: () => {
         return {
-            addCategoryDialog: false
+            addCategoryDialog: false,
+            isActive: false,
         }
     },
     async created() {
@@ -152,6 +159,9 @@ export default {
             } else {
                 this.errors[field] = ''
             }
+        },
+        hide() {
+          this.isActive = false
         },
         createCategoryPage() {
             location.href = '/groups'
@@ -166,6 +176,10 @@ export default {
                 })
             })
         }
+    },
+
+    directives: {
+        ClickOutside
     }
 }
 </script>
@@ -199,6 +213,28 @@ export default {
             }
             .header-last {
                 display: flex;
+                align-items: center;
+                .img-content {
+                    position: relative;
+                    img {
+                        margin-left: 30px;
+                        cursor: pointer;
+                    }
+                    .logout {
+                        position: absolute;
+                        top: 28px;
+                        padding: 10px;
+                        background: #ffffff;
+                        border-radius: 6px;
+                        width: 100px;
+                        box-shadow: 0px 0px 5px -4px;
+                        right: -38px;
+                        z-index: 99;
+                        div {
+                            cursor: pointer;
+                        }
+                    }
+                }
                 .create-btn {
                     background: transparent !important;
                     box-shadow: unset !important;

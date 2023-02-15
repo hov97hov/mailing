@@ -28,15 +28,18 @@ class SendEmailJob implements ShouldQueue
      */
     public function __construct($details)
     {
+
+
+
         $this->details = $details;
-        $settings = Email::where('email', $this->details['from'])->first();
+        $settings = Email::where('email',$details['from'])->first();
 
         Config::set('mail.mailers.smtp.host', $settings->host);
         Config::set('mail.mailers.smtp.port', $settings->port);
         Config::set('mail.mailers.smtp.encryption', $settings->encryption);
         Config::set('mail.mailers.smtp.username', $settings->username);
         Config::set('mail.mailers.smtp.password', $settings->password);
-        Config::set('mail.mailers.smtp.from', $details['from']);
+        Config::set('mail.mailers.smtp.from', $settings->email);
         Config::set('mail.mailers.smtp.header', $settings->header);
     }
 

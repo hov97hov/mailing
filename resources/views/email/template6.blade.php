@@ -8,20 +8,46 @@
     <title>Document</title>
 </head>
 <body>
-    <div style="width: 100%">
+    <div>
         <div>
-            @if($files)
-                @foreach($files as $file)
-                    ներբեռնել ֆայլ - <a href="{{asset($file[1])}}" target="_blank" download>{{$file[0]}}</a> <br> <br>
-                @endforeach
-            @endif
+            <img style="width: 100%" src="{{env('app_url').$data['image'][0][1]}}" alt="">
         </div>
-        <div style="width: 100%">
-            <img style="width: 100%" src="{{asset('/images/template/6.jpg')}}">
+        <br>
+        <br>
+        <br>
+        <br>
+        <div>
+            {!! $data['text'] !!}
         </div>
-        <div style="margin: 20px 0">
-            {!! $data['text'] ?? ''!!}
+        <br>
+        <br>
+        <div style="text-align: center">
+            <a style="padding: 10px 30px; border-radius: 6px; border: 0; background: #253266; color: #ffffff; text-decoration: none" href="{{$data['btnLink']}}">
+                {{$data['btnName']}}
+            </a>
         </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div>
+            <img style="width: 100%" src="{{env('app_url').$data['image2'][0][1]}}" alt="">
+        </div>
+    </div>
+    <br>
+    <div>
+        @if($files)
+            @foreach($files as $file)
+                ֆայլ - <a href="{{env('app_url').$file[1]}}" download>{{$file[0]}}</a> <br> <br>
+            @endforeach
+        @endif
+    </div>
+    <br>
+    <br>
+    <div>
+        @if($data['mailingImg'] != 'null')
+            <img  src="{{env('app_url').$data['mailingImg']}}">
+        @endif
     </div>
 </body>
 </html>

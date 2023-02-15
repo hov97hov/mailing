@@ -100,14 +100,19 @@ class ContactController extends Controller
         ]);
     }
 
-    public function search(Request $request): JsonResponse
+    public function searchContact(Request $request): JsonResponse
     {
-//        $categories = Group::where('id', $request->categoryId)->with(['contact' => function($query) use ($request) {
-//            $query->where('name', 'like', '%' . $request['query'] . '%');
-//        }])->get();
+        $emails = Contact::whereHas('group', function($query) use ($request){
+            $query->where('group_id',$request->categoryId);
+        })->where('email', 'like', '%' . $request['query'] . '%')->get();
 
-//        return response()->json([
-//            'category' => $categories
-//        ]);
+        return response()->json([
+            'categories' => $emails
+        ]);
+    }
+
+    public function deleteSelectedEmails(Request $request)
+    {
+        return Contact::whereIn('id', $request->ids)->delete();
     }
 }

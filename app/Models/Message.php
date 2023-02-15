@@ -13,17 +13,22 @@ class Message extends Model
         'archived',
         'message',
         'subject',
-        'user_id',
-        'contact_id',
+        'from',
+        'email',
+        'group_id',
+        'btn_name',
+        'btn_link',
+        'mailing_image',
+        'image_link',
     ];
 
     protected $casts = [
         'created_at' => 'datetime:d/m/Y - H:i',
     ];
 
-    public function contact()
+    public function group()
     {
-        return $this->belongsTo(Contact::class);
+        return $this->belongsTo(Group::class);
     }
 
     public function file()

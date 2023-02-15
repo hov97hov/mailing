@@ -26,6 +26,9 @@ ul {
     color: red !important;
 }
 
+.v-overlay__scrim {
+    background: transparent !important;
+}
 
 .round {
     position: relative;
