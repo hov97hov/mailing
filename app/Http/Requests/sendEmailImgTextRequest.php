@@ -41,6 +41,7 @@ class sendEmailImgTextRequest extends FormRequest
             'subject.required' => 'դաշտը պարտադիր է:',
             'image.required' => 'դաշտը պարտադիր է:',
             'text.required' => 'դաշտը պարտադիր է:',
+            'image.max' => 'նկարի չափսը չպետք է գերազանցի 1.6mb - ը:',
         ];
     }
 }

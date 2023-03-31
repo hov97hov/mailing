@@ -22,25 +22,25 @@
                         <ul>
                             <li>
                                 <a href="/?messages">
-                                    <img src="/images/send.png">
+                                    <img class="sent" src="/images/sent.png">
                                     <span>Նամակներ</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/groups">
-                                    <img src="/images/category.png">
+                                    <img class="category" src="/images/categories.png">
                                     <span>Կատեգորիաներ</span>
                                 </a>
                             </li>
                             <li class="emails">
                                 <a href="/emails">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/mails.png">
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/add-email-setting">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/addmails.png">
                                     <span>Ավելացնել Էլ․ հասցե</span>
                                 </a>
                             </li>
@@ -109,7 +109,7 @@
                         </div>
                         <div class="search-content">
                             <div>
-                                <img v-if="selectedEmails.length" @click="deleteEmailsDialog = true" src="/images/removeIcon.png" alt="">
+                                <img width="25" v-if="selectedEmails.length" @click="deleteEmailsDialog = true" src="/images/removeIcon.png" alt="">
                             </div>
                             <div class="search">
                                 <v-text-field
@@ -126,52 +126,65 @@
                             </div>
                         </div>
                         <div class="category-messages-list">
-                            <div class="header">
-                                <div>Անուն</div>
-                                <div>Էլ․ փոստ</div>
-                                <div>Կատեգորիա</div>
-                                <div></div>
-                            </div>
-                            <div class="items" v-click-outside="hide">
-                                <div class="item" v-for="item in emails">
-                                    <label class="checkbox-content">
-                                        <input v-model="selectedEmails" :value="item.id" type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <div class="ids">{{item.id}}</div>
-                                    <div class="last-block">
-                                        <div class="name">{{item.name}}</div>
-                                        <div class="email">{{item.email}}</div>
-                                        <div class="category">
-                                            <span v-for="group in item.group">
-                                                <span>{{group.name}}</span> <br>
-                                            </span>
-                                        </div>
-                                        <div class="actions">
-                                            <div>
-                                                <img @click="editEmailModal(item)" src="/images/pencil.png" alt="">
-                                            </div>
-                                            <div class="view-user-info">
-                                                <img @click="openModal(item.id)" src="/images/Subtract.png" alt="">
-                                                <div class="user-info" v-if="isActive === item.id">
-                                                   {{item.description}}
+                            <div>
+                                <div class="header-content">
+                                    <div class="header">
+                                        <div>Անուն</div>
+                                        <div>Էլ․ փոստ</div>
+                                        <div>Կատեգորիա</div>
+                                    </div>
+                                </div>
+                                <div class="items">
+                                    <div
+                                        class="item"
+                                        v-for="(item, i) in emails"
+                                        :class="{active : selectedEmails.includes(item.id)}"
+                                    >
+                                        <label class="checkbox-content">
+                                            <input v-model="selectedEmails" :value="item.id" type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <div class="ids">{{i +1}}</div>
+                                        <div class="last-block">
+                                            <div class="name">{{item.name}}</div>
+                                            <div class="email">{{item.email}}</div>
+                                            <div class="category">
+                                                <span v-for="(group, index) in item.group">
+                                                    {{ group.name }}
+                                                </span>
+                                                <div @click="openModalCategory(item.id)"  class="more-categories" v-if="item.group.length">...</div>
+                                                <div v-click-outside="hideCategory" class="category-info" v-if="isActiveCategory === item.id">
+                                                     <div v-for="(group, index) in item.group">
+                                                        {{ group.name }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <img @click="openDeleteEmailDialog(item.id)" src="/images/removeIocn.png" alt="">
+                                            <div class="actions">
+                                                <div>
+                                                    <img @click="editEmailModal(item)" src="/images/pencil.png" alt="">
+                                                </div>
+                                                <div class="view-user-info">
+                                                    <img @click="openModal(item.id)" src="/images/Subtract.png" alt="">
+                                                    <div v-click-outside="hide" class="user-info" v-if="isActive === item.id">
+                                                        {{item.description}}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <img @click="openDeleteEmailDialog(item.id)" src="/images/removeIocn.png" alt="">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <v-pagination
+                                    class="paginate-content"
+                                    v-model="pagination.current"
+                                    :length="pagination.total"
+                                    :total-visible="7"
+                                    @input="onPageChange"
+                                    color="#253266"
+                                ></v-pagination>
                             </div>
-                            <v-pagination
-                                class="paginate-content"
-                                v-model="pagination.current"
-                                :length="pagination.total"
-                                :total-visible="7"
-                                @input="onPageChange"
-                                color="#253266"
-                            ></v-pagination>
                         </div>
                     </div>
                 </div>
@@ -218,7 +231,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="text-h5 grey lighten-2">
+                <v-card-title>
                     Ավելացնել նոր Էլ․ հասցե
                 </v-card-title>
 
@@ -347,8 +360,10 @@ export default {
     },
     data: () => {
         return {
+            count: 0,
             loading: false,
             isActive: false,
+            isActiveCategory: false,
             dialog: false,
             deleteEmailDialog: false,
             deleteEmailsDialog: false,
@@ -396,6 +411,7 @@ export default {
           location.href = '/'
         },
 
+
         onPageChange() {
             this.getAllEmails();
         },
@@ -415,8 +431,16 @@ export default {
             this.isActive = false
         },
 
+        hideCategory () {
+            this.isActiveCategory = false
+        },
+
         openModal(id) {
            this.isActive =  id
+        },
+
+        openModalCategory(id) {
+            this.isActiveCategory =  id
         },
 
         checkErrors(obj, field) {
@@ -523,6 +547,7 @@ export default {
                 })
                 this.loading = false
                 this.deleteEmailsDialog = false
+                this.selectedEmails = []
                 this.getAllEmails()
             }).catch(error => {
                 this.loading = false
@@ -586,14 +611,42 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.checkbox-content {
+    margin-top: 8px;
+}
+.more-categories {
+    font-size: 36px;
+    cursor: pointer;
+    line-height: 0;
+    height: 20px;
+    margin-left: 15px;
+}
+.category-info {
+    z-index: 1;
+    width: 210px;
+    min-height: 50px;
+    max-height: 150px;
+    overflow-y: scroll;
+    position: absolute;
+    padding: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-67%, 17%);
+    background: #F7F7F7;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 18px;
+    > div {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #253266;
+    }
+}
 .mailing-wrapper {
     display: flex;
     .mailing-content {
         width: 100%;
         display: flex;
         .mailing-left-menu {
-            height: 100vh;
+            height: 100%;
             background: #E8E8E8;
             min-width: 350px;
             padding: 50px;
@@ -625,6 +678,17 @@ export default {
                             font-size: 18px;
                             line-height: 22px;
                             color: #253266;
+                            img {
+                                &.sent {
+                                    width: 25px;
+                                }
+                                &.category {
+                                    width: 25px;
+                                }
+                                &.email {
+                                    width: 30px;
+                                }
+                            }
                         }
                     }
                 }
@@ -656,7 +720,7 @@ export default {
         .mailing-right-list {
             width: 70%;
             .top-section {
-                margin-top: -22px;
+                margin-top: -33px;
                 margin-bottom: 10px;
                 margin-left: 10px;
                 span {
@@ -673,7 +737,7 @@ export default {
             .mailing-right-list-content {
                 background: #ffffff;
                 padding: 15px;
-                border-radius: 20px 15px 0px 0px;
+                border-radius: 0 15px 15px 0;
                 position: relative;
                 .close-page{
                     position: absolute;
@@ -687,6 +751,7 @@ export default {
                     width: 100%;
                     margin-bottom: 30px;
                     img {
+                        width: 30px;
                         margin-right: 30px;
                     }
                     .search {
@@ -757,30 +822,43 @@ export default {
                     }
                 }
                 .category-messages-list {
-                    > .header {
-                        display: flex;
-                        padding: 10px 100px;
-                        align-items: center;
-                        justify-content: space-between;
-                        background: #DEE1E4;
-                        border-radius: 5px;
-                        margin-bottom: 25px;
-                        > div {
-                            font-family: 'Inter';
-                            font-style: normal;
-                            font-weight: 400;
-                            font-size: 18px;
-                            line-height: 18px;
-                            color: #253266;
+                    >div {
+                        overflow-x: auto;
+                    }
+                    .header-content {
+                        > .header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            background: #DEE1E4;
+                            border-radius: 5px;
+                            margin-bottom: 25px;
+                            padding: 10px 130px;
+                            > div {
+                                font-family: 'Inter';
+                                font-style: normal;
+                                font-weight: 400;
+                                font-size: 18px;
+                                line-height: 18px;
+                                color: #253266;
+                                width: 100%;
+                            }
                         }
                     }
                     .items {
                         .item {
                             display: flex;
-                            align-items: center;
                             justify-content: space-between;
                             margin-bottom: 5px;
                             color: #253266;
+                            &.active {
+                                .last-block {
+                                    background: #E5E5E5;
+                                }
+                                .ids {
+                                    background: #E5E5E5;
+                                }
+                            }
                             .checkbox {
                                 width: 20px;
                                 height: 20px;
@@ -789,20 +867,55 @@ export default {
                                 margin-right: 20px;
                             }
                             .ids {
+                                width: 40px;
                                 padding: 10px 15px;
                                 background: #F4F4F4;
                                 border-radius: 15px 0 0 15px;
                                 margin-right: 3px;
                             }
                             .last-block {
-                                width: 100%;
+                                width: 1000%;
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-between;
                                 padding: 10px 20px;
                                 background: #F4F4F4;
-                                border-radius: 0px 15px 15px 0px;
+                                border-radius: 0 15px 15px 0;
+                                .name {
+                                    text-align: center;
+                                    width: 100px;
+                                    min-width: 100px;
+                                    margin: 0 20px;
+                                }
+                                .email {
+                                    text-align: center;
+                                    width: 230px;
+                                    min-width: 230px;
+                                    margin: 0 20px;
+                                }
+                                .category {
+                                    display: flex;
+                                    align-items: center;
+                                    text-align: center;
+                                    width: 150px;
+                                    min-width: 150px;
+                                    margin: 0 20px;
+                                    position: relative;
+                                   span {
+                                       overflow: hidden;
+                                       display: -webkit-box;
+                                       -webkit-line-clamp: 1;
+                                       -webkit-box-orient: vertical;
+                                       word-break: break-all;
+                                       &:not(:nth-child(1)) {
+                                           display: none;
+                                       }
+                                   }
+                                }
                                 .actions {
+                                    width: 150px;
+                                    min-width: 150px;
+                                    margin: 0 20px;
                                     display: flex;
                                     align-items: center;
                                     > div {
@@ -817,6 +930,8 @@ export default {
                                             z-index: 1;
                                             width: 250px;
                                             min-height: 77px;
+                                            max-height: 150px;
+                                            overflow-y: auto;
                                             position: absolute;
                                             padding: 10px;
                                             top: 50%;
@@ -851,5 +966,124 @@ export default {
 }
 .v-card__text {
     margin-top: 20px;
+}
+@media screen and (max-width: 1350px) {
+    .category-messages-list {
+        >div {
+            overflow-x: auto;
+        }
+        .header-content {
+            > .header {
+                width: 915px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #DEE1E4;
+                border-radius: 5px;
+                margin-bottom: 25px;
+                padding: 10px 130px;
+                > div {
+                    font-family: 'Inter';
+                    font-style: normal;
+                    font-weight: 400;
+                    font-size: 18px;
+                    line-height: 18px;
+                    color: #253266;
+                    width: 100%;
+                }
+            }
+        }
+        .items {
+            .item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 5px;
+                color: #253266;
+                .checkbox {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    border: 1px solid;
+                    margin-right: 20px;
+                }
+                .ids {
+                    width: 50px;
+                    padding: 10px 15px;
+                    background: #F4F4F4;
+                    border-radius: 15px 0 0 15px;
+                    margin-right: 3px;
+                }
+                .last-block {
+                    width: 1000%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10px 20px;
+                    background: #F4F4F4;
+                    border-radius: 0 15px 15px 0;
+                    .name {
+                        text-align: center;
+                        width: 100px;
+                        min-width: 100px;
+                        margin: 0 20px;
+                    }
+                    .email {
+                        text-align: center;
+                        width: 230px;
+                        min-width: 230px;
+                        margin: 0 20px;
+                    }
+                    .category {
+                        text-align: center;
+                        width: 150px;
+                        min-width: 150px;
+                        margin: 0 20px;
+                    }
+                    .actions {
+                        width: 150px;
+                        min-width: 150px;
+                        margin: 0 20px;
+                        display: flex;
+                        align-items: center;
+                        > div {
+                            margin-left: 20px;
+                            img {
+                                cursor: pointer;
+                            }
+                        }
+                        .view-user-info {
+                            position: relative;
+                            .user-info {
+                                z-index: 1;
+                                width: 250px;
+                                min-height: 77px;
+                                position: absolute;
+                                padding: 10px;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-72%, 25%);
+
+                                background: #F7F7F7;
+                                box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+                                border-radius: 18px;
+                                &:after {
+                                    content: "";
+                                    position: absolute;
+                                    top: -10px;
+                                    left: 72%;
+                                    margin-left: -15px;
+                                    width: 0;
+                                    height: 0;
+                                    border-bottom: solid 15px #F6F6F6;
+                                    border-left: solid 15px transparent;
+                                    border-right: solid 15px transparent;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 </style>

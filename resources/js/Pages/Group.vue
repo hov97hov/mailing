@@ -22,23 +22,25 @@
                         <ul>
                             <li>
                                 <a href="/?messages">
-                                    <img src="/images/send.png">
+                                    <img class="sent" src="/images/sent.png">
                                     <span>Նամակներ</span>
                                 </a>
                             </li>
                             <li class="groups">
-                                <img src="/images/category.png">
-                                <span>Կատեգորիաներ</span>
+                                <a href="/groups">
+                                    <img class="category" src="/images/categories.png">
+                                    <span>Կատեգորիաներ</span>
+                                </a>
                             </li>
                             <li>
                                 <a href="/emails">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/mails.png">
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/add-email-setting">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/addmails.png">
                                     <span>Ավելացնել Էլ․ հասցե</span>
                                 </a>
                             </li>
@@ -64,30 +66,30 @@
                                     ></v-text-field>
                                 </div>
 
-                                <div class="img-content">
-                                    <div>
-                                        <img class="category-img" :src="category.image" alt="">
-                                    </div>
-                                    <div>
-                                        <v-btn
-                                            color="#253266"
-                                            class="text-none"
-                                            round
-                                            depressed
-                                            :loading="isSelecting"
-                                            @click="onButtonClick"
-                                        >
-                                            <img src="/images/LargeReload.png" alt="">
-                                        </v-btn>
-                                        <input
-                                            ref="uploader"
-                                            class="d-none"
-                                            type="file"
-                                            accept="image/*"
-                                            @change="onFileChanged"
-                                        >
-                                    </div>
-                                </div>
+<!--                                <div class="img-content">-->
+<!--                                    <div>-->
+<!--                                        <img class="category-img" :src="category.image" alt="">-->
+<!--                                    </div>-->
+<!--                                    <div>-->
+<!--                                        <v-btn-->
+<!--                                            color="#253266"-->
+<!--                                            class="text-none"-->
+<!--                                            round-->
+<!--                                            depressed-->
+<!--                                            :loading="isSelecting"-->
+<!--                                            @click="onButtonClick"-->
+<!--                                        >-->
+<!--                                            <img src="/images/LargeReload.png" alt="">-->
+<!--                                        </v-btn>-->
+<!--                                        <input-->
+<!--                                            ref="uploader"-->
+<!--                                            class="d-none"-->
+<!--                                            type="file"-->
+<!--                                            accept="image/*"-->
+<!--                                            @change="onFileChanged"-->
+<!--                                        >-->
+<!--                                    </div>-->
+<!--                                </div>-->
                             </div>
                             <div class="btn-content">
                                <v-btn @click="openCreateEmailDialog">
@@ -124,12 +126,12 @@
                     </div>
                     <div class="category-messages-list">
                         <div class="items">
-                            <div class="item" v-for="item in categoryContact">
+                            <div class="item" v-for="(item, i) in categoryContact">
                                 <label class="checkbox-content">
                                     <input v-model="selectedEmails" :value="item.id" type="checkbox">
                                     <span class="checkmark"></span>
                                 </label>
-                                <div class="ids">{{item.id}}</div>
+                                <div class="ids">{{i +1}}</div>
                                 <div class="last-block">
                                     <div class="name">{{item.email}}</div>
                                 </div>
@@ -157,7 +159,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="text-h5 grey lighten-2">
+                <v-card-title>
                     Ավելացնել Էլ․ հասցե
                 </v-card-title>
 
@@ -169,7 +171,7 @@
                             chips
                             placeholder="Էլ․ Հասցե"
                             item-value="id"
-                            item-text="name"
+                            item-text="email"
                             multiple
                             solo
                             :error-messages="errors.emailIds.contact_ids"
@@ -183,14 +185,14 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="primary"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="closeCreateEmailDialog"
                     >
                         Չեղարկել
                     </v-btn>
                     <v-btn
-                        color="primary"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="addEmailCategory"
                     >
@@ -206,7 +208,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="text-h5 grey lighten-2">
+                <v-card-title>
                     Ավելացնել նոր Էլ․ հասցե
                 </v-card-title>
 
@@ -398,7 +400,7 @@ export default {
                 })
                 this.loading = false
                 this.deleteEmailsDialog = false
-                this.selectedEmails = ''
+                this.selectedEmails = []
                 this.getCategory()
                 this.getCategoryContact()
             }).catch(error => {
@@ -629,7 +631,7 @@ export default {
         width: 100%;
         display: flex;
         .mailing-left-menu {
-            height: 100vh;
+            height: 100%;
             background: #E8E8E8;
             min-width: 350px;
             padding: 50px;
@@ -661,6 +663,17 @@ export default {
                             font-size: 18px;
                             line-height: 22px;
                             color: #253266;
+                            img {
+                                &.sent {
+                                    width: 25px;
+                                }
+                                &.category {
+                                    width: 25px;
+                                }
+                                &.email {
+                                    width: 30px;
+                                }
+                            }
                         }
                     }
                 }

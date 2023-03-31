@@ -14,6 +14,8 @@ use App\Models\Group;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 
 class MessageController extends Controller
 {
@@ -69,21 +71,31 @@ class MessageController extends Controller
             $filesData[] = [$name,$filePath];
         }
         if($request->hasFile('image')) {
-            $imgName = $request->image->getClientOriginalName();
-            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image = Image::make($request->file('image'));
+            $imageName = time().'-'.$request->file('image')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image->width() >= 800) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+
+            $image->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_path' => $imgFilePath,
-                    'image_name' => $imgName,
+                    'image_name' => $imageName,
                     'from' => $request->from,
                     'image_link' => $request->imgLink,
                 ]);
             }
 
-            $image[] = [$imgName,$imgFilePath];
+            $image = [$imageName,$imgFilePath];
         }
 
         if ($request->to) {
@@ -102,9 +114,9 @@ class MessageController extends Controller
                 'template' => 'template1' ?? '' ,
                 'bottom_img_link' => $request->bottomImgLink ?? ''
             ];
+
             dispatch(new SendEmailJob($details));
         }
-
     }
 
     public function sendEmailImgBtn(sendEmailImgBtnRequest $request)
@@ -162,20 +174,30 @@ class MessageController extends Controller
             $filesData[] = [$name,$filePath];
         }
         if($request->hasFile('image')) {
-            $imgName = $request->image->getClientOriginalName();
-            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image = Image::make($request->file('image'));
+            $imageName = time().'-'.$request->file('image')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image->width() >= 800) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            $image->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_path' => $imgFilePath,
-                    'image_name' => $imgName,
+                    'image_name' => $imageName,
                     'from' => $request->from,
+                    'image_link' => $request->imgLink,
                 ]);
             }
 
-            $image[] = [$imgName,$imgFilePath];
+            $image = [$imageName,$imgFilePath];
         }
 
         if ($request->to) {
@@ -251,20 +273,30 @@ class MessageController extends Controller
             $filesData[] = [$name,$filePath];
         }
         if($request->hasFile('image')) {
-            $imgName = $request->image->getClientOriginalName();
-            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image = Image::make($request->file('image'));
+            $imageName = time().'-'.$request->file('image')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image->width() >= 800) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            $image->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_path' => $imgFilePath,
-                    'image_name' => $imgName,
+                    'image_name' => $imageName,
                     'from' => $request->from,
+                    'image_link' => $request->imgLink,
                 ]);
             }
 
-            $image[] = [$imgName,$imgFilePath];
+            $image = [$imageName,$imgFilePath];
         }
 
         if ($request->to) {
@@ -343,20 +375,30 @@ class MessageController extends Controller
             $filesData[] = [$name,$filePath];
         }
         if($request->hasFile('image')) {
-            $imgName = $request->image->getClientOriginalName();
-            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image = Image::make($request->file('image'));
+            $imageName = time().'-'.$request->file('image')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image->width() >= 1000) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            $image->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_path' => $imgFilePath,
-                    'image_name' => $imgName,
+                    'image_name' => $imageName,
                     'from' => $request->from,
+                    'image_link' => $request->imgLink,
                 ]);
             }
 
-            $image[] = [$imgName,$imgFilePath];
+            $image = [$imageName,$imgFilePath];
         }
 
         if ($request->to) {
@@ -530,37 +572,58 @@ class MessageController extends Controller
             $filesData[] = [$name,$filePath];
         }
         if($request->hasFile('image')) {
-            $imgName = $request->image->getClientOriginalName();
-            $request->image->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image = Image::make($request->file('image'));
+            $imageName = time().'-'.$request->file('image')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image->width() >= 800) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            $image->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_path' => $imgFilePath,
-                    'image_name' => $imgName,
+                    'image_name' => $imageName,
                     'from' => $request->from,
+                    'image_link' => $request->imgLink,
                 ]);
             }
 
-            $image[] = [$imgName,$imgFilePath];
+            $image = [$imageName,$imgFilePath];
         }
+
         if($request->hasFile('image2')) {
-            $imgName = $request->image2->getClientOriginalName();
-            $request->image2->move(public_path() . '/storage/mails/category/', $imgName);
-            $imgFilePath = '/storage/mails/category/'. $imgName;
+            $image2 = Image::make($request->file('image2'));
+            $imageName = time().'-'.$request->file('image2')->getClientOriginalName();
+            $path = public_path() . '/storage/mails/category/';
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            if ($image2->width() >= 800) {
+                $image2->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            $image2->save($path.$imageName);
+            $imgFilePath = '/storage/mails/category/'. $imageName;
 
             foreach ($messageIds as $id) {
                 Attachment::create([
                     'message_id' => $id,
                     'image_bottom_path' => $imgFilePath,
-                    'image_bottom_name' => $imgName,
+                    'image_bottom_name' => $imageName,
                     'from' => $request->from,
                 ]);
             }
 
-            $image2[] = [$imgName,$imgFilePath];
+            $image2 = [$imageName,$imgFilePath];
         }
+
 
         if ($request->to) {
             $emails[] = $request->to;

@@ -8,9 +8,10 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
+    <div style="min-width: 320px">
+         <div>
         <div>
-            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image'][0][1]}}" alt="">
+            <img style="max-width: 100%" src="https://ymail.yerevak.am{{$data['image'][1]}}" alt="">
         </div>
         <br>
         <br>
@@ -31,7 +32,7 @@
         <br>
         <br>
         <div>
-            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image2'][0][1]}}" alt="">
+            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image2'][1]}}" alt="">
         </div>
     </div>
     <br>
@@ -47,9 +48,11 @@
     <div>
         @if($data['mailingImg'] != 'null')
             <a target="_blank" href="{{$data['bottom_img_link']}}">
-                <img src="https://ymail.yerevak.am{{$file[1]}}{{$data['mailingImg']}}">
+                <img src="https://ymail.yerevak.am/images/mailing.png">
             </a>
         @endif
     </div>
+    </div>
+
 </body>
 </html>

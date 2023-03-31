@@ -22,25 +22,25 @@
                         <ul>
                             <li>
                                 <a href="/?messages">
-                                    <img src="/images/send.png">
+                                    <img class="sent" src="/images/sent.png">
                                     <span>Նամակներ</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/groups">
-                                    <img src="/images/category.png">
+                                    <img class="category" src="/images/categories.png">
                                     <span>Կատեգորիաներ</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/emails">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/mails.png">
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
                             <li class="emails-setting">
                                 <a href="/add-email-setting">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/addmails.png">
                                     <span>Ավելացնել Էլ․ հասցե</span>
                                 </a>
                             </li>
@@ -569,7 +569,7 @@ export default {
         width: 100%;
         display: flex;
         .mailing-left-menu {
-            height: 100vh;
+            height: 100%;
             background: #E8E8E8;
             min-width: 350px;
             padding: 50px;
@@ -601,6 +601,17 @@ export default {
                             font-size: 18px;
                             line-height: 22px;
                             color: #253266;
+                            img {
+                                &.sent {
+                                    width: 25px;
+                                }
+                                &.category {
+                                    width: 25px;
+                                }
+                                &.email {
+                                    width: 30px;
+                                }
+                            }
                         }
                     }
                 }
@@ -632,7 +643,7 @@ export default {
         .mailing-right-list {
             width: 70%;
             .top-section {
-                margin-top: -22px;
+                margin-top: -33px;
                 margin-bottom: 10px;
                 margin-left: 10px;
                 span {
@@ -649,7 +660,7 @@ export default {
             .mailing-right-list-content {
                 background: #ffffff;
                 padding: 15px;
-                border-radius: 20px 15px 0px 0px;
+                border-radius: 0 15px 15px 0;
                 position: relative;
                 .close-page{
                     position: absolute;

@@ -1,12 +1,12 @@
 <template>
     <div>
         <div class="header">
-            <div class="container">
+            <div class="site-container">
                 <div class="header-content">
                     <div class="logo">
                         <a href="/">
                             <img src="/images/header/logo.png" alt="logo">
-                            <span>Mailing</span>
+                            <span>MAILING</span>
                         </a>
                     </div>
                     <div class="header-last">
@@ -185,8 +185,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    .site-container {
+        width: 90%;
+        margin: auto;
+        padding: 10px 0;
+    }
     .header {
-        height: 70px;
         .header-content {
             display: flex;
             justify-content: space-between;
@@ -196,18 +200,17 @@ export default {
                     display: flex;
                     color: #253266 !important;
                     text-decoration: none;
-                    align-items: flex-start;
+                    align-items: baseline;
                     img {
-                        width: 50px;
+                        width: 65px;
+                        margin-right: 5px;
                     }
                     span {
                         font-style: normal;
                         font-weight: 700;
                         font-size: 26px;
-                        line-height: 71px;
                         display: flex;
                         align-items: center;
-                        margin-top: -7px;
                     }
                 }
             }

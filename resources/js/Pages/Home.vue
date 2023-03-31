@@ -22,25 +22,25 @@
                        <ul>
                            <li>
                                <a href="/?messages">
-                                   <img src="/images/send.png">
+                                   <img class="sent" src="/images/sent.png">
                                    <span>Նամակներ</span>
                                </a>
                            </li>
                            <li>
                                <a href="/groups">
-                                   <img src="/images/category.png">
+                                   <img class="category" src="/images/categories.png">
                                    <span>Կատեգորիաներ</span>
                                </a>
                            </li>
                            <li>
                                <a href="/emails">
-                                   <img src="/images/mail.png">
+                                   <img class="email" src="/images/mails.png">
                                    <span>Էլ․ փոստեր</span>
                                </a>
                            </li>
                            <li>
                                <a href="/add-email-setting">
-                                   <img src="/images/mail.png">
+                                   <img class="email" src="/images/addmails.png">
                                    <span>Ավելացնել Էլ․ հասցե</span>
                                </a>
                            </li>
@@ -53,19 +53,9 @@
                     </div>
                     <div v-if="messageBox" class="mailing-box-content">
                         <div class="mailing-box">
-                            <div class="field-attachment">
-                                <div class="btn-content">
-                                    <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
-                                    <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
-                                    <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
-                                    <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
-                                    <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
-                                    <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
-                                </div>
-                            </div>
                             <div v-if="imgLink">
                                 <div class="field select-field">
-                                    <select v-model="imgLinkData.from" @input="checkErrors('imgLinkData', 'from')">
+                                    <select v-model="from" @input="checkErrors('imgLinkData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.imgLinkData.from[0]}}</p>
@@ -73,7 +63,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgLinkData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -83,7 +73,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="imgLinkData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -99,7 +89,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgLinkData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -109,10 +99,21 @@
                                     >
                                     </v-text-field>
                                 </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
+                                </div>
                                 <div class="fields">
                                     <v-file-input
                                         v-model="imgLinkData.image"
-                                        label="Ընտրել նկար"
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել նկար"
                                         prepend-icon="mdi-camera"
                                         :error-messages="errors.imgLinkData.image"
                                         @change="checkErrors('imgLinkData', 'image')"
@@ -186,7 +187,7 @@
                             </div>
                             <div v-if="imgButton">
                                 <div class="field select-field">
-                                    <select v-model="imgBtnData.from" @input="checkErrors('imgBtnData', 'from')">
+                                    <select v-model="from" @input="checkErrors('imgBtnData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.imgBtnData.from[0]}}</p>
@@ -194,7 +195,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgBtnData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -206,7 +207,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="imgBtnData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -222,7 +223,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgBtnData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -232,12 +233,22 @@
                                     >
                                     </v-text-field>
                                 </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
+                                </div>
                                 <div class="field">
                                     <v-file-input
                                         v-model="imgBtnData.image"
-                                        label="Ընտրել նկար"
-                                        outlined
-                                        dense
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել նկար"
+                                        prepend-icon="mdi-camera"
                                         :error-messages="errors.imgBtnData.image"
                                         @change="checkErrors('imgBtnData', 'image')"
                                     ></v-file-input>
@@ -325,7 +336,7 @@
                             </div>
                             <div v-if="imgText">
                                 <div class="field select-field">
-                                    <select v-model="imgTextData.from" @input="checkErrors('imgTextData', 'from')">
+                                    <select v-model="from" @input="checkErrors('imgTextData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.imgTextData.from[0]}}</p>
@@ -333,7 +344,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -343,7 +354,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="imgTextData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -358,7 +369,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -368,12 +379,22 @@
                                     >
                                     </v-text-field>
                                 </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
+                                </div>
                                 <div class="field">
                                     <v-file-input
                                         v-model="imgTextData.image"
-                                        label="Ընտրել նկար"
-                                        outlined
-                                        dense
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել նկար"
+                                        prepend-icon="mdi-camera"
                                         :error-messages="errors.imgTextData.image"
                                         @change="checkErrors('imgTextData', 'image')"
                                     ></v-file-input>
@@ -442,7 +463,7 @@
                             </div>
                             <div v-if="imgTextButton">
                                 <div class="field select-field">
-                                    <select v-model="imgTextButtonData.from" @input="checkErrors('imgTextButtonData', 'from')">
+                                    <select v-model="from" @input="checkErrors('imgTextButtonData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.imgTextButtonData.from[0]}}</p>
@@ -450,7 +471,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextButtonData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -460,7 +481,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="imgTextButtonData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -475,7 +496,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextButtonData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -485,12 +506,22 @@
                                     >
                                     </v-text-field>
                                 </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
+                                </div>
                                 <div class="field">
                                     <v-file-input
                                         v-model="imgTextButtonData.image"
-                                        label="Ընտրել նկար"
-                                        outlined
-                                        dense
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել նկար"
+                                        prepend-icon="mdi-camera"
                                         :error-messages="errors.imgTextButtonData.image"
                                         @change="checkErrors('imgTextButtonData', 'image')"
                                     ></v-file-input>
@@ -585,7 +616,7 @@
                             </div>
                             <div v-if="textButton">
                                 <div class="field select-field">
-                                    <select v-model="textButtonData.from" @input="checkErrors('textButtonData', 'from')">
+                                    <select v-model="from" @input="checkErrors('textButtonData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.textButtonData.from[0]}}</p>
@@ -593,7 +624,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="textButtonData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -603,7 +634,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="textButtonData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -618,7 +649,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="textButtonData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -627,6 +658,16 @@
                                         @input="checkErrors('textButtonData', 'subject')"
                                     >
                                     </v-text-field>
+                                </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
                                 </div>
                                 <div class="fields">
                                     <div>
@@ -718,7 +759,7 @@
                             </div>
                             <div v-if="imgTextButtonImg">
                                 <div class="field select-field">
-                                    <select v-model="imgTextButtonImgData.from" @input="checkErrors('imgTextButtonImgData', 'from')">
+                                    <select v-model="from" @input="checkErrors('imgTextButtonImgData', 'from')">
                                         <option v-for="item in emailSettings" :value="item.email">{{item.email}}</option>
                                     </select>
                                     <p class="error-message setting">{{errors.imgTextButtonImgData.from[0]}}</p>
@@ -726,7 +767,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextButtonImgData.to"
+                                        v-model="to"
                                         label="Ում"
                                         solo
                                         color="#253266"
@@ -736,7 +777,7 @@
                                 </div>
                                 <div class="field">
                                     <v-select
-                                        v-model="imgTextButtonImgData.categoryIds"
+                                        v-model="categorieIds"
                                         label="Ընտրել կատեգորիա"
                                         solo
                                         :items="categories"
@@ -751,7 +792,7 @@
                                 </div>
                                 <div class="field">
                                     <v-text-field
-                                        v-model="imgTextButtonImgData.subject"
+                                        v-model="subject"
                                         label="Թեմա"
                                         solo
                                         color="#253266"
@@ -761,20 +802,31 @@
                                     >
                                     </v-text-field>
                                 </div>
+                                <div class="field-attachment">
+                                    <div class="btn-content">
+                                        <button @click="openImgLink" :class="{active : imgLink}">Նկար որպես հղում</button>
+                                        <button @click="openImgButton" :class="{active : imgButton}">Նկար / կոճակ</button>
+                                        <button @click="openImgText" :class="{active : imgText}">Նկար / տեքստ</button>
+                                        <button @click="openImgTextButton" :class="{active : imgTextButton}">Նկար / տեքստ /կոճակ</button>
+                                        <button @click="openTextButton" :class="{active : textButton}">Տեքստ / կոճակ</button>
+                                        <button @click="openImgTextButtonImg" :class="{active : imgTextButtonImg}">Նկար / տեքստ /կոճակ / նկար</button>
+                                    </div>
+                                </div>
                                 <div class="fields">
                                     <v-file-input
                                         v-model="imgTextButtonImgData.image"
-                                        label="Ընտրել առաջին նկարը"
-                                        outlined
-                                        dense
+                                        class="mr-3"
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել առաջին նկարը"
+                                        prepend-icon="mdi-camera"
                                         :error-messages="errors.imgTextButtonImgData.image"
                                         @change="checkErrors('imgTextButtonImgData', 'image')"
                                     ></v-file-input>
                                     <v-file-input
                                         v-model="imgTextButtonImgData.image2"
-                                        label="Ընտրել երկրորդ նկարը"
-                                        outlined
-                                        dense
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Ընտրել երկրորդ նկարը"
+                                        prepend-icon="mdi-camera"
                                         :error-messages="errors.imgTextButtonImgData.image2"
                                         @change="checkErrors('imgTextButtonImgData', 'image2')"
                                     ></v-file-input>
@@ -877,15 +929,13 @@
                             <div class="search">
                                 <v-text-field
                                     v-model="search"
-                                    prepend-inner-icon="mdi-magnify"
-                                    filled
-                                    rounded
-                                    dense
-                                    hi
-                                    hide-details
+                                    solo
                                     color="#253266"
+                                    class="rounded-lg"
+                                    prepend-inner-icon="mdi-magnify"
                                     @input="searchMessageData"
-                                ></v-text-field>
+                                >
+                                </v-text-field>
                             </div>
                            <div>
                                <img v-if="selectedMessages.length" @click="deleteMessageDialog = true" src="/images/removeIcon.png" alt="">
@@ -898,7 +948,11 @@
                                 <div>Թեմա</div>
                                 <div>Ամսաթիվ</div>
                             </div>
-                            <div v-for="item in messages" class="list">
+                            <div
+                                v-for="item in messages"
+                                class="list"
+                                :class="{active : selectedMessages.includes(item.id)}"
+                            >
                                 <div>
                                     <label class="checkbox-content">
                                         <input v-model="selectedMessages" :value="item.id" type="checkbox">
@@ -908,7 +962,7 @@
                                     <div style="cursor: pointer" @click="openModalDialog(item)" class="name">{{item.from}}</div>
                                 </div>
                                 <div>
-                                    <img style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover" :src="item.group ? item.group.image : '/images/Group.png'" alt="">
+                                    <img style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover" :src="item.group ? '/images/category.png' : '/images/Group.png'" alt="">
                                     <div>{{item.group ? item.group.name : item.email}}</div>
                                 </div>
                                 <div>
@@ -1035,6 +1089,10 @@ export default {
     },
     data: () => {
         return {
+            from: '',
+            to: '',
+            categorieIds: [],
+            subject: '',
             loading: false,
             imgLink: true,
             imgButton: false,
@@ -1198,12 +1256,7 @@ export default {
         await this.getEmailSetting()
         await this.getCategory()
         await this.getMessages()
-        this.imgLinkData.from = this.emailSettings[0].email
-        this.imgBtnData.from = this.emailSettings[0].email
-        this.imgTextData.from = this.emailSettings[0].email
-        this.imgTextButtonData.from = this.emailSettings[0].email
-        this.textButtonData.from = this.emailSettings[0].email
-        this.imgTextButtonImgData.from = this.emailSettings[0].email
+        this.from = this.emailSettings[0].email
 
         if (window.location.search === '?messages') {
             this.messageBox = false
@@ -1225,7 +1278,6 @@ export default {
                 this.errors[field] = ''
             }
         },
-
 
         onPageChange() {
             this.getMessages();
@@ -1353,10 +1405,10 @@ export default {
         async sendEmailImgLink() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.imgLinkData.from)
-            formData.append('to', this.imgLinkData.to)
-            formData.append('categoryIds', this.imgLinkData.categoryIds)
-            formData.append('subject', this.imgLinkData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('image', this.imgLinkData.image ?? '')
             formData.append('imgLink', this.imgLinkData.imgLink)
             formData.append('file', this.selectedFile)
@@ -1375,10 +1427,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.imgLinkData.from = ''
-                this.imgLinkData.to = ''
-                this.imgLinkData.categoryIds = ''
-                this.imgLinkData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.imgLinkData.image = ''
                 this.imgLinkData.imgLink = ''
                 this.imgLinkData.bottomImgLink = ''
@@ -1402,10 +1453,10 @@ export default {
         async sendEmailImgBtn() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.imgBtnData.from)
-            formData.append('to', this.imgBtnData.to)
-            formData.append('categoryIds', this.imgBtnData.categoryIds)
-            formData.append('subject', this.imgBtnData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('image', this.imgBtnData.image ?? '')
             formData.append('btnLink', this.imgBtnData.btnLink)
             formData.append('btnName', this.imgBtnData.btnName)
@@ -1425,10 +1476,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.imgBtnData.from = ''
-                this.imgBtnData.to = ''
-                this.imgBtnData.categoryIds = ''
-                this.imgBtnData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.imgBtnData.image = ''
                 this.imgBtnData.btnLink = ''
                 this.imgBtnData.btnName = ''
@@ -1453,10 +1503,10 @@ export default {
         async sendEmailImgTextData() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.imgTextData.from)
-            formData.append('to', this.imgTextData.to)
-            formData.append('categoryIds', this.imgTextData.categoryIds)
-            formData.append('subject', this.imgTextData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('image', this.imgTextData.image ?? '')
             formData.append('text', this.imgTextData.text)
             formData.append('file', this.selectedFile)
@@ -1475,10 +1525,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.imgTextData.from = ''
-                this.imgTextData.to = ''
-                this.imgTextData.categoryIds = ''
-                this.imgTextData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.imgTextData.image = ''
                 this.imgTextData.text = ''
                 this.imgTextData.bottomImgLink = ''
@@ -1502,10 +1551,10 @@ export default {
         async sendEmailImgTextButton() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.imgTextButtonData.from)
-            formData.append('to', this.imgTextButtonData.to)
-            formData.append('categoryIds', this.imgTextButtonData.categoryIds)
-            formData.append('subject', this.imgTextButtonData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('image', this.imgTextButtonData.image ?? '')
             formData.append('text', this.imgTextButtonData.text)
             formData.append('btnLink', this.imgTextButtonData.btnLink)
@@ -1526,10 +1575,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.imgTextButtonData.from = ''
-                this.imgTextButtonData.to = ''
-                this.imgTextButtonData.categoryIds = ''
-                this.imgTextButtonData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.imgTextButtonData.image = ''
                 this.imgTextButtonData.btnLink = ''
                 this.imgTextButtonData.btnName = ''
@@ -1555,10 +1603,10 @@ export default {
         async sendEmailTextButton() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.textButtonData.from)
-            formData.append('to', this.textButtonData.to)
-            formData.append('categoryIds', this.textButtonData.categoryIds)
-            formData.append('subject', this.textButtonData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('text', this.textButtonData.text)
             formData.append('btnLink', this.textButtonData.btnLink)
             formData.append('btnName', this.textButtonData.btnName)
@@ -1578,10 +1626,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.textButtonData.from = ''
-                this.textButtonData.to = ''
-                this.textButtonData.categoryIds = ''
-                this.textButtonData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.textButtonData.btnLink = ''
                 this.textButtonData.btnName = ''
                 this.textButtonData.text = ''
@@ -1606,10 +1653,10 @@ export default {
         async sendEmailImgTextButtonImg() {
             this.loading = true;
             const formData = new FormData()
-            formData.append('from', this.imgTextButtonImgData.from)
-            formData.append('to', this.imgTextButtonImgData.to)
-            formData.append('categoryIds', this.imgTextButtonImgData.categoryIds)
-            formData.append('subject', this.imgTextButtonImgData.subject)
+            formData.append('from', this.from)
+            formData.append('to', this.to)
+            formData.append('categoryIds', this.categorieIds)
+            formData.append('subject', this.subject)
             formData.append('text', this.imgTextButtonImgData.text)
             formData.append('btnLink', this.imgTextButtonImgData.btnLink)
             formData.append('btnName', this.imgTextButtonImgData.btnName)
@@ -1631,10 +1678,9 @@ export default {
                     duration: 1000,
                     speed: 1000
                 })
-                this.imgTextButtonImgData.from = ''
-                this.imgTextButtonImgData.to = ''
-                this.imgTextButtonImgData.categoryIds = ''
-                this.imgTextButtonImgData.subject = ''
+                this.to = ''
+                this.categorieIds = []
+                this.subject = ''
                 this.imgTextButtonImgData.btnLink = ''
                 this.imgTextButtonImgData.btnName = ''
                 this.imgTextButtonImgData.text = ''
@@ -1673,7 +1719,7 @@ export default {
                 this.getCategory()
                 this.getMessages()
                 this.deleteMessageDialog  = false
-                this.selectedMessages  = ''
+                this.selectedMessages = []
             }).catch(error => {
                 this.loading = false
                 this.$notify({
@@ -1691,6 +1737,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
 .dialog-message-title {
     font-family: 'Arial AMU';
     font-style: normal;
@@ -1852,7 +1899,7 @@ export default {
             width: 100%;
             display: flex;
             .mailing-left-menu {
-                height: 100vh;
+                height: 100%;
                 background: #E8E8E8;
                 min-width: 350px;
                 padding: 50px;
@@ -1879,6 +1926,17 @@ export default {
                                 font-size: 18px;
                                 line-height: 22px;
                                 color: #253266;
+                                img {
+                                    &.sent {
+                                        width: 25px;
+                                    }
+                                    &.category {
+                                        width: 25px;
+                                    }
+                                    &.email {
+                                        width: 30px;
+                                    }
+                                }
                             }
                             cursor: pointer;
                             margin-bottom: 10px;
@@ -1912,7 +1970,7 @@ export default {
             .mailing-right-list {
                 width: 70%;
                 .mailing-right-list-header {
-                    margin-top: -22px;
+                    margin-top: -33px;
                     width: 50%;
                     border-bottom: 1px solid;
                     margin-bottom: 10px;
@@ -1931,7 +1989,7 @@ export default {
                     width: 100%;
                     background: #ffffff;
                     padding: 15px;
-                    border-radius: 20px 15px 0px 0px;
+                    border-radius: 0 15px 15px 0;
                     display: flex;
                     align-items: flex-start;
                     .mailing-box {
@@ -1950,7 +2008,7 @@ export default {
                     width: 100%;
                     background: #ffffff;
                     padding: 15px;
-                    border-radius: 20px 15px 0px 0px;
+                    border-radius: 0 15px 15px 0;
                     .search-content {
                         margin-bottom: 30px;
                         display: flex;
@@ -2000,6 +2058,12 @@ export default {
                             padding: 10px 10px;
                             border-radius: 15px;
                             border: 1px solid #B9B9B9;
+                            &.active {
+                                background: #D7D7D7;
+                                .checkmark {
+                                    background: #D7D7D7;
+                                }
+                            }
                             &:not(:last-child) {
                                 margin-bottom: 5px;
                             }

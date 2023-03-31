@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use function GuzzleHttp\Promise\all;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class GroupsController extends Controller
 {
@@ -58,7 +59,7 @@ class GroupsController extends Controller
         $this->group->createGroup($request);
     }
 
-    public function updateCategory(CreateGroupRequest $request)
+    public function updateCategory(UpdateCategoryRequest $request)
     {
         return Group::where('id', $request->id)->update([
             'name' => $request->name,
@@ -71,14 +72,14 @@ class GroupsController extends Controller
     public function getCategory(): JsonResponse
     {
         return \response()->json([
-           'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->paginate(10)
+           'categories' => Group::orderBy('name', 'ASC')->with('contact')->paginate(10)
         ]);
     }
 
     public function getAllCategory()
     {
         return \response()->json([
-            'categories' => Group::orderBy('sorting', 'ASC')->with('contact')->get()
+            'categories' => Group::orderBy('name', 'ASC')->with('contact')->get()
         ]);
     }
 
@@ -95,8 +96,6 @@ class GroupsController extends Controller
      */
     public function deleteCategory(Request $request)
     {
-        $category = Group::where('id', $request->id)->first();
-        unlink(public_path($category->image));
 
         return Group::where('id', $request->id)->delete();
     }

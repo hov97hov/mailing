@@ -22,23 +22,25 @@
                         <ul>
                             <li>
                                 <a href="/?messages">
-                                    <img src="/images/send.png">
+                                    <img class="sent" src="/images/sent.png">
                                     <span>Նամակներ</span>
                                 </a>
                             </li>
                             <li class="groups">
-                                <img src="/images/category.png">
-                                <span>Կատեգորիաներ</span>
+                                <a href="/groups">
+                                    <img class="category" src="/images/categories.png">
+                                    <span>Կատեգորիաներ</span>
+                                </a>
                             </li>
                             <li>
                                 <a href="/emails">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/mails.png">
                                     <span>Էլ․ փոստեր</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/add-email-setting">
-                                    <img src="/images/mail.png">
+                                    <img class="email" src="/images/addmails.png">
                                     <span>Ավելացնել Էլ․ հասցե</span>
                                 </a>
                             </li>
@@ -56,7 +58,7 @@
                        <div class="create-category">
                            <div class="title">Ավելացնել կատեգորիա</div>
                            <div class="create-category-content">
-                               <div>
+                               <div >
                                    <v-text-field
                                        v-model="defaultCategoryData.name"
                                        placeholder="Անուն"
@@ -68,36 +70,36 @@
                                    ></v-text-field>
                                </div>
                                <div>
-                                   <div class="add-photo">
-                                       <div>
-                                           <span>Ավելացնել նկար</span>
-                                           <span>{{errors.defaultCategoryData.image[0]}}</span>
-                                       </div>
-                                       <div class="icon">
-                                           <div>
-                                               <v-btn
-                                                   color="#253266"
-                                                   class="text-none"
-                                                   round
-                                                   depressed
-                                                   :loading="isSelecting"
-                                                   @click="onButtonClick"
-                                               >
-                                                  <div>
-                                                      <img src="/images/uploadImage.png" alt="">
-                                                  </div>
-                                               </v-btn>
-                                               <input
-                                                   ref="uploader"
-                                                   class="d-none"
-                                                   type="file"
-                                                   accept="image/*"
-                                                   @change="onFileChanged"
-                                               >
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <div>
+<!--                                   <div class="add-photo">-->
+<!--                                       <div>-->
+<!--                                           <span>Ավելացնել նկար</span>-->
+<!--                                           <span>{{errors.defaultCategoryData.image[0]}}</span>-->
+<!--                                       </div>-->
+<!--                                       <div class="icon">-->
+<!--                                           <div>-->
+<!--                                               <v-btn-->
+<!--                                                   color="#253266"-->
+<!--                                                   class="text-none"-->
+<!--                                                   round-->
+<!--                                                   depressed-->
+<!--                                                   :loading="isSelecting"-->
+<!--                                                   @click="onButtonClick"-->
+<!--                                               >-->
+<!--                                                  <div>-->
+<!--                                                      <img src="/images/uploadImage.png" alt="">-->
+<!--                                                  </div>-->
+<!--                                               </v-btn>-->
+<!--                                               <input-->
+<!--                                                   ref="uploader"-->
+<!--                                                   class="d-none"-->
+<!--                                                   type="file"-->
+<!--                                                   accept="image/*"-->
+<!--                                                   @change="onFileChanged"-->
+<!--                                               >-->
+<!--                                           </div>-->
+<!--                                       </div>-->
+<!--                                   </div>-->
+                                   <div style="display: flex; justify-content: flex-end; width: 100%">
                                        <button @click="createCategory">Ավելացնել</button>
                                    </div>
                                </div>
@@ -106,7 +108,7 @@
                        </div>
                        <div class="search-content">
                            <div>
-                               <img v-if="selectedGroups.length" @click="deleteGroupDialog = true" src="/images/removeIcon.png" alt="">
+                               <img width="25" v-if="selectedGroups.length" @click="deleteGroupDialog = true" src="/images/removeIcon.png" alt="">
                            </div>
                            <div class="search">
                                <v-text-field
@@ -128,6 +130,7 @@
                                    <div class="item"
                                         v-for="item in categories"
                                         :key="item.id"
+                                        :class="{active: selectedGroups.includes(item.id)}"
                                    >
                                        <label class="checkbox-content">
                                            <input v-model="selectedGroups" :value="item.id" type="checkbox">
@@ -135,7 +138,7 @@
                                        </label>
                                        <div class="last-block" >
                                            <div class="name">
-                                               <img :src="item.image" alt="">
+                                               <img src="/images/category.png">
                                                <span @click="openGroupPage(item.id)">{{item.name}}</span>
                                            </div>
                                            <div class="actions">
@@ -192,7 +195,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="text-h5 grey lighten-2">
+                <v-card-title>
                     Ավելացնել Էլ․ հասցե
                 </v-card-title>
 
@@ -218,14 +221,14 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="primary"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="closeCreateEmailDialog"
                     >
                         Չեղարկել
                     </v-btn>
                     <v-btn
-                        color="primary"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="addEmailCategory"
                     >
@@ -241,7 +244,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="text-h5 grey lighten-2">
+                <v-card-title>
                     Ավելացնել նոր Էլ․ հասցե
                 </v-card-title>
 
@@ -290,14 +293,14 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        color="red"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="createNewEmailDialog = false"
                     >
                         Չեղարկել
                     </v-btn>
                     <v-btn
-                        color="#253266"
+                        style="background: #DADADA; color: #253266"
                         text
                         @click="createMail"
                     >
@@ -589,7 +592,7 @@ export default {
                 })
                 this.loading = false
                 this.deleteGroupDialog = false
-                this.selectedGroups = ''
+                this.selectedGroups = []
                 this.getCategory()
             }).catch(error => {
                 this.loading = false
@@ -713,7 +716,7 @@ export default {
         width: 100%;
         display: flex;
         .mailing-left-menu {
-            height: 100vh;
+            height: 100%;
             background: #E8E8E8;
             min-width: 350px;
             padding: 50px;
@@ -745,6 +748,17 @@ export default {
                             font-size: 18px;
                             line-height: 22px;
                             color: #253266;
+                            img {
+                                &.sent {
+                                    width: 25px;
+                                }
+                                &.category {
+                                    width: 25px;
+                                }
+                                &.email {
+                                    width: 30px;
+                                }
+                            }
                         }
                     }
                 }
@@ -794,7 +808,7 @@ export default {
                 width: 95%;
                 background: #ffffff;
                 padding: 15px;
-                border-radius: 20px 15px 0px 0px;
+                border-radius: 0 15px 15px 0;
                 position: relative;
                 .close-page{
                     position: absolute;
@@ -884,98 +898,113 @@ export default {
                         }
                     }
                 }
-                .category-list {
-                    .items {
-                        .item {
-                            width: 100%;
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 20px;
-                            > .checkbox {
-                                width: 20px;
-                                height: 20px;
-                                border-radius: 20px;
-                                border: 1px solid #000000;
-                                margin-right: 15px;
-                            }
-                            .name {
-                                font-family: 'Arial AMU';
-                                font-style: normal;
-                                font-weight: 400;
-                                font-size: 16px;
-                                line-height: 20px;
-                                color: #253266;
-                                cursor: pointer;
-                                img {
-                                    width: 25px;
-                                    height: 25px;
-                                    border-radius: 50%;
-                                    object-fit: cover;
-                                    margin-right: 10px;
-                                }
-                            }
-                            .last-block {
+                .category-messages-list {
+                    width: 100%;
+                    overflow: hidden;
+                    .category-list {
+                        .items {
+                            overflow-x: auto;
+                            .item {
                                 width: 100%;
                                 display: flex;
                                 align-items: center;
-                                justify-content: space-between;
-                                padding: 10px 15px;
-                                background: #EAEAEA;
-                                border-radius: 15px;
-                                > .actions {
-                                    width: 33%;
+                                margin-bottom: 20px;
+                                &.active {
+                                    .last-block {
+                                        background: #E5E5E5;
+                                    }
+                                }
+                                > .checkbox {
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 20px;
+                                    border: 1px solid #000000;
+                                    margin-right: 15px;
+                                }
+                                .name {
+                                    width: 300px;
+                                    word-break: break-word;
+                                    font-family: 'Arial AMU';
+                                    font-style: normal;
+                                    font-weight: 400;
+                                    font-size: 16px;
+                                    line-height: 20px;
+                                    color: #253266;
+                                    cursor: pointer;
+                                    img {
+                                        width: 25px;
+                                        height: 25px;
+                                        border-radius: 50%;
+                                        object-fit: cover;
+                                        margin-right: 10px;
+                                    }
+                                }
+                                .last-block {
+                                    width: 100%;
                                     display: flex;
                                     align-items: center;
-                                    > div {
-                                        margin-left: 20px;
-                                        img {
-                                            cursor: pointer;
-                                        }
+                                    justify-content: space-between;
+                                    padding: 10px 15px;
+                                    background: #F4F4F4;
+                                    border-radius: 15px;
+                                    > .name {
+                                        display: flex;
                                     }
-                                    .add-user-content {
-                                        position: relative;
-                                        .add-user {
-                                            width: 307px;
-                                            background: #F6F6F6;
-                                            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-                                            border-radius: 8px;
-                                            position: absolute;
-                                            padding: 5px 10px;
-                                            top: 50%;
-                                            left: 50%;
-                                            z-index: 1;
-                                            transform: translate(-50%, 25%);
-                                            .btn-content {
+                                    > .actions {
+                                        width: 33%;
+                                        display: flex;
+                                        align-items: center;
+                                        > div {
+                                            margin-left: 20px;
+                                            img {
                                                 cursor: pointer;
-                                                margin-bottom: 5px;
-                                                font-family: 'Arial AMU';
-                                                font-style: normal;
-                                                font-weight: 400;
-                                                font-size: 16px;
-                                                line-height: 20px;
-                                                color: #253266;
                                             }
-                                            .user-count {
-                                                display: flex;
-                                                justify-content: flex-end;
-                                                font-family: 'Arial AMU';
-                                                font-style: normal;
-                                                font-weight: 400;
-                                                font-size: 14px;
-                                                line-height: 18px;
-                                                color: #253266;
-                                            }
-                                            &:after {
-                                                content: "";
+                                        }
+                                        .add-user-content {
+                                            position: relative;
+                                            .add-user {
+                                                width: 307px;
+                                                background: #F6F6F6;
+                                                box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+                                                border-radius: 8px;
                                                 position: absolute;
-                                                top: -10px;
+                                                padding: 5px 10px;
+                                                top: 50%;
                                                 left: 50%;
-                                                margin-left: -15px;
-                                                width: 0;
-                                                height: 0;
-                                                border-bottom: solid 15px #F6F6F6;
-                                                border-left: solid 15px transparent;
-                                                border-right: solid 15px transparent;
+                                                z-index: 1;
+                                                transform: translate(-50%, 25%);
+                                                .btn-content {
+                                                    cursor: pointer;
+                                                    margin-bottom: 5px;
+                                                    font-family: 'Arial AMU';
+                                                    font-style: normal;
+                                                    font-weight: 400;
+                                                    font-size: 16px;
+                                                    line-height: 20px;
+                                                    color: #253266;
+                                                }
+                                                .user-count {
+                                                    display: flex;
+                                                    justify-content: flex-end;
+                                                    font-family: 'Arial AMU';
+                                                    font-style: normal;
+                                                    font-weight: 400;
+                                                    font-size: 14px;
+                                                    line-height: 18px;
+                                                    color: #253266;
+                                                }
+                                                &:after {
+                                                    content: "";
+                                                    position: absolute;
+                                                    top: -10px;
+                                                    left: 50%;
+                                                    margin-left: -15px;
+                                                    width: 0;
+                                                    height: 0;
+                                                    border-bottom: solid 15px #F6F6F6;
+                                                    border-left: solid 15px transparent;
+                                                    border-right: solid 15px transparent;
+                                                }
                                             }
                                         }
                                     }
@@ -991,6 +1020,116 @@ export default {
 
 .text-filed-content {
     margin-top: 20px;
+}
+
+@media (max-width: 950px) {
+    .category-messages-list {
+        width: 100%;
+        overflow: hidden;
+        .category-list {
+            .items {
+                width: 520px;
+                overflow-x: auto;
+                .item {
+                    width: 700px !important;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    > .checkbox {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 20px;
+                        border: 1px solid #000000;
+                        margin-right: 15px;
+                    }
+                    .name {
+
+                        font-family: 'Arial AMU';
+                        font-style: normal;
+                        font-weight: 400;
+                        font-size: 16px;
+                        line-height: 20px;
+                        color: #253266;
+                        cursor: pointer;
+                        img {
+                            width: 25px;
+                            height: 25px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            margin-right: 10px;
+                        }
+                    }
+                    .last-block {
+                        width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 10px 15px;
+                        background: #EAEAEA;
+                        border-radius: 15px;
+                        > .actions {
+                            width: 33%;
+                            display: flex;
+                            align-items: center;
+                            > div {
+                                margin-left: 20px;
+                                img {
+                                    cursor: pointer;
+                                }
+                            }
+                            .add-user-content {
+                                position: relative;
+                                .add-user {
+                                    width: 307px;
+                                    background: #F6F6F6;
+                                    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+                                    border-radius: 8px;
+                                    position: absolute;
+                                    padding: 5px 10px;
+                                    top: 50%;
+                                    left: 50%;
+                                    z-index: 1;
+                                    transform: translate(-50%, 25%);
+                                    .btn-content {
+                                        cursor: pointer;
+                                        margin-bottom: 5px;
+                                        font-family: 'Arial AMU';
+                                        font-style: normal;
+                                        font-weight: 400;
+                                        font-size: 16px;
+                                        line-height: 20px;
+                                        color: #253266;
+                                    }
+                                    .user-count {
+                                        display: flex;
+                                        justify-content: flex-end;
+                                        font-family: 'Arial AMU';
+                                        font-style: normal;
+                                        font-weight: 400;
+                                        font-size: 14px;
+                                        line-height: 18px;
+                                        color: #253266;
+                                    }
+                                    &:after {
+                                        content: "";
+                                        position: absolute;
+                                        top: -10px;
+                                        left: 50%;
+                                        margin-left: -15px;
+                                        width: 0;
+                                        height: 0;
+                                        border-bottom: solid 15px #F6F6F6;
+                                        border-left: solid 15px transparent;
+                                        border-right: solid 15px transparent;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 </style>

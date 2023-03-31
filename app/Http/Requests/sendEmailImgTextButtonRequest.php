@@ -41,6 +41,7 @@ class sendEmailImgTextButtonRequest extends FormRequest
             'categoryIds.required' => 'դաշտը պարտադիր է:',
             'subject.required' => 'դաշտը պարտադիր է:',
             'image.required' => 'դաշտը պարտադիր է:',
+            'image.max' => 'նկարի չափսը չպետք է գերազանցի 1.6mb - ը:',
             'text.required' => 'դաշտը պարտադիր է:',
             'btnLink.required' => 'դաշտը պարտադիր է:',
             'btnName.required' => 'դաշտը պարտադիր է:',

@@ -24,9 +24,9 @@ class CreateContactRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required'],
+            'name' => ['required', 'max:50'],
             'categoryId' => ['required'],
-            'email' => ['required', 'email', 'unique:contacts'],
+            'email' => ['required', 'email', 'unique:contacts', 'regex:/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix'],
         ];
     }
 
@@ -34,11 +34,13 @@ class CreateContactRequest extends FormRequest
     {
         return [
             'name.required' => 'դաշտը պարտադիր է լրացնել:',
+            'name.max' => 'Անունը չպետք է լինի 20 նիշից ավելի:',
             'name' => 'դաշտը պարտադիր է լրացնել:',
             'email.required' => 'դաշտը պարտադիր է լրացնել:',
             'email.unique' => 'Էլ․ փոստը արդեն գրանցված է',
-            'email' => 'դաշտը պարտադիր է լրացնել:',
+            'email.regex' => 'Լրացնել միայն լատինատառ',
             'categoryId.required' => 'դաշտը պարտադիր է լրացնել:',
+            'email' => 'Ճիշտ չեք գրել Էլ հասցեն'
         ];
     }
 }

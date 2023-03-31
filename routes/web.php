@@ -24,7 +24,6 @@ Route::get('/login', [LoginController::class, 'loginPage'])->name('loginPage');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-
     //Groups
     Route::get('/groups', [GroupsController::class, 'index'])->name('index.groups');
     Route::get('/group/{id}', [GroupsController::class, 'groupPage'])->name('group');
@@ -33,13 +32,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/add-contact', [ContactController::class, 'createContactPage'])->name('createContactPage');
     //contacts
     Route::get('/emails', [EmailController::class, 'index']);
-
     Route::get('/add-email-setting', [EmailController::class, 'addEmailSetting']);
-
     Route::middleware([UserPermision::class])->group(function () {
         //register
         Route::get('/register', [LoginController::class, 'register'])->name('register');
-
     });
 
 });

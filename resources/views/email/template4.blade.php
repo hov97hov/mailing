@@ -8,9 +8,10 @@
     <title>Document</title>
 </head>
 <body>
-    <div style="width: 500px; text-align: center">
+    <div style="min-width: 320px">
+        <div style="text-align: center">
         <div>
-            <img style="width: 100%" src="https://ymail.yerevak.am{{$data['image'][0][1]}}" alt="">
+            <img style="max-width: 100%" src="https://ymail.yerevak.am{{$data['image'][1]}}" alt="">
         </div>
         <div style="margin: 30px 0">
             {!! $data['text'] !!}
@@ -34,9 +35,11 @@
     <div>
         @if($data['mailingImg'] != 'null')
             <a target="_blank" href="{{$data['bottom_img_link']}}">
-                <img src="{{$data['mailingImg']}}">
+                <img src="https://ymail.yerevak.am/images/mailing.png">
             </a>
         @endif
     </div>
+    </div>
+
 </body>
 </html>
