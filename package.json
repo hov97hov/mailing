@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "@andresouzaabreu/vue-data-table": "^3.3.3",
-        "@inertiajs/inertia": "^0.11.0",
+        "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-vue": "^0.8.0",
         "@mdi/font": "^7.0.96",
         "laravel-vue-pagination": "^4.0.0",
